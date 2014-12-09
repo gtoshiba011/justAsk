@@ -1,25 +1,19 @@
 package com.example.justask;
 
-import android.app.Activity;
-
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.Gravity;
+import android.support.v4.app.FragmentTabHost;
+import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
-public class MainActivity extends Activity implements
-		NavigationDrawerFragment.NavigationDrawerCallbacks {
+public class MainActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the
@@ -45,6 +39,28 @@ public class MainActivity extends Activity implements
 		// Set up the drawer.
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
+/*	
+		FragmentTabHost tabHost = (FragmentTabHost)findViewById(android.R.id.tabhost);
+	    tabHost.setup(this, getSupportFragmentManager(), R.id.realtabcontent);
+	    tabHost.addTab(tabHost.newTabSpec("Profile").setIndicator("Profile"), ProfileForSpeaker.class, null);
+	    tabHost.addTab(tabHost.newTabSpec("Questions").setIndicator("Questions"), QuestionsForSpeaker.class, null);
+	    tabHost.addTab(tabHost.newTabSpec("Survey").setIndicator("Survey"), SurveyForSpeaker.class, null);
+//*/
+	}
+
+	/**************************
+	* 
+	* µπ§l≠∂≈“©I•s•Œ
+	* 
+	**************************/
+	public String getProfileData(){
+		return "Profile Page";
+	}
+	public String getQuestionsData(){
+		return "Question Page";
+	}
+	public String getSurveyData(){
+		return "Survey Page";
 	}
 
 	@Override
