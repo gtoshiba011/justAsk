@@ -1,17 +1,13 @@
 package com.example.justask;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
@@ -29,15 +25,15 @@ public class MainActivity extends SherlockFragmentActivity {
 	private ViewPager viewPager;
 	private TabsPagerAdapter mAdapter;
 	private ActionBar actionBar;
-
+	
 	// Tabs titles
-	private String[] tabsTitles = {"Profile", "Questions", "Survey"};
+	private String[] tabsTitles = {"MainPage", "Profile", "Questions", "Survey"};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		
 		// Drawer
 		mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
 		mDrawer = (LinearLayout)findViewById(R.id.drawer);
@@ -76,8 +72,9 @@ public class MainActivity extends SherlockFragmentActivity {
 			spec.setContent(R.id.fakeTabContent);
 			spec.setIndicator(tabName);
 			tabHost.addTab(spec);
+			tabHost.getTabWidget().getChildAt(i).setVisibility(View.GONE);
 		}
-
+		
 		viewPager = (ViewPager) findViewById(R.id.pager);
 		actionBar = getSupportActionBar();
 		mAdapter = new TabsPagerAdapter(getSupportFragmentManager(), tabsTitles.length);
@@ -114,6 +111,18 @@ public class MainActivity extends SherlockFragmentActivity {
 				
 			}
 		});
+		
+	/*	//Button
+		launch = (Button)findViewById(R.id.button1);
+		/*
+		launch.setOnClickListener(new Button.OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				//tabHost.getTabWidget().getChildAt(0).setVisibility(View.VISIBLE);
+				//tabHost.getTabWidget().getChildAt(1).setVisibility(View.VISIBLE);
+				//tabHost.getTabWidget().getChildAt(2).setVisibility(View.VISIBLE);
+			}
+		});//*/
 	}
 
 	@Override
@@ -140,6 +149,13 @@ public class MainActivity extends SherlockFragmentActivity {
 		super.onConfigurationChanged(newConfig);
 		// Pass any configuration change to the drawer toggles
 		mDrawerToggle.onConfigurationChanged(newConfig);
+	}
+	
+	public void launch(View v){
+		TabHost tabHost=(TabHost)findViewById(android.R.id.tabhost);
+		tabHost.getTabWidget().getChildAt(1).setVisibility(View.VISIBLE);
+		tabHost.getTabWidget().getChildAt(2).setVisibility(View.VISIBLE);
+		tabHost.getTabWidget().getChildAt(3).setVisibility(View.VISIBLE);
 	}
 	
 	/*
