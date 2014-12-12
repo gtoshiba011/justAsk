@@ -4,10 +4,8 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
@@ -22,11 +20,12 @@ public class MainActivity extends SherlockFragmentActivity {
 	private LinearLayout mDrawer;
 	private ActionBarDrawerToggle mDrawerToggle;
 	
-	private ViewPager viewPager;
+	private NonSwipeableViewPager viewPager;
 	private TabsPagerAdapter mAdapter;
 	private ActionBar actionBar;
 	
 	// Tabs titles
+	private String mainpageTitle = "MainPage";
 	private String[] tabsTitles = {"MainPage", "Profile", "Questions", "Survey"};
 
 	@Override
@@ -61,26 +60,26 @@ public class MainActivity extends SherlockFragmentActivity {
 		};
 		
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
-		
-		// Initialization
+
+
+		//Event Tab Layout Initialization
 		final TabHost tabHost=(TabHost)findViewById(android.R.id.tabhost);
 		tabHost.setup();
 		
 		for (int i = 0; i < tabsTitles.length; i++) {
-			String tabName = tabsTitles[i];
-			TabHost.TabSpec spec=tabHost.newTabSpec(tabName);
+			TabHost.TabSpec spec=tabHost.newTabSpec( tabsTitles[i] );
 			spec.setContent(R.id.fakeTabContent);
-			spec.setIndicator(tabName);
+			spec.setIndicator( tabsTitles[i] );
 			tabHost.addTab(spec);
 			tabHost.getTabWidget().getChildAt(i).setVisibility(View.GONE);
 		}
 		
-		viewPager = (ViewPager) findViewById(R.id.pager);
+		viewPager = (NonSwipeableViewPager) findViewById(R.id.pager);
 		actionBar = getSupportActionBar();
 		mAdapter = new TabsPagerAdapter(getSupportFragmentManager(), tabsTitles.length);
 		viewPager.setAdapter(mAdapter);
 		tabHost.setOnTabChangedListener(new OnTabChangeListener() {
-			
+			//*
 			@Override
 			public void onTabChanged(String tabId) {
 				for (int i = 0; i < tabsTitles.length; i++) {
@@ -90,9 +89,16 @@ public class MainActivity extends SherlockFragmentActivity {
 					}
 				}
 			}
+			/*/
+			@Override
+			public void onTabChanged(String tabId) {
+				if( tabId.equals(mainpageTitle) )
+					viewPager.setCurrentItem(0);
+			}
+			*/
 		});
 
-		viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+		viewPager.setOnPageChangeListener(new NonSwipeableViewPager.OnPageChangeListener() {
 			
 			@Override
 			public void onPageSelected(int position) {
@@ -111,18 +117,6 @@ public class MainActivity extends SherlockFragmentActivity {
 				
 			}
 		});
-		
-	/*	//Button
-		launch = (Button)findViewById(R.id.button1);
-		/*
-		launch.setOnClickListener(new Button.OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				//tabHost.getTabWidget().getChildAt(0).setVisibility(View.VISIBLE);
-				//tabHost.getTabWidget().getChildAt(1).setVisibility(View.VISIBLE);
-				//tabHost.getTabWidget().getChildAt(2).setVisibility(View.VISIBLE);
-			}
-		});//*/
 	}
 
 	@Override
@@ -153,6 +147,7 @@ public class MainActivity extends SherlockFragmentActivity {
 	
 	public void launch(View v){
 		TabHost tabHost=(TabHost)findViewById(android.R.id.tabhost);
+		tabHost.setCurrentTab(1);
 		tabHost.getTabWidget().getChildAt(1).setVisibility(View.VISIBLE);
 		tabHost.getTabWidget().getChildAt(2).setVisibility(View.VISIBLE);
 		tabHost.getTabWidget().getChildAt(3).setVisibility(View.VISIBLE);
