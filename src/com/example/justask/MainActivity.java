@@ -4,6 +4,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -20,13 +21,12 @@ public class MainActivity extends SherlockFragmentActivity {
 	private LinearLayout mDrawer;
 	private ActionBarDrawerToggle mDrawerToggle;
 	
-	private NonSwipeableViewPager viewPager;
+	private ViewPager viewPager;
 	private TabsPagerAdapter mAdapter;
 	private ActionBar actionBar;
 	
 	// Tabs titles
-	private String mainpageTitle = "MainPage";
-	private String[] tabsTitles = {"MainPage", "Profile", "Questions", "Survey"};
+	private String[] tabsTitles = {"Profile", "Questions", "Survey"};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -71,10 +71,10 @@ public class MainActivity extends SherlockFragmentActivity {
 			spec.setContent(R.id.fakeTabContent);
 			spec.setIndicator( tabsTitles[i] );
 			tabHost.addTab(spec);
-			tabHost.getTabWidget().getChildAt(i).setVisibility(View.GONE);
+			//tabHost.getTabWidget().getChildAt(i).setVisibility(View.GONE);
 		}
 		
-		viewPager = (NonSwipeableViewPager) findViewById(R.id.pager);
+		viewPager = (ViewPager) findViewById(R.id.pager);
 		actionBar = getSupportActionBar();
 		mAdapter = new TabsPagerAdapter(getSupportFragmentManager(), tabsTitles.length);
 		viewPager.setAdapter(mAdapter);
@@ -98,7 +98,7 @@ public class MainActivity extends SherlockFragmentActivity {
 			*/
 		});
 
-		viewPager.setOnPageChangeListener(new NonSwipeableViewPager.OnPageChangeListener() {
+		viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 			
 			@Override
 			public void onPageSelected(int position) {
@@ -143,14 +143,6 @@ public class MainActivity extends SherlockFragmentActivity {
 		super.onConfigurationChanged(newConfig);
 		// Pass any configuration change to the drawer toggles
 		mDrawerToggle.onConfigurationChanged(newConfig);
-	}
-	
-	public void launch(View v){
-		TabHost tabHost=(TabHost)findViewById(android.R.id.tabhost);
-		tabHost.setCurrentTab(1);
-		tabHost.getTabWidget().getChildAt(1).setVisibility(View.VISIBLE);
-		tabHost.getTabWidget().getChildAt(2).setVisibility(View.VISIBLE);
-		tabHost.getTabWidget().getChildAt(3).setVisibility(View.VISIBLE);
 	}
 	
 	/*

@@ -20,12 +20,10 @@ public class TabsPagerAdapter extends FragmentPagerAdapter{
 	public Fragment getItem(int index) {
 		switch(index) {
 		case 0:
-			return new MainPage();
-		case 1:
 			return new WhiteFragment();
-		case 2:
+		case 1:
 			return new BlackFragment();
-		case 3:
+		case 2:
 			return new WhiteFragment();
 		}
 		
