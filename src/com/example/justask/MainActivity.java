@@ -7,13 +7,11 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
@@ -36,6 +34,7 @@ public class MainActivity extends SherlockFragmentActivity {
 	// socket obj
 	private WebSocketClient mWebSocketClient;
 
+
 	// Tabs titles
 	private String[] tabsTitles = {"Profile", "Questions", "Survey"};
 
@@ -43,7 +42,7 @@ public class MainActivity extends SherlockFragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		
 		// Drawer
 		mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
 		mDrawer = (LinearLayout)findViewById(R.id.drawer);
@@ -71,25 +70,26 @@ public class MainActivity extends SherlockFragmentActivity {
 		};
 		
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
-		
-		// Initialization
+
+
+		//Event Tab Layout Initialization
 		final TabHost tabHost=(TabHost)findViewById(android.R.id.tabhost);
 		tabHost.setup();
 		
 		for (int i = 0; i < tabsTitles.length; i++) {
-			String tabName = tabsTitles[i];
-			TabHost.TabSpec spec=tabHost.newTabSpec(tabName);
+			TabHost.TabSpec spec=tabHost.newTabSpec( tabsTitles[i] );
 			spec.setContent(R.id.fakeTabContent);
-			spec.setIndicator(tabName);
+			spec.setIndicator( tabsTitles[i] );
 			tabHost.addTab(spec);
+			//tabHost.getTabWidget().getChildAt(i).setVisibility(View.GONE);
 		}
-
+		
 		viewPager = (ViewPager) findViewById(R.id.pager);
 		actionBar = getSupportActionBar();
 		mAdapter = new TabsPagerAdapter(getSupportFragmentManager(), tabsTitles.length);
 		viewPager.setAdapter(mAdapter);
 		tabHost.setOnTabChangedListener(new OnTabChangeListener() {
-			
+			//*
 			@Override
 			public void onTabChanged(String tabId) {
 				for (int i = 0; i < tabsTitles.length; i++) {
@@ -99,6 +99,13 @@ public class MainActivity extends SherlockFragmentActivity {
 					}
 				}
 			}
+			/*/
+			@Override
+			public void onTabChanged(String tabId) {
+				if( tabId.equals(mainpageTitle) )
+					viewPager.setCurrentItem(0);
+			}
+			*/
 		});
 
 		viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {

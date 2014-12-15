@@ -18,10 +18,12 @@ public class TabsPagerAdapter extends FragmentPagerAdapter{
 
 	@Override
 	public Fragment getItem(int index) {
-		switch(index % 2) {
+		switch(index) {
 		case 0:
-			return new BlackFragment();
+			return new WhiteFragment();
 		case 1:
+			return new BlackFragment();
+		case 2:
 			return new WhiteFragment();
 		}
 		
