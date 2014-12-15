@@ -1,7 +1,10 @@
 package com.example.justask;
 
+// import socket dictionary
 import java.net.URI;
 import java.net.URISyntaxException;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
 
 import android.content.res.Configuration;
 import android.os.Build;
@@ -29,6 +32,9 @@ public class MainActivity extends SherlockFragmentActivity {
 	private ViewPager viewPager;
 	private TabsPagerAdapter mAdapter;
 	private ActionBar actionBar;
+	
+	// socket obj
+	private WebSocketClient mWebSocketClient;
 
 	// Tabs titles
 	private String[] tabsTitles = {"Profile", "Questions", "Survey"};
@@ -114,6 +120,11 @@ public class MainActivity extends SherlockFragmentActivity {
 				
 			}
 		});
+		
+		// socket connection
+		connectWebSocket();
+		//String message = "{\"type\": \"hello_world\"}";
+		//sendMessage(message);
 	}
 
 	@Override
@@ -142,13 +153,12 @@ public class MainActivity extends SherlockFragmentActivity {
 		mDrawerToggle.onConfigurationChanged(newConfig);
 	}
 	
-	/*
+	
 	// socket communication start
-	private WebSocketClient mWebSocketClient;
     private void connectWebSocket() {
         URI uri;
         try {
-            uri = new URI("ws://websockethost:8080");
+            uri = new URI("140.112.230.230:10012");
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return;
@@ -158,10 +168,10 @@ public class MainActivity extends SherlockFragmentActivity {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
                 Log.i("Websocket", "Opened");
-                mWebSocketClient.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
+                //mWebSocketClient.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
             }
 
-            @Override
+            @Override 
             public void onMessage(String s) {
                 final String message = s;
                 runOnUiThread(new Runnable() {
@@ -185,10 +195,10 @@ public class MainActivity extends SherlockFragmentActivity {
         };
         mWebSocketClient.connect();
     }
-    public void sendMessage(View view) {
+    public void sendMessage(String sendMessage) {
+        mWebSocketClient.send(sendMessage);
         //EditText editText = (EditText)findViewById(R.id.message);
-        //mWebSocketClient.send(editText.getText().toString());
         //editText.setText("");
     }
-    // end of socket communication*/
+    // end of socket communication
 }
