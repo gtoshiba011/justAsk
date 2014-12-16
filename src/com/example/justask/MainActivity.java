@@ -1,6 +1,8 @@
 package com.example.justask;
 
 import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
@@ -117,6 +119,8 @@ public class MainActivity extends SherlockFragmentActivity {
 				
 			}
 		});
+		
+		getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#2F6877")));
 	}
 
 	@Override
