@@ -3,6 +3,7 @@ package com.example.justask;
 // import socket dictionary
 import java.net.URI;
 import java.net.URISyntaxException;
+
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -12,13 +13,13 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
-import android.util.Log;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -30,7 +31,7 @@ public class MainActivity extends SherlockFragmentActivity {
 	private LinearLayout mDrawer;
 	private ActionBarDrawerToggle mDrawerToggle;
 	
-	private ViewPager viewPager;
+	private NonSwipeableViewPager viewPager;
 	private TabsPagerAdapter mAdapter;
 	private ActionBar actionBar;
 	
@@ -85,9 +86,13 @@ public class MainActivity extends SherlockFragmentActivity {
 			spec.setIndicator( tabsTitles[i] );
 			tabHost.addTab(spec);
 			//tabHost.getTabWidget().getChildAt(i).setVisibility(View.GONE);
+			tabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.parseColor("#f02F6877"));
+			TextView t = (TextView)tabHost.getTabWidget().getChildAt(i).findViewById(android.R.id.title);
+			t.setTextColor(Color.parseColor("#FFFFFF"));
 		}
+		//tabHost.getTabWidget().setStripEnabled( true );
 		
-		viewPager = (ViewPager) findViewById(R.id.pager);
+		viewPager = (NonSwipeableViewPager) findViewById(R.id.pager);
 		actionBar = getSupportActionBar();
 		mAdapter = new TabsPagerAdapter(getSupportFragmentManager(), tabsTitles.length);
 		viewPager.setAdapter(mAdapter);
@@ -97,7 +102,7 @@ public class MainActivity extends SherlockFragmentActivity {
 			public void onTabChanged(String tabId) {
 				for (int i = 0; i < tabsTitles.length; i++) {
 					if (tabId.equals(tabsTitles[i])) {
-						viewPager.setCurrentItem(i);
+						viewPager.setCurrentItem(i, false);
 						break;
 					}
 				}
@@ -111,7 +116,7 @@ public class MainActivity extends SherlockFragmentActivity {
 			*/
 		});
 
-		viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+		viewPager.setOnPageChangeListener(new NonSwipeableViewPager.OnPageChangeListener() {
 			
 			@Override
 			public void onPageSelected(int position) {

@@ -20,11 +20,11 @@ public class TabsPagerAdapter extends FragmentPagerAdapter{
 	public Fragment getItem(int index) {
 		switch(index) {
 		case 0:
-			return new WhiteFragment();
+			return new ProfileFragment();
 		case 1:
-			return new BlackFragment();
+			return new QuestionFragment();
 		case 2:
-			return new WhiteFragment();
+			return new SurveyFragment();
 		}
 		
 		return null;
