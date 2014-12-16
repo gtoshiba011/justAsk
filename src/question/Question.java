@@ -1,45 +1,65 @@
 package question;
 
+import android.util.Log;
+
 public class Question {
 
-    // member varibale
+    // member variable
     private int _ID;
     private String _title;
-    private boolean _status;
+    private boolean _status;	// true: solved; false: unsolved
     private int _popu;
 
     //constructor
-    public Question() {
-        //TODO
+    public Question(int id, String title) {
+        _ID = id;
+        _title = title;
+        _status = false;
+        _popu = 0;
     }
 
     // function
+    // get private member variable
     public int getQuestionID(){
-        //TODO
         return _ID;
     }
     public String getQuestionTitle(){
-        //TODO
         return _title;
     }
     public boolean isSolved(){
-        //TODO
         return _status;
     }
     public int getPopu(){
-        //TODO
         return _popu;
     }
+    
     public boolean increasePopu(int incr){
-        //TODO
-        return true;
+    	if(incr < 0){
+    		Log.e("Question", "function increasePopu() value error");
+    		return false;
+    	}
+    	else{
+    		_popu += incr;
+    		return true;
+    	}
     }
     public boolean decreasePopu(int decr){
-        //TODO
-        return true;
+    	if(decr < 0){
+    		Log.e("Question", "function decreasePopu() value error");
+    		return false;
+    	}
+    	else{
+    		_popu -= decr;
+    		if( _popu < 0){
+    			Log.e("Question", "_popu < 0");
+    			_popu = 0;
+    			return false;
+    		}
+    		return true;
+    	}
     }
     public boolean setStatus(boolean status){
-        //TODO
+    	_status = status;
         return true;
     }
 
