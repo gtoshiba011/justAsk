@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">JustAsk</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="title_activity_main_page_drawer">MainPageDrawer</string>
+
+    <string-array name="drawer_item_array">
+        <item>Main Page</item>
+        <item>Log in</item>
+        <item>Log out</item>
+    </string-array>
+    
+</resources>
