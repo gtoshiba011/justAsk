@@ -20,7 +20,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
+
+import net.sourceforge.zbar.android.CameraTest.*;
 
 public class MainPageDrawer extends Activity {
     private DrawerLayout mDrawerLayout;
@@ -180,6 +183,14 @@ public class MainPageDrawer extends Activity {
 	public void launch(View v){
 		Intent it = new Intent(this, MainActivity.class);
 		startActivity( it );
+	}
+	
+	// When the "Scan QR code" button is pushed
+	public void ScanQR(View v){
+		Intent it = new Intent(this, CameraTestActivity.class);
+		startActivity( it );
+		EditText editText = (EditText) findViewById(R.id.editText1);
+		editText.setText("123");
 	}
 
     /**
