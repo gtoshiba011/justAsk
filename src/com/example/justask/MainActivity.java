@@ -16,6 +16,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
@@ -37,7 +38,9 @@ public class MainActivity extends SherlockFragmentActivity {
 	
 	// socket obj
 	private WebSocketClient mWebSocketClient;
-
+	
+	// Buttons
+	private Button btnEditSave, btnWebCode;
 
 	// Tabs titles
 	private String[] tabsTitles = {"Profile", "Questions", "Survey"};
@@ -169,7 +172,42 @@ public class MainActivity extends SherlockFragmentActivity {
 		// Pass any configuration change to the drawer toggles
 		mDrawerToggle.onConfigurationChanged(newConfig);
 	}
-	
+
+    // For buttons clicked events fuction
+    public void EditProfile(View v){
+    	// Buttons
+    	btnEditSave = (Button)findViewById(R.id.btnEditSave);
+    	btnWebCode = (Button)findViewById(R.id.btnWebCode);
+    	 
+    	if( (Integer)btnEditSave.getTag() == 0 ){
+    		btnEditSave.setText("Save");
+    		btnWebCode.setText("Cancel");
+    		btnEditSave.setTag(1);
+    		btnWebCode.setTag(1);
+    	}
+    	else {
+    		btnEditSave.setText("Edit");
+    		btnWebCode.setText("Web Code");
+    		btnEditSave.setTag(0);
+    		btnWebCode.setTag(0);
+    	}
+    }
+    
+    public void WebCode(View v){
+    	// Buttons
+    	btnEditSave = (Button)findViewById(R.id.btnEditSave);
+    	btnWebCode = (Button)findViewById(R.id.btnWebCode);
+    	
+    	if( (Integer)btnEditSave.getTag() == 1 ){
+    		btnEditSave.setText("Edit");
+    		btnWebCode.setText("Web Code");
+    		btnEditSave.setTag(0);
+    		btnWebCode.setTag(0);
+    	}
+    	else{
+    		
+    	}
+    }
 	
 	// socket communication start
     private void connectWebSocket() {
