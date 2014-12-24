@@ -179,6 +179,17 @@ public class MainPageDrawer extends Activity {
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
     
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	switch(resultCode){
+    	case 1://QR flag
+    		String result = data.getExtras().getString("QREventCode");
+    		EditText editText = (EditText) findViewById(R.id.editText1);
+    		editText.setText(result);
+    		break;
+    	}
+    }
+    
 	// When the "Launch An Event" button is pushed
 	public void launch(View v){
 		Intent it = new Intent(this, MainActivity.class);
@@ -188,10 +199,10 @@ public class MainPageDrawer extends Activity {
 	// When the "Scan QR code" button is pushed
 	public void ScanQR(View v){
 		Intent it = new Intent(this, CameraTestActivity.class);
-		startActivity( it );
-		EditText editText = (EditText) findViewById(R.id.editText1);
-		editText.setText("123");
+		startActivityForResult(it, 1);
 	}
+	
+	
 
     /**
      * Fragment that appears in the "content_frame", shows a planet
