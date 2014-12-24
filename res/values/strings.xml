@@ -9,9 +9,17 @@
     <string name="title_activity_main_page_drawer">MainPageDrawer</string>
 
     <string-array name="drawer_item_array">
-        <item>Main Page</item>
-        <item>Log in</item>
-        <item>Log out</item>
-    </string-array>
+        <item>JustAsk</item>
+        <item>Deveplopers:\n
+       Han, Cheng-Yu\n
+       Lin, Guo Yu\n
+       Chen, Po-Hao\n
+       Huang, Kuan-Yen\n
+       Yu, Chien\n
+       Chiang, Kuan-Ying\n
+       Wang, Ying-Hsu\n
+       Ho, Yu-Hao\n
+       Chang, Chen-Hui\n</item>
+     </string-array>
     
 </resources>

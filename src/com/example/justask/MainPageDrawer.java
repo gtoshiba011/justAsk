@@ -23,7 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import net.sourceforge.zbar.android.CameraTest.*;
+//import net.sourceforge.zbar.android.CameraTest.*;
 
 public class MainPageDrawer extends Activity {
     private DrawerLayout mDrawerLayout;
@@ -150,7 +150,7 @@ public class MainPageDrawer extends Activity {
 
         // update selected item and title, then close the drawer
         mDrawerList.setItemChecked(position, true);
-        setTitle(mDrawerTitles[position]);
+        //setTitle(mDrawerTitles[position]);
         mDrawerLayout.closeDrawer(mDrawerList);
     }
 
@@ -198,8 +198,8 @@ public class MainPageDrawer extends Activity {
 	
 	// When the "Scan QR code" button is pushed
 	public void ScanQR(View v){
-		Intent it = new Intent(this, CameraTestActivity.class);
-		startActivityForResult(it, 1);
+		//Intent it = new Intent(this, CameraTestActivity.class);
+		//startActivityForResult(it, 1);
 	}
 	
 	
@@ -224,7 +224,7 @@ public class MainPageDrawer extends Activity {
             //int imageId = getResources().getIdentifier(planet.toLowerCase(Locale.getDefault()),
             //                "drawable", getActivity().getPackageName());
             //((ImageView) rootView.findViewById(R.id.image)).setImageResource(imageId);
-            getActivity().setTitle(planet);
+            getActivity().setTitle(getResources().getStringArray(R.array.drawer_item_array)[0]);
             return rootView;
         }
     }
