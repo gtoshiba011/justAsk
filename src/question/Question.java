@@ -10,7 +10,7 @@ public class Question {
     private boolean _status;	// true: solved; false: unsolved
     private int _popu;
 
-    //constructor
+    //constructor 
     public Question(int id, String title) {
         _ID = id;
         _title = title;

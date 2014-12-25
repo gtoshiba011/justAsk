@@ -3,10 +3,14 @@ package com.example.justask;
 // import socket dictionary
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
+import question.Question;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -15,12 +19,19 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -44,6 +55,11 @@ public class MainActivity extends SherlockFragmentActivity {
 
 	// Tabs titles
 	private String[] tabsTitles = {"Profile", "Questions", "Survey"};
+	
+	// Question list
+	protected QuestionDbHelper db;
+	List<Question> list;
+	MyAdapter adapt;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +122,13 @@ public class MainActivity extends SherlockFragmentActivity {
 				for (int i = 0; i < tabsTitles.length; i++) {
 					if (tabId.equals(tabsTitles[i])) {
 						viewPager.setCurrentItem(i, false);
+						if( i == 1 ){
+							db = new QuestionDbHelper(MainActivity.this);
+							list = db.getAllQuestions();
+							adapt = new MyAdapter(MainActivity.this, R.layout.list_inner_view, list);
+							ListView listTask = (ListView) findViewById(R.id.listView1);
+							listTask.setAdapter(adapt);
+						}
 						break;
 					}
 				}
@@ -208,6 +231,92 @@ public class MainActivity extends SherlockFragmentActivity {
     		
     	}
     }
+    
+    
+    // Question List Manager
+	public void addQuestionNow(View v) {
+		EditText t = (EditText) findViewById(R.id.editText1);
+		String s = t.getText().toString();
+		if (s.equalsIgnoreCase("")) {
+			Toast.makeText(this, "enter the question description first!!",
+					Toast.LENGTH_LONG);
+		} else {
+			Question question = new Question(0, s);
+			db.addQuestion(question);
+			Log.d("question list", "data added");
+			t.setText("");
+			adapt.add(question);
+			adapt.notifyDataSetChanged();
+		}
+
+	}
+/*
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.activity_view_task, menu);
+		return true;
+	}
+*/
+	private class MyAdapter extends ArrayAdapter<Question> {
+
+		Context context;
+		List<Question> questionList = new ArrayList<Question>();
+		int layoutResourceId;
+
+		public MyAdapter(Context context, int layoutResourceId,
+				List<Question> objects) {
+			super(context, layoutResourceId, objects);
+			this.layoutResourceId = layoutResourceId;
+			this.questionList = objects;
+			this.context = context;
+		}
+
+		/**
+		 * This method will DEFINe what the view inside the list view will
+		 * finally look like Here we are going to code that the checkbox state
+		 * is the status of task and check box text is the task name
+		 */
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			CheckBox chk = null;
+			if (convertView == null) {
+				LayoutInflater inflater = (LayoutInflater) context
+						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				convertView = inflater.inflate(R.layout.list_inner_view,
+						parent, false);
+				chk = (CheckBox) convertView.findViewById(R.id.chkStatus);
+				convertView.setTag(chk);
+
+				chk.setOnClickListener(new View.OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						CheckBox cb = (CheckBox) v;
+						Question changeQuestion = (Question) cb.getTag();
+						changeQuestion.setStatus(cb.isChecked());
+						db.updateQuestion(changeQuestion);
+						Toast.makeText(
+								getApplicationContext(),
+								"Clicked on Checkbox: " + cb.getText() + " is "
+										+ cb.isChecked(), Toast.LENGTH_LONG)
+								.show();
+					}
+
+				});
+			} else {
+				chk = (CheckBox) convertView.getTag();
+			}
+			Question current = questionList.get(position);
+			chk.setText(current.getQuestionTitle());
+			chk.setChecked(current.isSolved());
+			chk.setTag(current);
+			Log.d("listener", String.valueOf(current.getQuestionID()));
+			return convertView;
+		}
+
+	}
+    
 	
 	// socket communication start
     private void connectWebSocket() {
