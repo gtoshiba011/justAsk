@@ -22,8 +22,9 @@ public class QuestionDbHelper extends SQLiteOpenHelper {
 
 	// tasks Table Columns names
 	private static final String KEY_ID = "id";
-	private static final String KEY_TASKNAME = "taskName";
+	private static final String KEY_QUESTIONNAME = "questionName";
 	private static final String KEY_STATUS = "status";
+	private static final String KEY_POPULARITY = "popularity";
 
 	public QuestionDbHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -33,8 +34,10 @@ public class QuestionDbHelper extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 
 		String sql = "CREATE TABLE IF NOT EXISTS " + TABLE_QUESTIONS + " ( "
-				+ KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + KEY_TASKNAME
-				+ " TEXT, " + KEY_STATUS + " INTEGER)";
+				+ KEY_ID 			+ " INTEGER PRIMARY KEY AUTOINCREMENT, " 
+				+ KEY_QUESTIONNAME	+ " TEXT, " 
+				+ KEY_STATUS 		+ " INTEGER, "
+				+ KEY_POPULARITY	+ " INTEGER)";
 		db.execSQL(sql);
 	
 		//db.close();
@@ -53,9 +56,9 @@ public class QuestionDbHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();
-		values.put(KEY_TASKNAME, question.getQuestionTitle()); // task name
-		// status of task- can be 0 for not done and 1 for done
+		values.put(KEY_QUESTIONNAME, question.getQuestionTitle()); // task name
 		values.put(KEY_STATUS, question.isSolved());
+		values.put(KEY_POPULARITY, question.getPopu());
 
 		// Inserting Row
 		db.insert(TABLE_QUESTIONS, null, values);
@@ -76,6 +79,7 @@ public class QuestionDbHelper extends SQLiteOpenHelper {
 				Question question = new Question(	cursor.getInt(0),
 													cursor.getString(1)  );
 				question.setStatus( cursor.getInt(2)!=0 );
+				question.setPopu( cursor.getInt(3) );
 				// Adding contact to list
 				questionList.add(question);
 			} while (cursor.moveToNext());
@@ -85,12 +89,13 @@ public class QuestionDbHelper extends SQLiteOpenHelper {
 		return questionList;
 	}
 
-	public void updateQuestion(Question question) {
+	public void updateQuestionStatus(Question question) {
 		// updating row
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
-		values.put(KEY_TASKNAME, question.getQuestionTitle());
+		values.put(KEY_QUESTIONNAME, question.getQuestionTitle());
 		values.put(KEY_STATUS, question.isSolved());
+		values.put(KEY_POPULARITY, question.getPopu());
 		db.update(TABLE_QUESTIONS, values, KEY_ID + " = ?",new String[] {String.valueOf(question.getQuestionID())});
 		//db.close();
 	}

@@ -8,6 +8,9 @@
     <string name="drawer_close">Close navigation drawer</string>
     <string name="title_activity_main_page_drawer">MainPageDrawer</string>
 
+    <item type="id" name="first_tag"/>
+    <item type="id" name="second_tag"/>
+    
     <string-array name="drawer_item_array">
         <item>JustAsk</item>
         <item>Deveplopers:\n

@@ -32,6 +32,7 @@ import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -250,14 +251,16 @@ public class MainActivity extends SherlockFragmentActivity {
 		}
 
 	}
-/*
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_view_task, menu);
-		return true;
+
+	public void onLikeButtonClick(View view){
+		View v = (View) view.getParent();
+		ToggleButton btn = (ToggleButton) v.findViewById(R.id.btnLike);
+		
+		
+		//btn.setBackgroundResource(R.drawable.button_like_clicked);
+		//btn.setText( "99" );
 	}
-*/
+
 	private class MyAdapter extends ArrayAdapter<Question> {
 
 		Context context;
@@ -265,11 +268,13 @@ public class MainActivity extends SherlockFragmentActivity {
 		int layoutResourceId;
 
 		public MyAdapter(Context context, int layoutResourceId,
-				List<Question> objects) {
+				List<Question> objects) {			
 			super(context, layoutResourceId, objects);
 			this.layoutResourceId = layoutResourceId;
 			this.questionList = objects;
 			this.context = context;
+			
+			
 		}
 
 		/**
@@ -280,43 +285,79 @@ public class MainActivity extends SherlockFragmentActivity {
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			CheckBox chk = null;
+			ToggleButton btn = null;
+			TextView txv = null;
+			
 			if (convertView == null) {
 				LayoutInflater inflater = (LayoutInflater) context
 						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				convertView = inflater.inflate(R.layout.list_inner_view,
 						parent, false);
 				chk = (CheckBox) convertView.findViewById(R.id.chkStatus);
-				convertView.setTag(chk);
+				btn = (ToggleButton) convertView.findViewById(R.id.btnLike);
+				convertView.setTag(R.id.first_tag, chk);
+				convertView.setTag(R.id.second_tag, btn);
 
 				chk.setOnClickListener(new View.OnClickListener() {
-
 					@Override
 					public void onClick(View v) {
 						CheckBox cb = (CheckBox) v;
 						Question changeQuestion = (Question) cb.getTag();
 						changeQuestion.setStatus(cb.isChecked());
-						db.updateQuestion(changeQuestion);
-						Toast.makeText(
-								getApplicationContext(),
-								"Clicked on Checkbox: " + cb.getText() + " is "
-										+ cb.isChecked(), Toast.LENGTH_LONG)
-								.show();
+						
+						View questionBlcok = (View)cb.getParent();
+						if( cb.isChecked() ){
+							questionBlcok.setBackgroundResource(R.drawable.question_solved_shape);
+							Button like = (Button)questionBlcok.findViewById(R.id.btnLike);
+							like.setBackgroundResource(R.drawable.button_like_nonclickable);
+							like.setEnabled(false);
+						}
+						else{
+							cb.setChecked(true);
+						}
+						
+						db.updateQuestionStatus(changeQuestion);
 					}
-
 				});
+				
+				btn.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						ToggleButton tb = (ToggleButton) v;
+						Question changeQuestion = (Question) tb.getTag();
+						if( tb.isChecked() ){
+							changeQuestion.increasePopu(1);
+							tb.setBackgroundResource(R.drawable.button_like_clicked);
+						}
+						else{
+							changeQuestion.decreasePopu(1);
+							tb.setBackgroundResource(R.drawable.button_like_unclicked);
+						}
+						tb.setText( String.valueOf(changeQuestion.getPopu()) );
+						db.updateQuestionStatus(changeQuestion);
+					}
+				});
+				
 			} else {
-				chk = (CheckBox) convertView.getTag();
+				chk = (CheckBox) convertView.getTag(R.id.first_tag);
+				btn = (ToggleButton) convertView.getTag(R.id.second_tag);
 			}
+			
 			Question current = questionList.get(position);
 			chk.setText(current.getQuestionTitle());
 			chk.setChecked(current.isSolved());
 			chk.setTag(current);
+			
+			btn.setText( String.valueOf( current.getPopu() ) );
+			btn.setChecked( false );
+			btn.setTag(current);
+			
 			Log.d("listener", String.valueOf(current.getQuestionID()));
 			return convertView;
 		}
 
 	}
-    
+	
 	
 	// socket communication start
     private void connectWebSocket() {

@@ -58,6 +58,12 @@ public class Question {
     		return true;
     	}
     }
+    
+    public boolean setPopu(int popu){
+    	_popu = popu;
+    	return true;
+    }
+    
     public boolean setStatus(boolean status){
     	_status = status;
         return true;

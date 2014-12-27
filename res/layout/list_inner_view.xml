@@ -32,23 +32,25 @@
             android:textColor="#2F6877"
             android:textSize="16sp" />
 
-        <Button
+        <ToggleButton
             android:id="@+id/btnLike"
             style="?android:attr/buttonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:background="@drawable/button_like_clicked"
+            android:background="@drawable/button_like_unclicked"
             android:drawableLeft="@drawable/ic_thumb_up_white_18dp"
             android:height="25dp"
             android:minHeight="0dp"
             android:minWidth="0dp"
             android:paddingLeft="10dp"
-            android:text="Like"
+            android:paddingRight="10dp"
             android:textColor="#FFFFFF"
+            android:textOff="55"
+            android:textOn="56"
             android:textSize="16sp"
-            android:width="75dp" />
-
+            android:width="70dp" />
+        
     </LinearLayout>
 
 </RelativeLayout>
