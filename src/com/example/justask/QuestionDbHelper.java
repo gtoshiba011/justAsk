@@ -1,7 +1,9 @@
 package com.example.justask;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import question.Question;
 import android.content.ContentValues;
@@ -9,6 +11,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class QuestionDbHelper extends SQLiteOpenHelper {
 
@@ -25,6 +28,7 @@ public class QuestionDbHelper extends SQLiteOpenHelper {
 	private static final String KEY_QUESTIONNAME = "questionName";
 	private static final String KEY_STATUS = "status";
 	private static final String KEY_POPULARITY = "popularity";
+	private static final String KEY_LIKE = "like";
 
 	public QuestionDbHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -37,7 +41,8 @@ public class QuestionDbHelper extends SQLiteOpenHelper {
 				+ KEY_ID 			+ " INTEGER PRIMARY KEY AUTOINCREMENT, " 
 				+ KEY_QUESTIONNAME	+ " TEXT, " 
 				+ KEY_STATUS 		+ " INTEGER, "
-				+ KEY_POPULARITY	+ " INTEGER)";
+				+ KEY_POPULARITY	+ " INTEGER, "
+				+ KEY_LIKE			+ " INTEGER)";
 		db.execSQL(sql);
 	
 		//db.close();
@@ -59,14 +64,17 @@ public class QuestionDbHelper extends SQLiteOpenHelper {
 		values.put(KEY_QUESTIONNAME, question.getQuestionTitle()); // task name
 		values.put(KEY_STATUS, question.isSolved());
 		values.put(KEY_POPULARITY, question.getPopu());
+		values.put(KEY_LIKE, 0);
 
 		// Inserting Row
 		db.insert(TABLE_QUESTIONS, null, values);
 		db.close(); // Closing database connection
 	}
 
-	public List<Question> getAllQuestions() {
-		List<Question> questionList = new ArrayList<Question>();
+	public List<List<Map<String, Question>>> getAllQuestions() {
+		List<Map<String, Question>> unsolved = new ArrayList<Map<String, Question>>();
+		List<Map<String, Question>> solved = new ArrayList<Map<String, Question>>();		
+		
 		// Select All Query
 		String selectQuery = "SELECT  * FROM " + TABLE_QUESTIONS;
 
@@ -80,22 +88,37 @@ public class QuestionDbHelper extends SQLiteOpenHelper {
 													cursor.getString(1)  );
 				question.setStatus( cursor.getInt(2)!=0 );
 				question.setPopu( cursor.getInt(3) );
+				
+				Map<String, Question> questionData = new HashMap<String, Question>();
+				questionData.put("child", question);
+				
 				// Adding contact to list
-				questionList.add(question);
+				if( question.isSolved() ){
+					solved.add(questionData);
+				}
+				else{
+					unsolved.add(questionData);
+				}
+
 			} while (cursor.moveToNext());
+			//Log.d("End", String.valueOf(unsolved.size()) + ' ' + String.valueOf(solved.size()) );
 		}
 
 		// return task list
+		List<List<Map<String, Question>>> questionList = new ArrayList<List<Map<String, Question>>>();
+		questionList.add(unsolved);
+		questionList.add(solved);
 		return questionList;
 	}
 
-	public void updateQuestionStatus(Question question) {
+	public void updateQuestionStatus(Question question, boolean like) {
 		// updating row
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
 		values.put(KEY_QUESTIONNAME, question.getQuestionTitle());
 		values.put(KEY_STATUS, question.isSolved());
 		values.put(KEY_POPULARITY, question.getPopu());
+		values.put(KEY_LIKE, like);
 		db.update(TABLE_QUESTIONS, values, KEY_ID + " = ?",new String[] {String.valueOf(question.getQuestionID())});
 		//db.close();
 	}

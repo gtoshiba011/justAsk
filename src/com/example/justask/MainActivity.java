@@ -4,7 +4,9 @@ package com.example.justask;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -23,9 +25,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TabHost;
@@ -58,8 +62,13 @@ public class MainActivity extends SherlockFragmentActivity {
 	private String[] tabsTitles = {"Profile", "Questions", "Survey"};
 	
 	// Question list
-	protected QuestionDbHelper db;
-	List<Question> list;
+	protected QuestionDbHelper qdb;
+	List<List<Map<String,Question>>> qlist;
+	ExpandableAdapter adapter;
+	
+	// Survey list
+	protected SurveyDbHelper sdb;
+	List<Question> slist;
 	MyAdapter adapt;
 
 	@Override
@@ -124,11 +133,10 @@ public class MainActivity extends SherlockFragmentActivity {
 					if (tabId.equals(tabsTitles[i])) {
 						viewPager.setCurrentItem(i, false);
 						if( i == 1 ){
-							db = new QuestionDbHelper(MainActivity.this);
-							list = db.getAllQuestions();
-							adapt = new MyAdapter(MainActivity.this, R.layout.list_inner_view, list);
-							ListView listTask = (ListView) findViewById(R.id.listView1);
-							listTask.setAdapter(adapt);
+							initialQuestionlist();
+						}
+						else if( i == 2 ){
+							initialSurveylist();
 						}
 						break;
 					}
@@ -171,6 +179,38 @@ public class MainActivity extends SherlockFragmentActivity {
 		//sendMessage(message);
 	}
 
+	public void initialSurveylist(){
+		sdb = new SurveyDbHelper(MainActivity.this);
+		slist = sdb.getAllSurveys();
+		adapt = new MyAdapter(MainActivity.this, R.layout.survey_item_view, slist);
+		ListView listTask = (ListView) findViewById(R.id.listView1);
+		listTask.setAdapter(adapt);
+	}
+	
+	public void initialQuestionlist(){
+		
+		// Set question list title
+		List<Map<String, String>> groups = new ArrayList<Map<String, String>>();
+		Map<String, String> unsolved = new HashMap<String, String>();
+		unsolved.put("group", "Unsolved");
+		groups.add(unsolved);
+		Map<String, String> solved = new HashMap<String, String>();
+		solved.put("group", "Solved");
+		groups.add(solved);
+		
+		qdb = new QuestionDbHelper(MainActivity.this);
+		qlist = qdb.getAllQuestions();
+		adapter = new ExpandableAdapter(MainActivity.this, groups, qlist);
+		ExpandableListView elv = (ExpandableListView)findViewById(R.id.mExpandableListView);
+		elv.setAdapter(adapter);
+		
+		//qdb = new QuestionDbHelper(MainActivity.this);
+		//slist = qdb.getAllQuestions();
+		//adapt = new MyAdapter(MainActivity.this, R.layout.list_inner_view, slist);
+		//ListView listTask = (ListView) findViewById(R.id.listView1);
+		//listTask.setAdapter(adapt);
+	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == android.R.id.home) {
@@ -197,7 +237,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		mDrawerToggle.onConfigurationChanged(newConfig);
 	}
 
-    // For buttons clicked events fuction
+    // For buttons clicked events function
     public void EditProfile(View v){
     	// Buttons
     	btnEditSave = (Button)findViewById(R.id.btnEditSave);
@@ -236,31 +276,148 @@ public class MainActivity extends SherlockFragmentActivity {
     
     // Question List Manager
 	public void addQuestionNow(View v) {
-		EditText t = (EditText) findViewById(R.id.editText1);
+		
+		EditText t = (EditText) findViewById(R.id.edtQuestion);
 		String s = t.getText().toString();
 		if (s.equalsIgnoreCase("")) {
-			Toast.makeText(this, "enter the question description first!!",
-					Toast.LENGTH_LONG);
+			Toast.makeText(this, "enter the question description first!!",Toast.LENGTH_LONG);
 		} else {
 			Question question = new Question(0, s);
-			db.addQuestion(question);
+			qdb.addQuestion(question);
 			Log.d("question list", "data added");
+			t.setText("");
+			//adapter.add(question);
+			Map<String, Question> newQuestion = new HashMap<String, Question>();
+			newQuestion.put("child", question);
+			qlist.get(0).add(newQuestion);
+			adapter.notifyDataSetChanged();
+		}
+		
+	}
+
+	public void addSurveyNow(View v) {
+		
+		EditText t = (EditText) findViewById(R.id.edtSurvey);
+		String s = t.getText().toString();
+		if (s.equalsIgnoreCase("")) {
+			Toast.makeText(this, "enter the question description first!!",Toast.LENGTH_LONG);
+		} else {
+			Question question = new Question(0, s);
+			sdb.addSurvey(question);
+			Log.d("survey list", "data added");
 			t.setText("");
 			adapt.add(question);
 			adapt.notifyDataSetChanged();
 		}
-
+		
 	}
-
-	public void onLikeButtonClick(View view){
+	
+	public void onClickLike(View view) {
 		View v = (View) view.getParent();
-		ToggleButton btn = (ToggleButton) v.findViewById(R.id.btnLike);
-		
-		
-		//btn.setBackgroundResource(R.drawable.button_like_clicked);
-		//btn.setText( "99" );
+		ToggleButton tb = (ToggleButton) v.findViewById(R.id.btnLike);
+		Question changeQuestion = (Question) tb.getTag();
+		if( tb.isChecked() ){
+			changeQuestion.increasePopu(1);
+			tb.setBackgroundResource(R.drawable.button_like_clicked);
+		}
+		else{
+			changeQuestion.decreasePopu(1);
+			tb.setBackgroundResource(R.drawable.button_like_unclicked);
+		}
+		tb.setText( String.valueOf(changeQuestion.getPopu()) );
+		qdb.updateQuestionStatus(changeQuestion, tb.isChecked());
 	}
 
+	// Adapter for question list
+	class ExpandableAdapter extends BaseExpandableListAdapter
+	{
+		private Context context;
+		List<Map<String, String>> groups;
+		List<List<Map<String, Question>>> childs;
+		
+		public ExpandableAdapter(Context context, List<Map<String, String>> groups, List<List<Map<String, Question>>> childs)
+		{
+			this.groups = groups;
+			this.childs = childs;
+			this.context = context;
+		}
+
+		public Object getChild(int groupPosition, int childPosition)
+		{
+			return childs.get(groupPosition).get(childPosition);
+		}
+
+		public long getChildId(int groupPosition, int childPosition)
+		{
+			return childPosition;
+		}
+
+		//獲取二級清單的View物件
+		public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView,
+				ViewGroup parent)
+		{
+			//@SuppressWarnings("unchecked")
+			Question question = ((Map<String, Question>) getChild(groupPosition, childPosition)).get("child");
+			LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+			//獲取二級清單對應的佈局檔, 並將其各元素設置相應的屬性
+			LinearLayout linearLayout = (LinearLayout) layoutInflater.inflate(R.layout.question_item_view, null);
+			TextView tv = (TextView) linearLayout.findViewById(R.id.txvQuestion);
+			tv.setText(question.getQuestionTitle());
+			ToggleButton btn = (ToggleButton)linearLayout.findViewById(R.id.btnLike);
+			btn.setChecked(question.isSolved());
+			btn.setTag(question);
+
+			return linearLayout;
+		}
+
+		public int getChildrenCount(int groupPosition)
+		{
+			return childs.get(groupPosition).size();
+		}
+
+		public Object getGroup(int groupPosition)
+		{
+			return groups.get(groupPosition);
+		}
+
+		public int getGroupCount()
+		{
+			return groups.size();
+		}
+
+		public long getGroupId(int groupPosition)
+		{
+			return groupPosition;
+		}
+
+		//獲取一級清單View物件
+		public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent)
+		{
+			String text = groups.get(groupPosition).get("group");
+			LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+			//獲取一級清單佈局檔,設置相應元素屬性
+			LinearLayout linearLayout = (LinearLayout) layoutInflater.inflate(R.layout.question_group, null);
+			TextView textView = (TextView)linearLayout.findViewById(R.id.group_tv);
+			textView.setText(text);
+
+			return linearLayout;
+		}
+
+		public boolean hasStableIds()
+		{
+			return false;
+		}
+
+		public boolean isChildSelectable(int groupPosition, int childPosition)
+		{
+			return false;
+		}
+
+	}
+	
+	// Adapter for survey list
 	private class MyAdapter extends ArrayAdapter<Question> {
 
 		Context context;
@@ -273,8 +430,6 @@ public class MainActivity extends SherlockFragmentActivity {
 			this.layoutResourceId = layoutResourceId;
 			this.questionList = objects;
 			this.context = context;
-			
-			
 		}
 
 		/**
@@ -291,7 +446,7 @@ public class MainActivity extends SherlockFragmentActivity {
 			if (convertView == null) {
 				LayoutInflater inflater = (LayoutInflater) context
 						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				convertView = inflater.inflate(R.layout.list_inner_view,
+				convertView = inflater.inflate(R.layout.survey_item_view,
 						parent, false);
 				chk = (CheckBox) convertView.findViewById(R.id.chkStatus);
 				btn = (ToggleButton) convertView.findViewById(R.id.btnLike);
@@ -310,13 +465,13 @@ public class MainActivity extends SherlockFragmentActivity {
 							questionBlcok.setBackgroundResource(R.drawable.question_solved_shape);
 							Button like = (Button)questionBlcok.findViewById(R.id.btnLike);
 							like.setBackgroundResource(R.drawable.button_like_nonclickable);
-							like.setEnabled(false);
+							//like.setEnabled(false);
 						}
 						else{
-							cb.setChecked(true);
+							//cb.setChecked(true);
 						}
 						
-						db.updateQuestionStatus(changeQuestion);
+						sdb.updateSurveyStatus(changeQuestion);
 					}
 				});
 				
@@ -334,7 +489,7 @@ public class MainActivity extends SherlockFragmentActivity {
 							tb.setBackgroundResource(R.drawable.button_like_unclicked);
 						}
 						tb.setText( String.valueOf(changeQuestion.getPopu()) );
-						db.updateQuestionStatus(changeQuestion);
+						sdb.updateSurveyStatus(changeQuestion);
 					}
 				});
 				

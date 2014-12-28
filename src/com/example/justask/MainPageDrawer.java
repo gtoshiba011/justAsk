@@ -184,7 +184,7 @@ public class MainPageDrawer extends Activity {
     	switch(resultCode){
     	case 1://QR flag
     		String result = data.getExtras().getString("QREventCode");
-    		EditText editText = (EditText) findViewById(R.id.editText1);
+    		EditText editText = (EditText) findViewById(R.id.edtEventCode);
     		editText.setText(result);
     		break;
     	}
