@@ -120,6 +120,8 @@ public class MainActivity extends SherlockFragmentActivity {
 			t.setTextColor(Color.parseColor("#FFFFFF"));
 		}
 		//tabHost.getTabWidget().setStripEnabled( true );
+		View v = (View) tabHost.getParent();
+		v.setBackgroundColor(Color.parseColor("#ff2F6877"));
 		
 		viewPager = (NonSwipeableViewPager) findViewById(R.id.pager);
 		actionBar = getSupportActionBar();
@@ -309,6 +311,9 @@ public class MainActivity extends SherlockFragmentActivity {
 			adapt.add(question);
 			adapt.notifyDataSetChanged();
 		}
+	}
+	
+	public void SolveQuestion(View view) {
 		
 	}
 	
@@ -365,7 +370,15 @@ public class MainActivity extends SherlockFragmentActivity {
 			TextView tv = (TextView) linearLayout.findViewById(R.id.txvQuestion);
 			tv.setText(question.getQuestionTitle());
 			ToggleButton btn = (ToggleButton)linearLayout.findViewById(R.id.btnLike);
-			btn.setChecked(question.isSolved());
+			if( qdb.getQuestionLike(question) ){
+				btn.setChecked( true );
+				btn.setBackgroundResource(R.drawable.button_like_clicked);
+			}
+			else{
+				btn.setChecked( false );
+				btn.setBackgroundResource(R.drawable.button_like_unclicked);
+			}
+			btn.setText( String.valueOf(question.getPopu()) );
 			btn.setTag(question);
 
 			return linearLayout;
@@ -440,7 +453,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			CheckBox chk = null;
-			ToggleButton btn = null;
+			Button btn = null;
 			TextView txv = null;
 			
 			if (convertView == null) {
@@ -449,7 +462,7 @@ public class MainActivity extends SherlockFragmentActivity {
 				convertView = inflater.inflate(R.layout.survey_item_view,
 						parent, false);
 				chk = (CheckBox) convertView.findViewById(R.id.chkStatus);
-				btn = (ToggleButton) convertView.findViewById(R.id.btnLike);
+				btn = (Button) convertView.findViewById(R.id.btnSend);
 				convertView.setTag(R.id.first_tag, chk);
 				convertView.setTag(R.id.second_tag, btn);
 
@@ -462,9 +475,9 @@ public class MainActivity extends SherlockFragmentActivity {
 						
 						View questionBlcok = (View)cb.getParent();
 						if( cb.isChecked() ){
-							questionBlcok.setBackgroundResource(R.drawable.question_solved_shape);
-							Button like = (Button)questionBlcok.findViewById(R.id.btnLike);
-							like.setBackgroundResource(R.drawable.button_like_nonclickable);
+							//questionBlcok.setBackgroundResource(R.drawable.question_solved_shape);
+							//Button send = (Button)questionBlcok.findViewById(R.id.btnSend);
+							//send.setBackgroundResource(R.drawable.button_like_nonclickable);
 							//like.setEnabled(false);
 						}
 						else{
@@ -478,8 +491,9 @@ public class MainActivity extends SherlockFragmentActivity {
 				btn.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						ToggleButton tb = (ToggleButton) v;
+						Button tb = (Button) v;
 						Question changeQuestion = (Question) tb.getTag();
+						/*
 						if( tb.isChecked() ){
 							changeQuestion.increasePopu(1);
 							tb.setBackgroundResource(R.drawable.button_like_clicked);
@@ -488,14 +502,15 @@ public class MainActivity extends SherlockFragmentActivity {
 							changeQuestion.decreasePopu(1);
 							tb.setBackgroundResource(R.drawable.button_like_unclicked);
 						}
-						tb.setText( String.valueOf(changeQuestion.getPopu()) );
+						*/
+						//tb.setText( String.valueOf(changeQuestion.getPopu()) );
 						sdb.updateSurveyStatus(changeQuestion);
 					}
 				});
 				
 			} else {
 				chk = (CheckBox) convertView.getTag(R.id.first_tag);
-				btn = (ToggleButton) convertView.getTag(R.id.second_tag);
+				btn = (Button) convertView.getTag(R.id.second_tag);
 			}
 			
 			Question current = questionList.get(position);
@@ -503,8 +518,8 @@ public class MainActivity extends SherlockFragmentActivity {
 			chk.setChecked(current.isSolved());
 			chk.setTag(current);
 			
-			btn.setText( String.valueOf( current.getPopu() ) );
-			btn.setChecked( false );
+			//btn.setText( String.valueOf( current.getPopu() ) );
+			//btn.setChecked( false );
 			btn.setTag(current);
 			
 			Log.d("listener", String.valueOf(current.getQuestionID()));

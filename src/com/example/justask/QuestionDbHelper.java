@@ -89,6 +89,8 @@ public class QuestionDbHelper extends SQLiteOpenHelper {
 				question.setStatus( cursor.getInt(2)!=0 );
 				question.setPopu( cursor.getInt(3) );
 				
+				Log.d("cursor", cursor.getString(1));
+				
 				Map<String, Question> questionData = new HashMap<String, Question>();
 				questionData.put("child", question);
 				
@@ -101,7 +103,6 @@ public class QuestionDbHelper extends SQLiteOpenHelper {
 				}
 
 			} while (cursor.moveToNext());
-			//Log.d("End", String.valueOf(unsolved.size()) + ' ' + String.valueOf(solved.size()) );
 		}
 
 		// return task list
@@ -123,7 +124,16 @@ public class QuestionDbHelper extends SQLiteOpenHelper {
 		//db.close();
 	}
 	
-
+	public boolean getQuestionLike(Question question){
+		
+		String selectQuery = "SELECT  * FROM " + TABLE_QUESTIONS + " WHERE " + KEY_QUESTIONNAME + "='" + question.getQuestionTitle() + "'";
+		//String selectQuery = "SELECT  * FROM " + TABLE_QUESTIONS;
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
+		cursor.moveToFirst();
+		
+		return ( cursor.getInt(4)==1 );
+	}
 	
 
 }
