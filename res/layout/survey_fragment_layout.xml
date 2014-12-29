@@ -15,6 +15,7 @@
             android:id="@+id/edtSurvey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
             android:layout_weight="1"
             android:ems="10" >
 
@@ -25,7 +26,7 @@
             android:id="@+id/btnSurvey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="14dp"
+            android:layout_marginRight="10dp"
             android:layout_weight="1"
             android:onClick="addSurveyNow"
             android:text="Add" />
@@ -34,7 +35,9 @@
     <ListView
         android:id="@+id/listView1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp" >
+
     </ListView>
 
 </LinearLayout>

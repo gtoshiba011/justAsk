@@ -63,6 +63,7 @@ public class MainActivity extends SherlockFragmentActivity {
 	
 	// Question list
 	protected QuestionDbHelper qdb;
+	List<Map<String, String>> qtitle;
 	List<List<Map<String,Question>>> qlist;
 	ExpandableAdapter adapter;
 	
@@ -135,7 +136,15 @@ public class MainActivity extends SherlockFragmentActivity {
 					if (tabId.equals(tabsTitles[i])) {
 						viewPager.setCurrentItem(i, false);
 						if( i == 1 ){
-							initialQuestionlist();
+							// Set question list title
+							qtitle = new ArrayList<Map<String, String>>();
+							Map<String, String> unsolved = new HashMap<String, String>();
+							unsolved.put("group", "Unsolved");
+							qtitle.add(unsolved);
+							Map<String, String> solved = new HashMap<String, String>();
+							solved.put("group", "Solved");
+							qtitle.add(solved);
+							updateQuestionlist(true, true);
 						}
 						else if( i == 2 ){
 							initialSurveylist();
@@ -189,28 +198,17 @@ public class MainActivity extends SherlockFragmentActivity {
 		listTask.setAdapter(adapt);
 	}
 	
-	public void initialQuestionlist(){
-		
-		// Set question list title
-		List<Map<String, String>> groups = new ArrayList<Map<String, String>>();
-		Map<String, String> unsolved = new HashMap<String, String>();
-		unsolved.put("group", "Unsolved");
-		groups.add(unsolved);
-		Map<String, String> solved = new HashMap<String, String>();
-		solved.put("group", "Solved");
-		groups.add(solved);
+	public void updateQuestionlist( boolean group0, boolean group1){
 		
 		qdb = new QuestionDbHelper(MainActivity.this);
 		qlist = qdb.getAllQuestions();
-		adapter = new ExpandableAdapter(MainActivity.this, groups, qlist);
+		adapter = new ExpandableAdapter(MainActivity.this, qtitle, qlist);
+		
 		ExpandableListView elv = (ExpandableListView)findViewById(R.id.mExpandableListView);
 		elv.setAdapter(adapter);
+		if( group0 ) elv.expandGroup(0);
+		if( group1 ) elv.expandGroup(1);
 		
-		//qdb = new QuestionDbHelper(MainActivity.this);
-		//slist = qdb.getAllQuestions();
-		//adapt = new MyAdapter(MainActivity.this, R.layout.list_inner_view, slist);
-		//ListView listTask = (ListView) findViewById(R.id.listView1);
-		//listTask.setAdapter(adapt);
 	}
 	
 	@Override
@@ -314,7 +312,16 @@ public class MainActivity extends SherlockFragmentActivity {
 	}
 	
 	public void SolveQuestion(View view) {
+		View v = (View) view.getParent();
+		CheckBox cb = (CheckBox) v.findViewById(R.id.chkStatus);
+		ToggleButton tb = (ToggleButton) v.findViewById(R.id.btnLike);
 		
+		Question changeQuestion = (Question) tb.getTag();
+		changeQuestion.setStatus(cb.isChecked());
+		qdb.updateQuestionStatus(changeQuestion, tb.isChecked());
+		
+		ExpandableListView elv = (ExpandableListView)findViewById(R.id.mExpandableListView);
+		updateQuestionlist( elv.isGroupExpanded(0), elv.isGroupExpanded(1) );
 	}
 	
 	public void onClickLike(View view) {
@@ -369,6 +376,7 @@ public class MainActivity extends SherlockFragmentActivity {
 			LinearLayout linearLayout = (LinearLayout) layoutInflater.inflate(R.layout.question_item_view, null);
 			TextView tv = (TextView) linearLayout.findViewById(R.id.txvQuestion);
 			tv.setText(question.getQuestionTitle());
+
 			ToggleButton btn = (ToggleButton)linearLayout.findViewById(R.id.btnLike);
 			if( qdb.getQuestionLike(question) ){
 				btn.setChecked( true );
@@ -380,6 +388,15 @@ public class MainActivity extends SherlockFragmentActivity {
 			}
 			btn.setText( String.valueOf(question.getPopu()) );
 			btn.setTag(question);
+			
+			CheckBox cb = (CheckBox) linearLayout.findViewById(R.id.chkStatus);
+			if( question.isSolved() ) {
+				cb.setChecked(true);
+				linearLayout.setBackgroundResource(R.drawable.question_solved_shape);
+				btn.setBackgroundResource(R.drawable.button_like_nonclickable);
+				btn.setClickable(false);
+			}
+			else btn.setClickable(true);
 
 			return linearLayout;
 		}

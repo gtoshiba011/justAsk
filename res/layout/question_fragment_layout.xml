@@ -15,6 +15,7 @@
             android:id="@+id/edtQuestion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
             android:layout_weight="1"
             android:ems="10" />
 
@@ -22,7 +23,7 @@
             android:id="@+id/btnQuestion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="14dp"
+            android:layout_marginRight="10dp"
             android:layout_weight="1"
             android:onClick="addQuestionNow"
             android:text="Add" />
@@ -30,9 +31,9 @@
     </LinearLayout>
     
     <ExpandableListView
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:id="@+id/mExpandableListView"
-	/>
+        android:id="@+id/mExpandableListView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp" />
 
 </LinearLayout>
