@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import net.sourceforge.zbar.android.CameraTest.CameraTestActivity;
+
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -24,6 +26,8 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
+//import android.view.Menu;
+//import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -43,6 +47,8 @@ import android.widget.ToggleButton;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 
 public class MainActivity extends SherlockFragmentActivity {
 
@@ -190,6 +196,13 @@ public class MainActivity extends SherlockFragmentActivity {
 		//String message = "{\"type\": \"hello_world\"}";
 		//sendMessage(message);
 	}
+	
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getSupportMenuInflater();
+        inflater.inflate(R.menu.main_page_drawer, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
 	public void initialSurveylist(){
 		sdb = new SurveyDbHelper(MainActivity.this);
@@ -234,6 +247,10 @@ public class MainActivity extends SherlockFragmentActivity {
 			} else {
 				mDrawerLayout.openDrawer(mDrawer);
 			}
+		}
+		//close activity after pressing action_home buttom in action bar
+		else if(item.getItemId() == R.id.action_home) {
+			MainActivity.this.finish(); //close Activity
 		}
 
 		return super.onOptionsItemSelected(item);
