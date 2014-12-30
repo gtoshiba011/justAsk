@@ -76,9 +76,9 @@ public class SurveyDbHelper extends SQLiteOpenHelper {
 		// looping through all rows and adding to list
 		if (cursor.moveToFirst()) {
 			do {
-				Survey survey = new Survey(	//cursor.getInt(0),
+				Survey survey = new Survey(	cursor.getInt(0) ); //cursor.getInt(0),
 											//cursor.getInt(1),
-											cursor.getString(2)  );
+											//cursor.getString(2)  );
 				//survey.setStatus( cursor.getInt(2)!=0 );
 				// Adding contact to list
 				surveyList.add(survey);

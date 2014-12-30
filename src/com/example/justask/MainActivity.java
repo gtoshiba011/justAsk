@@ -3,16 +3,20 @@ package com.example.justask;
 // import socket dictionary
 import java.net.URI;
 import java.net.URISyntaxException;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
+//global manager
+import com.example.justask.Manager;
+//json object
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import net.sourceforge.zbar.android.CameraTest.CameraTestActivity;
-
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.handshake.ServerHandshake;
 
 import question.Question;
 import survey.Survey;
@@ -62,6 +66,8 @@ public class MainActivity extends SherlockFragmentActivity {
 	
 	// socket obj
 	private WebSocketClient mWebSocketClient;
+	// application
+	private Manager manager = (Manager)this.getApplication();
 	
 	// Buttons
 	private Button btnEditSave, btnWebCode;
@@ -197,8 +203,6 @@ public class MainActivity extends SherlockFragmentActivity {
 		
 		// socket connection
 		connectWebSocket();
-		//String message = "{\"type\": \"hello_world\"}";
-		//sendMessage(message);
 	}
 	
 	@Override
@@ -316,7 +320,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		if (s.equalsIgnoreCase("")) {
 			Toast.makeText(this, "enter the question description first!!",Toast.LENGTH_LONG);
 		} else {
-			Question question = new Question(0, s);
+			Question question = new Question(0, s, false, 0);
 			Log.d("question list", "data added");
 			t.setText("");;
 			Map<String, Question> newQuestion = new HashMap<String, Question>();
@@ -335,7 +339,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		if (s.equalsIgnoreCase("")) {
 			Toast.makeText(this, "enter the question description first!!",Toast.LENGTH_LONG);
 		} else {
-			Survey survey = new Survey(s);
+			Survey survey = new Survey(0);
 			//sdb.addSurvey(survey);
 			Log.d("survey list", "data added");
 			t.setText("");
@@ -363,11 +367,11 @@ public class MainActivity extends SherlockFragmentActivity {
 		Question changeQuestion = (Question) tb.getTag();
 		changeQuestion.setLike(tb.isChecked());
 		if( tb.isChecked() ){
-			changeQuestion.increasePopu(1);
+			changeQuestion.increasePopu();
 			tb.setBackgroundResource(R.drawable.button_like_clicked);
 		}
 		else{
-			changeQuestion.decreasePopu(1);
+			changeQuestion.decreasePopu();
 			tb.setBackgroundResource(R.drawable.button_like_unclicked);
 		}
 		tb.setText( String.valueOf(changeQuestion.getPopu()) );
@@ -415,7 +419,7 @@ public class MainActivity extends SherlockFragmentActivity {
 			//獲取二級清單對應的佈局檔, 並將其各元素設置相應的屬性
 			LinearLayout linearLayout = (LinearLayout) layoutInflater.inflate(R.layout.question_item_view, null);
 			TextView tv = (TextView) linearLayout.findViewById(R.id.txvQuestion);
-			tv.setText(question.getQuestionTitle());
+			tv.setText(question.getQuestionTopic());
 
 			ToggleButton btn = (ToggleButton)linearLayout.findViewById(R.id.btnLike);
 			if( question.isLiked() ){
@@ -536,18 +540,19 @@ public class MainActivity extends SherlockFragmentActivity {
 		}
 
 	}
-	
-	
-	// socket communication start
+	// *** socket communication start ***
     private void connectWebSocket() {
+        Log.i("webSocket", "MainActivity connect web socket");
         URI uri;
         try {
-            uri = new URI("140.112.230.230:10012");
+        	Log.i("webSocket", "start new uri");
+            uri = new URI("ws://140.112.230.230:7272");
+            Log.i("webSocket", "new uri success!");
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return;
         }
-
+        
         mWebSocketClient = new WebSocketClient(uri) {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
@@ -561,8 +566,51 @@ public class MainActivity extends SherlockFragmentActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //TextView textView = (TextView)findViewById(R.id.messages);
-                        //textView.setText(textView.getText() + "\n" + message);
+                       // Log.i("webSocket", "onMessage: " + message);
+                        // decode JSON Object
+                        JSONObject object = null;
+                        int event_mission;
+                        try {
+							object = new JSONObject(message);
+							event_mission = (Integer)object.get("Event_Mission");
+							switch(event_mission){
+								case 0:	//Request Reply
+									Log.i("MainPageDrawer::case0", object.toString());
+									break;
+								case 1: //update event information
+									manager.modifiedEventInfo(object.getInt("Event_ID"), object.getString("Name"), object.getString("Email"), object.getString("Topic"));
+									break;
+								case 2: //create survey
+									if(object.getInt("Survey_Type") == 2)
+										manager.createSurvey(object.getInt("Event_ID"), object.getInt("Survey_ID"), object.getInt("Survey_Type"), object.getString("Survey_Topic"), object.getJSONArray("Choice"));
+									else
+										manager.createSurvey(object.getInt("Event_ID"), object.getInt("Survey_ID"), object.getInt("Survey_Type"), object.getString("Survey_Topic"));
+									break;
+								case 4: //create question
+									manager.createQuestion(object.getInt("Event_ID"), object.getInt("Question_ID"), object.getString("Question_Topic"));
+									break;
+								case 5: //increase question popularity
+									manager.incrPopu(object.getInt("Event_ID"), object.getInt("Question_ID"));
+									break;
+								case 6: //decrease question popularity
+									manager.decrPopu(object.getInt("Event_ID"), object.getInt("Question_ID"));
+									break;
+								case 7: //change question status
+									manager.chagneQuestionStatus(object.getInt("Event_ID"), object.getInt("Question_ID"), object.getString("Status"));
+									break;
+								case 8: //change survey status
+									manager.changeSurveyStatus(object.getInt("Event_ID"), object.getInt("Survey_ID"), object.getString("Status"));
+									break;
+								case 9: //close the event, can't ask question, survey...etc
+									manager.closeEvent(object.getInt("Event_ID"));
+									break;
+								default:
+									Log.e("socket run()", "switch" + Integer.toString(event_mission));
+									break;
+							}
+						} catch (JSONException e) {
+							Log.e("MainPageDrawer", "Create object error");
+						}
                     }
                 });
             }
@@ -581,8 +629,201 @@ public class MainActivity extends SherlockFragmentActivity {
     }
     public void sendMessage(String sendMessage) {
         mWebSocketClient.send(sendMessage);
-        //EditText editText = (EditText)findViewById(R.id.message);
-        //editText.setText("");
+        Log.i("webSocket", "send message: " + sendMessage);
     }
     // end of socket communication
+    
+    // *** mission function ***    
+    // for audience 
+    //mission 0
+    public boolean joinEvent(int eventID){
+    	JSONObject object = new JSONObject();
+    	try{
+    		object.put("Identity", 1);
+    		object.put("Event_Mission", 0);
+    		object.put("Event_ID", eventID);
+    	} catch(JSONException e){
+    		Log.e("MainActivity::joinEvent()", e.toString());
+    	}
+        return true;
+    }
+    //mission 1
+    public boolean replySurvey(int eventID, int surveyID, String answer){
+    	JSONObject object = new JSONObject();
+    	try{
+    		object.put("Identity", 1);
+    		object.put("Event_Mission", 1);
+    		object.put("Event_ID", eventID);
+    		object.put("Survey_ID", surveyID);
+    		object.put("Answer", answer);
+    	} catch(JSONException e){
+    		Log.e("MainActivity::replySurvey()", e.toString());
+    	}
+        return false;
+    }
+    //mission 2
+    public boolean askQuestion(int eventID, String topic){
+    	JSONObject object = new JSONObject();
+    	try{
+    		object.put("Identity", 1);
+    		object.put("Event_Mission", 2);
+    		object.put("Event_ID", eventID);
+    		object.put("Question_Topic", topic);
+    	} catch(JSONException e){
+    		Log.e("MainActivity::askQuestion()", e.toString());
+    	}
+        return true;
+    }
+    //mission 3
+    public boolean increasePopu(int eventID, int questionID){
+    	JSONObject object = new JSONObject();
+    	try{
+    		object.put("Identity", 1);
+    		object.put("Event_Mission", 3);
+    		object.put("Event_ID", eventID);
+    		object.put("Question_ID", questionID);
+    	} catch(JSONException e){
+    		Log.e("MainActivity::increasePopu()", e.toString());
+    	}
+        return true;
+    }
+    //mission 4
+    public boolean decreasePopu(int eventID, int questionID){
+    	JSONObject object = new JSONObject();
+    	try{
+    		object.put("Identity", 1);
+    		object.put("Event_Mission", 4);
+    		object.put("Event_ID", eventID);
+    		object.put("Question_ID", questionID);
+    	} catch(JSONException e){
+    		Log.e("MainActivity::decreasePopu()", e.toString());
+    	}
+        return true;
+    }
+    /*// for speaker
+    //mission 0
+    public boolean createEvent(){
+    	JSONObject object = new JSONObject();
+    	try{
+    		object.put("Identity", 0);
+    		object.put("Event_Mission", 0);
+    	} catch(JSONException e){
+    		Log.e("createEvent()", e.toString());
+    	}
+    	return false;
+    }
+    //mission 1
+    public boolean modifySpeechInfo(SpeechInfo info){
+        //TODO
+    	int eventID = 0;
+    	JSONObject object = new JSONObject();
+    	try{
+    		object.put("Identity", 0);
+    		object.put("Event_Mission", 1);
+    		object.put("Event_ID", eventID);
+    		object.put("Name", info.getName());
+    		object.put("Email", info.getEmail());
+    		object.put("Topic", info.getTopic());
+    	} catch(JSONException e){
+    		Log.e("modifySpeechInfo()", e.toString());
+    	}
+    	return false;
+    }
+    //mission 2
+    public boolean createSurvey(int surveyType, String topic){
+        //TODO
+    	int eventID = 0;
+    	JSONObject object = new JSONObject();
+    	try{
+    		object.put("Identity", 0);
+    		object.put("Event_Mission", 2);
+    		object.put("Event_ID", eventID);
+    		object.put("Survey_type", surveyType);
+    		object.put("Survey_Topic", topic);
+    	} catch(JSONException e){
+    		Log.e("createSurvey()", e.toString());
+    	}
+    	return false;
+    }
+    //mission 3
+    public boolean startSurvey(){
+    	//TODO
+    	int eventID = 0;
+    	int surveyID = 0;
+    	JSONObject object = new JSONObject();
+    	try{
+    		object.put("Identity", 0);
+    		object.put("Event_Mission", 3);
+    		object.put("Event_ID", eventID);
+    		object.put("Survey_ID", surveyID);
+    	} catch(JSONException e){
+    		Log.e("startSurvey()", e.toString());
+    	}
+    	return false;
+    }
+    //mission 4
+    public boolean closeSurvey(){
+    	//TODO
+    	int eventID = 0;
+    	int surveyID = 0;
+    	JSONObject object = new JSONObject();
+    	try{
+    		object.put("Identity", 0);
+    		object.put("Event_Mission", 4);
+    		object.put("Event_ID", eventID);
+    		object.put("Survey_ID", surveyID);
+    	} catch(JSONException e){
+    		Log.e("showSurveyResult()", e.toString());
+    	}
+    	return false;
+    }
+    //mission 5
+    public boolean showSurveyResult(){
+    	//TODO
+    	int eventID = 0;
+    	int surveyID = 0;
+    	JSONObject object = new JSONObject();
+    	try{
+    		object.put("Identity", 0);
+    		object.put("Event_Mission", 5);
+    		object.put("Event_ID", eventID);
+    		object.put("Survey_ID", surveyID);
+    	} catch(JSONException e){
+    		Log.e("showSurveyResult()", e.toString());
+    	}
+    	return false;
+    }
+    //mission 6
+    public boolean solveQuestion(){
+    	//TODO
+    	int eventID = 0;
+    	int questionID = 0;
+    	JSONObject object = new JSONObject();
+    	try{
+    		object.put("Identity", 0);
+    		object.put("Event_Mission", 6);
+    		object.put("Event_ID", eventID);
+    		object.put("Question_ID", questionID);
+    	} catch(JSONException e){
+    		Log.e("solveQuestion()", e.toString());
+    	}
+    	return false;
+    }
+    //mission 7
+    public boolean unSolveQuestion(){
+    	//TODO
+    	int eventID = 0;
+    	int questionID = 0;
+    	JSONObject object = new JSONObject();
+    	try{
+    		object.put("Identity", 0);
+    		object.put("Event_Mission", 7);
+    		object.put("Event_ID", eventID);
+    		object.put("Question_ID", questionID);
+    	} catch(JSONException e){
+    		Log.e("UNsolveQuestion()", e.toString());
+    	}
+    	return false;
+    }
+    */
 }

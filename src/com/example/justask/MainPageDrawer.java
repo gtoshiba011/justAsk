@@ -1,5 +1,19 @@
 package com.example.justask;
 
+//import socket dictionary
+import java.net.URI;
+import java.net.URISyntaxException;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
+
+//json object
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+//Application
+import com.example.justask.Manager;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
@@ -38,12 +52,19 @@ public class MainPageDrawer extends Activity {
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private String[] mDrawerTitles;
-
+    
+	// socket obj
+	private WebSocketClient mWebSocketClient;
+	// application
+	private Manager manager = (Manager)this.getApplication();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page_drawer);
 
+		// socket connection
+		connectWebSocket();
+        
         mTitle = mDrawerTitle = getTitle();
         mDrawerTitles = getResources().getStringArray(R.array.drawer_item_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -91,6 +112,77 @@ public class MainPageDrawer extends Activity {
         ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#2F6877"));     
         ab.setBackgroundDrawable(colorDrawable);
     }
+	// *** socket communication start ***
+    private void connectWebSocket() {
+        Log.i("webSocket", "MainPageDrawer connect web socket");
+        URI uri;
+        try {
+        	Log.i("webSocket", "start new uri");
+            uri = new URI("ws://140.112.230.230:7272");
+            Log.i("webSocket", "new uri success!");
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+            return;
+        }
+        Log.i("webSocket", "new webSocket");
+        mWebSocketClient = new WebSocketClient(uri) {
+            @Override
+            public void onOpen(ServerHandshake serverHandshake) {
+                Log.i("Websocket", "Opened");
+            }
+
+            @Override 
+            public void onMessage(String s) {
+                final String message = s;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.i("webSocket", "onMessage: " + message);
+                        
+                        // decode JSON Object
+                        JSONObject object = null;
+                        int event_mission;
+                        try {
+							object = new JSONObject(message);
+							event_mission = object.getInt("Event_Mission");
+							switch(event_mission){
+								case 0:	//Request Reply
+									Log.i("MainPageDrawer::case0", object.toString());
+									break;
+								case 10:// create event;
+									manager.createEvent(object.getInt("Event_ID"));
+									break;
+								case 11:// when join event and update the event
+									manager.updateEventInfo(object.getInt("Event_ID"), object.getString("Name"), object.getString("Email"), object.getString("Topic"), object.getJSONArray("SurveyList"), object.getJSONArray("QuestionList"));
+									break;
+								default:
+									Log.e("socket run()", "switch" + Integer.toString(event_mission));
+									break;
+							}
+						} catch (JSONException e) {
+							Log.e("MainPageDrawer", "Create object error");
+						}
+                    }
+                });
+            }
+
+            @Override
+            public void onClose(int i, String s, boolean b) {
+                Log.i("Websocket", "Closed " + s);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.i("Websocket", "Error " + e.getMessage());
+            }
+        };
+        mWebSocketClient.connect();
+    }
+    public void sendMessage(String sendMessage) {
+        mWebSocketClient.send(sendMessage);
+        Log.i("webSocket", "success send message: " + sendMessage);
+    }
+    // *** end of socket communication ***
     /* comment this line to prevent setting buttom on action bar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -262,4 +354,30 @@ public class MainPageDrawer extends Activity {
             return rootView;
         }
     }
+    // *** mission function ***    
+    // for audience 
+    //mission 0
+    public boolean joinEvent(int eventID){
+    	JSONObject object = new JSONObject();
+    	try{
+    		object.put("Identity", 1);
+    		object.put("Event_Mission", 0);
+    		object.put("Event_ID", eventID);
+    	} catch(JSONException e){
+    		Log.e("MainActivity::joinEvent()", e.toString());
+    	}
+        return true;
+    }
+    /*// for speaker
+    //mission 0
+    public boolean createEvent(){
+    	JSONObject object = new JSONObject();
+    	try{
+    		object.put("Identity", 0);
+    		object.put("Event_Mission", 0);
+    	} catch(JSONException e){
+    		Log.e("createEvent()", e.toString());
+    	}
+    	return false;
+    }*/
 }

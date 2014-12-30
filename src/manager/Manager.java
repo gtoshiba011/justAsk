@@ -28,16 +28,6 @@ public class Manager {
         return 0;
     }
 
-    public boolean joinEvent(long eventID){
-        //TODO
-        return true;
-    }
-
-    public boolean joinEvent(QR QRcode){
-        //TODO
-        return true;
-    }
-
     public boolean showEventList(){
         //TODO
         return true;
@@ -75,10 +65,5 @@ public class Manager {
     public boolean closeEvent(){
         //TODO
         return true;
-    }
-
-    // main
-    public static void main(String[] args){
-        //TODO
     }
 }

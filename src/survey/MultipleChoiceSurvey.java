@@ -2,31 +2,25 @@ package survey;
 
 import java.util.Vector;
 
+import org.json.JSONArray;
+
 public class MultipleChoiceSurvey extends Survey{
 
     private int _numberOfChoice;
-    private Vector _choice;// type : int
+    private JSONArray _choiceArr;// type : int
 
     //constructor
-    public MultipleChoiceSurvey(String topic) {
-        super(topic);
-        _surveyType = 3;
+    public MultipleChoiceSurvey(int ID, int status, String topic, JSONArray choiceJSONArray) {
+        super(ID);
+    	_status = status;
+    	_surveyTopic = topic;
+        _surveyType = MULTIPLE;
+        _choiceArr = choiceJSONArray;
     }
-
-    public boolean receiveAndParseResult(){
-        //TODO
-        return false;
-    }
-
-    public boolean showResult(){
-        //TODO
-        return false;
-    }
-
     public boolean replyResult(int answer){
         //TODO
-    	//whether send to server
     	_numberOfChoice = answer;
         return false;
     }
+
 }
