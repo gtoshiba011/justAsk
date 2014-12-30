@@ -71,7 +71,7 @@ public class MainActivity extends SherlockFragmentActivity {
 	ExpandableAdapter adapter;
 	
 	// Survey list
-	protected SurveyDbHelper sdb;
+	//protected SurveyDbHelper sdb;
 	List<Survey> slist;
 	MyAdapter adapt;
 
@@ -84,6 +84,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
 		mDrawer = (LinearLayout)findViewById(R.id.drawer);
 		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+		mDrawer.setBackgroundColor(Color.parseColor("#f02F6877"));
 
 		getSupportActionBar().setHomeButtonEnabled(true);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -140,6 +141,9 @@ public class MainActivity extends SherlockFragmentActivity {
 		qlist = new ArrayList<Map<String,Question>>();
 		child = new ArrayList<List<Map<String,Question>>>();
 		
+		// Allocate address to survey list
+		slist = new ArrayList<Survey>();
+		
 		viewPager = (NonSwipeableViewPager) findViewById(R.id.pager);
 		actionBar = getSupportActionBar();
 		mAdapter = new TabsPagerAdapter(getSupportFragmentManager(), tabsTitles.length);
@@ -155,7 +159,7 @@ public class MainActivity extends SherlockFragmentActivity {
 							updateQuestionlist(true, true);
 						}
 						else if( i == 2 ){
-							initialSurveylist();
+							updateSurveylist();
 						}
 						break;
 					}
@@ -191,9 +195,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		//sendMessage(message);
 	}
 
-	public void initialSurveylist(){
-		sdb = new SurveyDbHelper(MainActivity.this);
-		slist = sdb.getAllSurveys();
+	public void updateSurveylist(){
 		adapt = new MyAdapter(MainActivity.this, R.layout.survey_item_view, slist);
 		ListView listTask = (ListView) findViewById(R.id.listView1);
 		listTask.setAdapter(adapt);
@@ -317,10 +319,10 @@ public class MainActivity extends SherlockFragmentActivity {
 			Toast.makeText(this, "enter the question description first!!",Toast.LENGTH_LONG);
 		} else {
 			Survey survey = new Survey(s);
-			sdb.addSurvey(survey);
+			//sdb.addSurvey(survey);
 			Log.d("survey list", "data added");
 			t.setText("");
-			adapt.add(survey);
+			slist.add(survey);
 			adapt.notifyDataSetChanged();
 		}
 	}
@@ -352,6 +354,12 @@ public class MainActivity extends SherlockFragmentActivity {
 			tb.setBackgroundResource(R.drawable.button_like_unclicked);
 		}
 		tb.setText( String.valueOf(changeQuestion.getPopu()) );
+	}
+	
+	public void sendSurveyResult(View view) {
+		Survey survey = (Survey)view.getTag();
+		slist.remove(survey);		
+		adapt.notifyDataSetChanged();
 	}
 
 	// Adapter for question list
@@ -484,7 +492,6 @@ public class MainActivity extends SherlockFragmentActivity {
 		 */
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			CheckBox chk = null;
 			Button btn = null;
 			TextView txv = null;
 			
@@ -493,68 +500,21 @@ public class MainActivity extends SherlockFragmentActivity {
 						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				convertView = inflater.inflate(R.layout.survey_item_view,
 						parent, false);
-				chk = (CheckBox) convertView.findViewById(R.id.chkStatus);
+				txv = (TextView) convertView.findViewById(R.id.txvSurvey);
 				btn = (Button) convertView.findViewById(R.id.btnSend);
-				convertView.setTag(R.id.first_tag, chk);
-				convertView.setTag(R.id.second_tag, btn);
-
-				chk.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						CheckBox cb = (CheckBox) v;
-						Survey changeSurvey = (Survey) cb.getTag();
-						//changeSurvey.setStatus(cb.isChecked());
-						
-						View surveyBlcok = (View)cb.getParent();
-						if( cb.isChecked() ){
-							//questionBlcok.setBackgroundResource(R.drawable.question_solved_shape);
-							//Button send = (Button)questionBlcok.findViewById(R.id.btnSend);
-							//send.setBackgroundResource(R.drawable.button_like_nonclickable);
-							//like.setEnabled(false);
-						}
-						else{
-							//cb.setChecked(true);
-						}
-						
-						sdb.updateSurveyStatus(changeSurvey);
-					}
-				});
-				
-				btn.setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						Button tb = (Button) v;
-						Survey changeSurvey = (Survey) tb.getTag();
-						/*
-						if( tb.isChecked() ){
-							changeQuestion.increasePopu(1);
-							tb.setBackgroundResource(R.drawable.button_like_clicked);
-						}
-						else{
-							changeQuestion.decreasePopu(1);
-							tb.setBackgroundResource(R.drawable.button_like_unclicked);
-						}
-						*/
-						//tb.setText( String.valueOf(changeQuestion.getPopu()) );
-						sdb.updateSurveyStatus(changeSurvey);
-					}
-				});
-				
-			} else {
-				chk = (CheckBox) convertView.getTag(R.id.first_tag);
+				convertView.setTag(R.id.first_tag, txv);
+				convertView.setTag(R.id.second_tag, btn);				
+			} 
+			else {
+				txv = (TextView) convertView.getTag(R.id.first_tag);
 				btn = (Button) convertView.getTag(R.id.second_tag);
 			}
 			
 			Survey current = surveyList.get(position);
-			//chk.setText(current.getSurveyTitle());
-			//chk.setChecked(current.isSolved());
-			chk.setTag(current);
-			
-			//btn.setText( String.valueOf( current.getPopu() ) );
-			//btn.setChecked( false );
+			txv.setText(current.getSurveyTopic());
+			txv.setTag(current);
 			btn.setTag(current);
-			
-			//Log.d("listener", String.valueOf(current.getQuestionID()));
+
 			return convertView;
 		}
 

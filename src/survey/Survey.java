@@ -35,6 +35,10 @@ public class Survey {
     public int getSurveyID(){
         return _ID;
     }
+    
+    public String getSurveyTopic() {
+    	return _surveyTopic;
+    }
 
     public boolean receiveAndParseResult(){
         //TODO
