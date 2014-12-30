@@ -12,6 +12,9 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,7 +24,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.support.v4.app.FragmentTransaction;
 
 //import net.sourceforge.zbar.android.CameraTest.*;
 
@@ -202,7 +207,6 @@ public class MainPageDrawer extends Activity {
 		//startActivityForResult(it, 1);
 	}
 	
-	
 
     /**
      * Fragment that appears in the "content_frame", shows a planet
@@ -225,6 +229,33 @@ public class MainPageDrawer extends Activity {
             //                "drawable", getActivity().getPackageName());
             //((ImageView) rootView.findViewById(R.id.image)).setImageResource(imageId);
             getActivity().setTitle(getResources().getStringArray(R.array.drawer_item_array)[0]);
+            
+        	// When enter event code finished
+        	final EditText editText_code = (EditText) rootView.findViewById(R.id.edtEventCode);
+        	editText_code.addTextChangedListener(new TextWatcher() {
+        		@Override
+        		public void onTextChanged(CharSequence s, int start, int before, int count) {
+        			if(editText_code.getText().length()==6)
+        			{
+        				String mString = editText_code.getText().toString();
+        				Log.d("Enter",mString);
+        			}
+        		}
+
+        		@Override
+        		public void beforeTextChanged(CharSequence s, int start, int count,
+        				int after) {
+        			// TODO Auto-generated method stub
+        			
+        		}
+
+        		@Override
+        		public void afterTextChanged(Editable s) {
+        			// TODO Auto-generated method stub
+        			
+        		}
+        	});
+            
             return rootView;
         }
     }
