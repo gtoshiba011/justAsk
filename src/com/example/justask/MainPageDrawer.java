@@ -90,6 +90,8 @@ public class MainPageDrawer extends Activity {
         ActionBar ab = getActionBar(); 
         ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#2F6877"));     
         ab.setBackgroundDrawable(colorDrawable);
+        
+        FragmentManager fm = getFragmentManager();
     }
 
     @Override
@@ -207,7 +209,6 @@ public class MainPageDrawer extends Activity {
 		//startActivityForResult(it, 1);
 	}
 	
-
     /**
      * Fragment that appears in the "content_frame", shows a planet
      */
@@ -221,7 +222,7 @@ public class MainPageDrawer extends Activity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             int i = getArguments().getInt(ITEM_NUMBER);
             String planet = getResources().getStringArray(R.array.drawer_item_array)[i];
 
@@ -239,6 +240,7 @@ public class MainPageDrawer extends Activity {
         			{
         				String mString = editText_code.getText().toString();
         				Log.d("Enter",mString);
+        				((MainPageDrawer) getActivity()).launch(rootView);
         			}
         		}
 
