@@ -9,6 +9,7 @@ public class Question {
     private String _title;
     private boolean _status;	// true: solved; false: unsolved
     private int _popu;
+    private boolean _like;
 
     //constructor 
     public Question(int id, String title) {
@@ -16,6 +17,7 @@ public class Question {
         _title = title;
         _status = false;
         _popu = 0;
+        _like = false;
     }
 
     // function
@@ -31,6 +33,9 @@ public class Question {
     }
     public int getPopu(){
         return _popu;
+    }
+    public boolean isLiked(){
+    	return _like;
     }
     
     public boolean increasePopu(int incr){
@@ -67,6 +72,11 @@ public class Question {
     public boolean setStatus(boolean status){
     	_status = status;
         return true;
+    }
+    
+    public boolean setLike(boolean like){
+    	_like = like;
+    	return true;
     }
 
     // main

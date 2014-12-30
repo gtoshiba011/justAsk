@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -63,9 +64,10 @@ public class MainActivity extends SherlockFragmentActivity {
 	private String[] tabsTitles = {"Profile", "Questions", "Survey"};
 	
 	// Question list
-	protected QuestionDbHelper qdb;
-	List<Map<String, String>> qtitle;
-	List<List<Map<String,Question>>> qlist;
+	//protected QuestionDbHelper qdb;
+	List<Map<String, Question>> qlist;
+	List<Map<String, String>> group;
+	List<List<Map<String, Question>>> child;
 	ExpandableAdapter adapter;
 	
 	// Survey list
@@ -125,6 +127,19 @@ public class MainActivity extends SherlockFragmentActivity {
 		View v = (View) tabHost.getParent();
 		v.setBackgroundColor(Color.parseColor("#ff2F6877"));
 		
+		// Set question list titles
+		group = new ArrayList<Map<String, String>>();
+		Map<String, String> unsolved = new HashMap<String, String>();
+		unsolved.put("group", "Unsolved");
+		group.add(unsolved);
+		Map<String, String> solved = new HashMap<String, String>();
+		solved.put("group", "Solved");
+		group.add(solved);
+		
+		// Allocate address to question list
+		qlist = new ArrayList<Map<String,Question>>();
+		child = new ArrayList<List<Map<String,Question>>>();
+		
 		viewPager = (NonSwipeableViewPager) findViewById(R.id.pager);
 		actionBar = getSupportActionBar();
 		mAdapter = new TabsPagerAdapter(getSupportFragmentManager(), tabsTitles.length);
@@ -136,15 +151,7 @@ public class MainActivity extends SherlockFragmentActivity {
 				for (int i = 0; i < tabsTitles.length; i++) {
 					if (tabId.equals(tabsTitles[i])) {
 						viewPager.setCurrentItem(i, false);
-						if( i == 1 ){
-							// Set question list title
-							qtitle = new ArrayList<Map<String, String>>();
-							Map<String, String> unsolved = new HashMap<String, String>();
-							unsolved.put("group", "Unsolved");
-							qtitle.add(unsolved);
-							Map<String, String> solved = new HashMap<String, String>();
-							solved.put("group", "Solved");
-							qtitle.add(solved);
+						if( i == 1 ){							
 							updateQuestionlist(true, true);
 						}
 						else if( i == 2 ){
@@ -154,13 +161,6 @@ public class MainActivity extends SherlockFragmentActivity {
 					}
 				}
 			}
-			/*/
-			@Override
-			public void onTabChanged(String tabId) {
-				if( tabId.equals(mainpageTitle) )
-					viewPager.setCurrentItem(0);
-			}
-			*/
 		});
 
 		viewPager.setOnPageChangeListener(new NonSwipeableViewPager.OnPageChangeListener() {
@@ -200,16 +200,30 @@ public class MainActivity extends SherlockFragmentActivity {
 	}
 	
 	public void updateQuestionlist( boolean group0, boolean group1){
+
+		child = new ArrayList<List<Map<String,Question>>>();
+		List<Map<String, Question>> unsolved, solved;
+		unsolved = new ArrayList<Map<String, Question>>();
+		solved = new ArrayList<Map<String, Question>>();
 		
-		qdb = new QuestionDbHelper(MainActivity.this);
-		qlist = qdb.getAllQuestions();
-		adapter = new ExpandableAdapter(MainActivity.this, qtitle, qlist);
+		Iterator<Map<String, Question>> it = qlist.iterator();
+		while( it.hasNext() ){
+			Map<String, Question> temp = it.next();
+			Question questionNow = temp.get("child");
+			if( questionNow.isSolved() )
+				solved.add(temp);
+			else
+				unsolved.add(temp);
+		}
+		child.add(unsolved);
+		child.add(solved);
+		
+		adapter = new ExpandableAdapter(MainActivity.this, group, child);
 		
 		ExpandableListView elv = (ExpandableListView)findViewById(R.id.mExpandableListView);
 		elv.setAdapter(adapter);
 		if( group0 ) elv.expandGroup(0);
-		if( group1 ) elv.expandGroup(1);
-		
+		if( group1 ) elv.expandGroup(1);		
 	}
 	
 	@Override
@@ -284,13 +298,12 @@ public class MainActivity extends SherlockFragmentActivity {
 			Toast.makeText(this, "enter the question description first!!",Toast.LENGTH_LONG);
 		} else {
 			Question question = new Question(0, s);
-			qdb.addQuestion(question);
 			Log.d("question list", "data added");
-			t.setText("");
-			//adapter.add(question);
+			t.setText("");;
 			Map<String, Question> newQuestion = new HashMap<String, Question>();
 			newQuestion.put("child", question);
-			qlist.get(0).add(newQuestion);
+			qlist.add(newQuestion);
+			child.get(0).add(newQuestion);
 			adapter.notifyDataSetChanged();
 		}
 		
@@ -303,7 +316,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		if (s.equalsIgnoreCase("")) {
 			Toast.makeText(this, "enter the question description first!!",Toast.LENGTH_LONG);
 		} else {
-			Survey survey = new Survey(0, 0, s);
+			Survey survey = new Survey(s);
 			sdb.addSurvey(survey);
 			Log.d("survey list", "data added");
 			t.setText("");
@@ -319,16 +332,17 @@ public class MainActivity extends SherlockFragmentActivity {
 		
 		Question changeQuestion = (Question) tb.getTag();
 		changeQuestion.setStatus(cb.isChecked());
-		qdb.updateQuestionStatus(changeQuestion, tb.isChecked());
 		
 		ExpandableListView elv = (ExpandableListView)findViewById(R.id.mExpandableListView);
 		updateQuestionlist( elv.isGroupExpanded(0), elv.isGroupExpanded(1) );
+		adapter.notifyDataSetChanged();
 	}
 	
 	public void onClickLike(View view) {
 		View v = (View) view.getParent();
 		ToggleButton tb = (ToggleButton) v.findViewById(R.id.btnLike);
 		Question changeQuestion = (Question) tb.getTag();
+		changeQuestion.setLike(tb.isChecked());
 		if( tb.isChecked() ){
 			changeQuestion.increasePopu(1);
 			tb.setBackgroundResource(R.drawable.button_like_clicked);
@@ -338,7 +352,6 @@ public class MainActivity extends SherlockFragmentActivity {
 			tb.setBackgroundResource(R.drawable.button_like_unclicked);
 		}
 		tb.setText( String.valueOf(changeQuestion.getPopu()) );
-		qdb.updateQuestionStatus(changeQuestion, tb.isChecked());
 	}
 
 	// Adapter for question list
@@ -369,6 +382,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView,
 				ViewGroup parent)
 		{
+			Log.d("ExpandableAdapter", "getChileView()");
 			//@SuppressWarnings("unchecked")
 			Question question = ((Map<String, Question>) getChild(groupPosition, childPosition)).get("child");
 			LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -379,7 +393,7 @@ public class MainActivity extends SherlockFragmentActivity {
 			tv.setText(question.getQuestionTitle());
 
 			ToggleButton btn = (ToggleButton)linearLayout.findViewById(R.id.btnLike);
-			if( qdb.getQuestionLike(question) ){
+			if( question.isLiked() ){
 				btn.setChecked( true );
 				btn.setBackgroundResource(R.drawable.button_like_clicked);
 			}
