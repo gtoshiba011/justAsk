@@ -91,13 +91,14 @@ public class MainPageDrawer extends Activity {
         ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#2F6877"));     
         ab.setBackgroundDrawable(colorDrawable);
     }
-
+    /* comment this line to prevent setting buttom on action bar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
         return super.onCreateOptionsMenu(menu);
     }
+    */
 
     /* Called whenever we call invalidateOptionsMenu() */
     @Override
