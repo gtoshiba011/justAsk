@@ -12,6 +12,7 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
 import question.Question;
+import survey.Survey;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -69,7 +70,7 @@ public class MainActivity extends SherlockFragmentActivity {
 	
 	// Survey list
 	protected SurveyDbHelper sdb;
-	List<Question> slist;
+	List<Survey> slist;
 	MyAdapter adapt;
 
 	@Override
@@ -302,11 +303,11 @@ public class MainActivity extends SherlockFragmentActivity {
 		if (s.equalsIgnoreCase("")) {
 			Toast.makeText(this, "enter the question description first!!",Toast.LENGTH_LONG);
 		} else {
-			Question question = new Question(0, s);
-			sdb.addSurvey(question);
+			Survey survey = new Survey(0, 0, s);
+			sdb.addSurvey(survey);
 			Log.d("survey list", "data added");
 			t.setText("");
-			adapt.add(question);
+			adapt.add(survey);
 			adapt.notifyDataSetChanged();
 		}
 	}
@@ -448,17 +449,17 @@ public class MainActivity extends SherlockFragmentActivity {
 	}
 	
 	// Adapter for survey list
-	private class MyAdapter extends ArrayAdapter<Question> {
+	private class MyAdapter extends ArrayAdapter<Survey> {
 
 		Context context;
-		List<Question> questionList = new ArrayList<Question>();
+		List<Survey> surveyList = new ArrayList<Survey>();
 		int layoutResourceId;
 
 		public MyAdapter(Context context, int layoutResourceId,
-				List<Question> objects) {			
+				List<Survey> objects) {			
 			super(context, layoutResourceId, objects);
 			this.layoutResourceId = layoutResourceId;
-			this.questionList = objects;
+			this.surveyList = objects;
 			this.context = context;
 		}
 
@@ -487,10 +488,10 @@ public class MainActivity extends SherlockFragmentActivity {
 					@Override
 					public void onClick(View v) {
 						CheckBox cb = (CheckBox) v;
-						Question changeQuestion = (Question) cb.getTag();
-						changeQuestion.setStatus(cb.isChecked());
+						Survey changeSurvey = (Survey) cb.getTag();
+						//changeSurvey.setStatus(cb.isChecked());
 						
-						View questionBlcok = (View)cb.getParent();
+						View surveyBlcok = (View)cb.getParent();
 						if( cb.isChecked() ){
 							//questionBlcok.setBackgroundResource(R.drawable.question_solved_shape);
 							//Button send = (Button)questionBlcok.findViewById(R.id.btnSend);
@@ -501,7 +502,7 @@ public class MainActivity extends SherlockFragmentActivity {
 							//cb.setChecked(true);
 						}
 						
-						sdb.updateSurveyStatus(changeQuestion);
+						sdb.updateSurveyStatus(changeSurvey);
 					}
 				});
 				
@@ -509,7 +510,7 @@ public class MainActivity extends SherlockFragmentActivity {
 					@Override
 					public void onClick(View v) {
 						Button tb = (Button) v;
-						Question changeQuestion = (Question) tb.getTag();
+						Survey changeSurvey = (Survey) tb.getTag();
 						/*
 						if( tb.isChecked() ){
 							changeQuestion.increasePopu(1);
@@ -521,7 +522,7 @@ public class MainActivity extends SherlockFragmentActivity {
 						}
 						*/
 						//tb.setText( String.valueOf(changeQuestion.getPopu()) );
-						sdb.updateSurveyStatus(changeQuestion);
+						sdb.updateSurveyStatus(changeSurvey);
 					}
 				});
 				
@@ -530,16 +531,16 @@ public class MainActivity extends SherlockFragmentActivity {
 				btn = (Button) convertView.getTag(R.id.second_tag);
 			}
 			
-			Question current = questionList.get(position);
-			chk.setText(current.getQuestionTitle());
-			chk.setChecked(current.isSolved());
+			Survey current = surveyList.get(position);
+			//chk.setText(current.getSurveyTitle());
+			//chk.setChecked(current.isSolved());
 			chk.setTag(current);
 			
 			//btn.setText( String.valueOf( current.getPopu() ) );
 			//btn.setChecked( false );
 			btn.setTag(current);
 			
-			Log.d("listener", String.valueOf(current.getQuestionID()));
+			//Log.d("listener", String.valueOf(current.getQuestionID()));
 			return convertView;
 		}
 
