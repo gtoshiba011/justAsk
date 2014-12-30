@@ -54,8 +54,25 @@
 	    android:layout_width="240dp"
 	    android:layout_height="match_parent"
 	    android:layout_gravity="start"
-	    android:background="@android:color/white"
-	    android:orientation="vertical"
-	    />
+	    android:background="@android:color/black"
+	    android:orientation="vertical">
+
+	    <TextView
+        android:id="@+id/developer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Deveplopers:\n
+       			Han, Cheng-Yu\n
+      			 Lin, Guo Yu\n
+       			Chen, Po-Hao\n
+       			Huang, Kuan-Yen\n
+       			Yu, Chien\n
+       			Chiang, Kuan-Ying\n
+       			Wang, Ying-Hsu\n
+       			Ho, Yu-Hao\n
+       			Chang, Chen-Hui\n"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#FFFFFF" />
+	</LinearLayout>
 
 </android.support.v4.widget.DrawerLayout>

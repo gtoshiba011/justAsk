@@ -90,8 +90,6 @@ public class MainPageDrawer extends Activity {
         ActionBar ab = getActionBar(); 
         ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#2F6877"));     
         ab.setBackgroundDrawable(colorDrawable);
-        
-        FragmentManager fm = getFragmentManager();
     }
 
     @Override
@@ -240,7 +238,9 @@ public class MainPageDrawer extends Activity {
         			{
         				String mString = editText_code.getText().toString();
         				Log.d("Enter",mString);
+        				//TODO check whether activity has been launched or not
         				((MainPageDrawer) getActivity()).launch(rootView);
+        				editText_code.setText("");
         			}
         		}
 
