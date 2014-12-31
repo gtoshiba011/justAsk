@@ -28,7 +28,7 @@ public class Manager extends Application{
     	_myEventTable = new Hashtable<Integer, Event>();
     	//_accountManager = new AccountManager();
     }
-    private Event getEvent(int eventID){
+    public Event getEvent(int eventID){
     	if(_myEventTable.containsKey(eventID))
     		return _myEventTable.get(eventID);
     	else 

@@ -42,6 +42,9 @@ public class Event {
     	_isClosed = isClosed;
     	return true;
     }
+    public SpeechInfo getSpeechInfo(){
+    	return _speechInfo;
+    }
     public int getID(){
     	return _eventID;
     }

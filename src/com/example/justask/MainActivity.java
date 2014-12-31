@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 import question.Question;
 import survey.Survey;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -68,7 +69,7 @@ public class MainActivity extends SherlockFragmentActivity {
 	// socket obj
 	private static WebSocketClient mWebSocketClient;
 	// application
-	private static Manager manager;
+	Manager manager;
 	
 	// Buttons
 	private Button btnEditSave, btnWebCode;
@@ -188,7 +189,10 @@ public class MainActivity extends SherlockFragmentActivity {
 						getSupportActionBar().setTitle( tabsTitles[i] );
 						dw.mutate().setColorFilter( 0xffffffff, Mode.MULTIPLY);		
 						viewPager.setCurrentItem(i, false);
-						if( i == 1 ){							
+						if( i == 0){
+							updateInfo();
+						}
+						else if( i == 1 ){							
 							updateQuestionlist(true, true);
 						}
 						else if( i == 2 ){
@@ -223,16 +227,18 @@ public class MainActivity extends SherlockFragmentActivity {
 		getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#2F6877")));
 		
 		
-		// join an event
-		boolean join_result = joinEvent(314024);
-		if(join_result==true){
-			Log.d("joinEvent","true");
-			EditText event_ID = (EditText) v.findViewById(R.id.EventID);
-			//event_ID.setText("708955");
-		}
-		else
-			MainActivity.this.finish(); //close Activity
+		// join an event again
+		joinEvent(manager.getJoinEventID());
+		Log.i("MainActivity:join event again","finished");
+		//updateInfo();
 	}
+	
+	@Override
+    protected void onStart() {
+        super.onStart();
+        //updateInfo();
+        Log.d("MainActivity:onStart","update info in textview finished");
+    }
 	
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -240,6 +246,17 @@ public class MainActivity extends SherlockFragmentActivity {
         inflater.inflate(R.menu.main_page_drawer, menu);
         return super.onCreateOptionsMenu(menu);
     }
+	
+	public void updateInfo(){
+		TextView event_id_text =  (TextView) findViewById(R.id.EventID);
+		TextView name_text =  (TextView) findViewById(R.id.txvPresenter);
+        TextView mail_text =  (TextView) findViewById(R.id.txvEmail);
+        TextView topic_text =  (TextView) findViewById(R.id.txvTopic);
+		event_id_text.setText(Integer.toString(manager.getJoinEventID()));
+		name_text.setText(manager.getEvent(manager.getJoinEventID()).getSpeechInfo().getName());
+        mail_text.setText(manager.getEvent(manager.getJoinEventID()).getSpeechInfo().getEmail());
+        topic_text.setText(manager.getEvent(manager.getJoinEventID()).getSpeechInfo().getTopic());
+	}
 
 	public void updateSurveylist(){
 		adapt = new MyAdapter(MainActivity.this, R.layout.survey_item_view, slist);
@@ -680,6 +697,7 @@ public class MainActivity extends SherlockFragmentActivity {
     		object.put("Identity", 1);
     		object.put("Event_Mission", 0);
     		object.put("Event_ID", eventID);
+    		sendMessage(object.toString());
     	} catch(JSONException e){
     		Log.e("MainActivity::joinEvent()", e.toString());
     	}
