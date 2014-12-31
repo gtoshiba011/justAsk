@@ -242,7 +242,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		ExpandableListView elv = (ExpandableListView)findViewById(R.id.mExpandableListView);
 		elv.setAdapter(adapter);
 		if( group0 ) elv.expandGroup(0);
-		if( group1 ) elv.expandGroup(1);		
+		if( group1 ) elv.expandGroup(1);
 	}
 	
 	@Override
