@@ -218,6 +218,16 @@ public class MainActivity extends SherlockFragmentActivity {
 		
 		// socket connection
 		connectWebSocket();
+		
+		// join an event
+		boolean join_result = joinEvent(314024);
+		if(join_result==true){
+			Log.d("joinEvent","true");
+			EditText event_ID = (EditText) v.findViewById(R.id.EventID);
+			//event_ID.setText("708955");
+		}
+		else
+			MainActivity.this.finish(); //close Activity
 	}
 	
 	@Override
@@ -257,7 +267,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		ExpandableListView elv = (ExpandableListView)findViewById(R.id.mExpandableListView);
 		elv.setAdapter(adapter);
 		if( group0 ) elv.expandGroup(0);
-		if( group1 ) elv.expandGroup(1);		
+		if( group1 ) elv.expandGroup(1);
 	}
 	
 	@Override
@@ -581,7 +591,7 @@ public class MainActivity extends SherlockFragmentActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                       // Log.i("webSocket", "onMessage: " + message);
+                        Log.i("webSocket", "onMessage: " + message);
                         // decode JSON Object
                         JSONObject object = null;
                         int event_mission;
