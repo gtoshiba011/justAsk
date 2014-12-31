@@ -68,17 +68,4 @@
         android:text="Event History"
         android:textColor="#FFFFFF" />
 
-    <Button
-        android:id="@+id/btnWebCode"
-        android:layout_width="200sp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="5dp"
-        android:background="@drawable/button_shape"
-        android:minHeight="30dp"
-        android:minWidth="0dp"
-        android:onClick="launch"
-        android:text="Launch an event"
-        android:textColor="#FFFFFF" />
-
 </LinearLayout>

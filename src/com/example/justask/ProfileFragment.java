@@ -20,6 +20,8 @@ public class ProfileFragment extends Fragment{
     	btnWebCode = (Button) rootView.findViewById(R.id.btnWebCode);
     	btnEditSave.setTag(0);
     	btnWebCode.setTag(0);
+    	btnEditSave.setVisibility(View.GONE);
+    	btnWebCode.setVisibility(View.GONE);
     	
     	return rootView;
     }

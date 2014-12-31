@@ -11,19 +11,20 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:layout_margin="10dp" >
 
         <ImageView
             android:id="@+id/imageView1"
-            android:layout_width="150dp"
+            android:layout_width="fill_parent"
             android:layout_height="150dp"
-            android:src="@drawable/ic_launcher" />
+            android:layout_weight="1"
+            android:src="@drawable/stevejobs" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
+            android:layout_width="fill_parent"
+            android:layout_height="150dp"
+            android:layout_weight="1"
             android:gravity="bottom"
             android:orientation="vertical" >
 
@@ -31,6 +32,7 @@
                 android:id="@+id/TextView01"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
                 android:text="Event ID"
                 android:textColor="#FFFFFF" />
 
@@ -38,9 +40,12 @@
                 android:id="@+id/EventID"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:padding="5dp"
                 android:text="B3UEK7"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp" />
+
         </LinearLayout>
     </LinearLayout>
 
@@ -76,14 +81,13 @@
             android:onClick="WebCode"
             android:text="Web Code"
             android:textColor="#FFFFFF" />
-
     </LinearLayout>
 
     <TextView
         android:id="@+id/TextView02"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_marginLeft="10dp"
         android:text="Presenter"
         android:textColor="#FFFFFF" />
 
@@ -91,7 +95,8 @@
         android:id="@+id/txvPresenter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_marginLeft="20dp"
+        android:padding="5dp"
         android:text="Steve Jobs"
         android:textColor="#FFFFFF"
         android:textSize="20sp" />
@@ -100,7 +105,8 @@
         android:id="@+id/TextView03"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
         android:text="Topic"
         android:textColor="#FFFFFF" />
 
@@ -108,8 +114,28 @@
         android:id="@+id/txvTopic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_marginLeft="20dp"
+        android:padding="5dp"
         android:text="The secret of iPhone"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/TextView04"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:text="E-mail"
+        android:textColor="#FFFFFF" />
+
+    <TextView
+        android:id="@+id/txvEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:padding="5dp"
+        android:text="sjobs@apple.com"
         android:textColor="#FFFFFF"
         android:textSize="20sp" />
 

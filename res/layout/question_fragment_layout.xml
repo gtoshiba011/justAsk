@@ -9,24 +9,29 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical" >
 
         <EditText
             android:id="@+id/edtQuestion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
             android:layout_weight="1"
-            android:ems="10" />
+            android:background="@drawable/edittext_shape"
+            android:ems="10"
+            android:minHeight="30dp"
+            android:padding="5dp" />
 
-        <Button
-            android:id="@+id/btnQuestion"
+        <ImageView
+            android:id="@+id/imageView1"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="10dp"
             android:layout_weight="1"
             android:onClick="addQuestionNow"
-            android:text="Add" />
+            android:src="@drawable/ic_plus_circle" />
 
     </LinearLayout>
     

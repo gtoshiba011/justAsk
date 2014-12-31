@@ -3,35 +3,31 @@ package com.example.justask;
 // import socket dictionary
 import java.net.URI;
 import java.net.URISyntaxException;
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.handshake.ServerHandshake;
-//global manager
-import com.example.justask.Manager;
-//json object
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import question.Question;
 import survey.Survey;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.PorterDuff.Mode;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
-//import android.view.Menu;
-//import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -40,6 +36,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TabHost;
@@ -50,9 +47,13 @@ import android.widget.ToggleButton;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+//global manager
+//json object
+//import android.view.Menu;
+//import android.view.MenuInflater;
 
 public class MainActivity extends SherlockFragmentActivity {
 
@@ -74,6 +75,7 @@ public class MainActivity extends SherlockFragmentActivity {
 
 	// Tabs titles
 	private String[] tabsTitles = {"Profile", "Questions", "Survey"};
+	private int[] tabDrawable = {R.drawable.ic_profile, R.drawable.ic_question, R.drawable.ic_survey};
 	
 	// Question list
 	//protected QuestionDbHelper qdb;
@@ -100,6 +102,11 @@ public class MainActivity extends SherlockFragmentActivity {
 
 		getSupportActionBar().setHomeButtonEnabled(true);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setIcon(android.R.color.transparent);
+		
+		//Event Tab Layout Initialization
+		final TabHost tabHost=(TabHost)findViewById(android.R.id.tabhost);
+		tabHost.setup();
 
 		mDrawerToggle = new ActionBarDrawerToggle(
 				this,
@@ -109,6 +116,7 @@ public class MainActivity extends SherlockFragmentActivity {
 				R.string.drawer_close) {
 			
 			public void onDrawerClosed(View view) {
+				getSupportActionBar().setTitle( tabsTitles[tabHost.getCurrentTab()] );
 				super.onDrawerClosed(view);
 			}
 			
@@ -120,16 +128,16 @@ public class MainActivity extends SherlockFragmentActivity {
 		};
 		
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-
-		//Event Tab Layout Initialization
-		final TabHost tabHost=(TabHost)findViewById(android.R.id.tabhost);
-		tabHost.setup();
 		
 		for (int i = 0; i < tabsTitles.length; i++) {
 			TabHost.TabSpec spec=tabHost.newTabSpec( tabsTitles[i] );
 			spec.setContent(R.id.fakeTabContent);
-			spec.setIndicator( tabsTitles[i] );
+			Drawable dwb = getResources().getDrawable( tabDrawable[i] );
+			if( i==0 )
+				dwb.mutate().setColorFilter( 0xffffffff, Mode.MULTIPLY);
+			else
+				dwb.mutate().setColorFilter( 0xffaaaaaa, Mode.MULTIPLY);
+			spec.setIndicator( null, dwb );
 			tabHost.addTab(spec);
 			//tabHost.getTabWidget().getChildAt(i).setVisibility(View.GONE);
 			tabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.parseColor("#f02F6877"));
@@ -137,6 +145,7 @@ public class MainActivity extends SherlockFragmentActivity {
 			t.setTextColor(Color.parseColor("#FFFFFF"));
 		}
 		//tabHost.getTabWidget().setStripEnabled( true );
+		getSupportActionBar().setTitle( tabsTitles[0] );
 		View v = (View) tabHost.getParent();
 		v.setBackgroundColor(Color.parseColor("#ff2F6877"));
 		
@@ -161,11 +170,17 @@ public class MainActivity extends SherlockFragmentActivity {
 		mAdapter = new TabsPagerAdapter(getSupportFragmentManager(), tabsTitles.length);
 		viewPager.setAdapter(mAdapter);
 		tabHost.setOnTabChangedListener(new OnTabChangeListener() {
-			//*
+
 			@Override
 			public void onTabChanged(String tabId) {
+				//ActionBar actionBar = getActionBar();
 				for (int i = 0; i < tabsTitles.length; i++) {
+					ImageView iv = (ImageView)tabHost.getTabWidget().getChildAt(i).findViewById(android.R.id.icon);
+					Drawable dw = getResources().getDrawable( tabDrawable[i] );
+					dw.mutate().setColorFilter( 0xffaaaaaa, Mode.MULTIPLY);	
 					if (tabId.equals(tabsTitles[i])) {
+						getSupportActionBar().setTitle( tabsTitles[i] );
+						dw.mutate().setColorFilter( 0xffffffff, Mode.MULTIPLY);		
 						viewPager.setCurrentItem(i, false);
 						if( i == 1 ){							
 							updateQuestionlist(true, true);
@@ -173,8 +188,8 @@ public class MainActivity extends SherlockFragmentActivity {
 						else if( i == 2 ){
 							updateSurveylist();
 						}
-						break;
 					}
+					iv.setImageDrawable(dw);
 				}
 			}
 		});
