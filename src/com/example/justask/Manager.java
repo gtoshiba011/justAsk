@@ -41,6 +41,9 @@ public class Manager extends Application{
     public void setEventID(int eventID){
     	_joinEventID = eventID;
     }
+    public int getJoinEventID(){
+    	return _joinEventID;
+    }
     //Server to client mission
     // M1
     public void modifiedEventInfo(int eventID, String name, String email, String topic){

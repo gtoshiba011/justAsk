@@ -58,7 +58,9 @@ public class MainPageDrawer extends Activity {
 	// socket obj
 	private static WebSocketClient mWebSocketClient;
 	// application
-	private Manager manager = (Manager)this.getApplication();
+	private static Manager manager;
+	//final Manager manager = (Manager) getApplicationContext();
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +68,8 @@ public class MainPageDrawer extends Activity {
 
 		// socket connection
 		connectWebSocket();
-        
+		manager = (Manager) getApplicationContext();
+		
         mTitle = mDrawerTitle = getTitle();
         mDrawerTitles = getResources().getStringArray(R.array.drawer_item_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -116,7 +119,7 @@ public class MainPageDrawer extends Activity {
     }
 	// *** socket communication start ***
     private void connectWebSocket() {
-        Log.i("webSocket", "MainPageDrawer connect web socket");
+    	Log.i("MainPageDrawer::connectWebSocket()", "Connect web socket...");
         URI uri;
         try {
         	Log.i("webSocket", "start new uri");
@@ -126,7 +129,7 @@ public class MainPageDrawer extends Activity {
             e.printStackTrace();
             return;
         }
-        Log.i("webSocket", "new webSocket");
+        Log.i("MainPageDrawer::connectWebSocket()", "Connect success!");
         mWebSocketClient = new WebSocketClient(uri) {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
@@ -152,20 +155,23 @@ public class MainPageDrawer extends Activity {
 									Log.i("MainPageDrawer::case0", object.toString());
 									break;
 								case 10:// create event;
-									//manager.createEvent(object.getInt("Event_ID"));
+									manager.createEvent(object.getInt("Event_ID"));
+									Log.i("MainPageDrawer::case10", "finisih create event");
 									break;
 								case 11:// when join event and update the event
-									//manager.updateEventInfo(object.getInt("Event_ID"), object.getString("Name"), object.getString("Email"), object.getString("Topic"), object.getJSONArray("SurveyList"), object.getJSONArray("QuestionList"));
+									manager.updateEventInfo(object.getInt("Event_ID"), object.getString("Name"), object.getString("Email"), object.getString("Topic"), object.getJSONArray("SurveyList"), object.getJSONArray("QuestionList"));
+									Log.i("MainPageDrawer::case11", "finisih update event");
 									Intent intent = new Intent();
 									intent.setClass(MainPageDrawer.this, MainActivity.class);
 									startActivity(intent);
 									break;
 								default:
-									Log.e("socket run()", "switch" + Integer.toString(event_mission));
+									Log.e("MainPageDrawer::case default", "Wrong case " + Integer.toString(event_mission));
 									break;
 							}
 						} catch (JSONException e) {
-							Log.e("MainPageDrawer", "Create object error");
+							e.printStackTrace();
+							Log.e("MainPageDrawer::JSONObject", "JSONObject error");
 						}
                     }
                 });
@@ -185,7 +191,7 @@ public class MainPageDrawer extends Activity {
     }
     public static void sendMessage(String sendMessage) {
         mWebSocketClient.send(sendMessage);
-        Log.i("webSocket", "success send message: " + sendMessage);
+        Log.i("MainPageDrawer::sendMessage()", "success send message: " + sendMessage);
     }
     // *** end of socket communication ***
     /* comment this line to prevent setting buttom on action bar
@@ -243,7 +249,8 @@ public class MainPageDrawer extends Activity {
 
     private void selectItem(int position) {
         // update the main content by replacing fragments
-        Fragment fragment = new DrawerItemFragment(manager);
+        //Fragment fragment = new DrawerItemFragment(manager);
+        Fragment fragment = new DrawerItemFragment();
         Bundle args = new Bundle();
         args.putInt(DrawerItemFragment.ITEM_NUMBER, position);
         fragment.setArguments(args);
@@ -310,10 +317,11 @@ public class MainPageDrawer extends Activity {
      */
     public static class DrawerItemFragment extends Fragment {
         public static final String ITEM_NUMBER = "item_number";
-        Manager manager;
+        //Manager manager;
 
-        public DrawerItemFragment(Manager _manager) {
-        	manager = _manager;
+        //public DrawerItemFragment(Manager _manager) {
+        public DrawerItemFragment() {
+        	//manager = _manager;
             // Empty constructor required for fragment subclasses
         }
 
@@ -372,7 +380,8 @@ public class MainPageDrawer extends Activity {
     		object.put("Event_ID", eventID);
     		sendMessage(object.toString());
     	} catch(JSONException e){
-    		Log.e("MainActivity::joinEvent()", e.toString());
+    		e.printStackTrace();
+    		Log.e("MainPageDrawer::JSONObject", e.toString());
     	}
         return true;
     }

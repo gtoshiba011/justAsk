@@ -66,9 +66,9 @@ public class MainActivity extends SherlockFragmentActivity {
 	private ActionBar actionBar;
 	
 	// socket obj
-	private WebSocketClient mWebSocketClient;
+	private static WebSocketClient mWebSocketClient;
 	// application
-	private Manager manager = (Manager)this.getApplication();
+	private static Manager manager;
 	
 	// Buttons
 	private Button btnEditSave, btnWebCode;
@@ -93,6 +93,12 @@ public class MainActivity extends SherlockFragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		
+		manager = (Manager) getApplicationContext();
+		Log.i("manager", Integer.toString(manager.getJoinEventID()));
+		// socket connection
+		connectWebSocket();
 		
 		// Drawer
 		mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
@@ -216,8 +222,6 @@ public class MainActivity extends SherlockFragmentActivity {
 		
 		getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#2F6877")));
 		
-		// socket connection
-		connectWebSocket();
 		
 		// join an event
 		boolean join_result = joinEvent(314024);
@@ -567,7 +571,7 @@ public class MainActivity extends SherlockFragmentActivity {
 	}
 	// *** socket communication start ***
     private void connectWebSocket() {
-        Log.i("webSocket", "MainActivity connect web socket");
+    	Log.i("MainActivity::connectWebSocket()", "Connect web socket...");
         URI uri;
         try {
         	Log.i("webSocket", "start new uri");
@@ -577,7 +581,7 @@ public class MainActivity extends SherlockFragmentActivity {
             e.printStackTrace();
             return;
         }
-        
+        Log.i("MainActivity::connectWebSocket()", "Connect success!");
         mWebSocketClient = new WebSocketClient(uri) {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
@@ -600,41 +604,50 @@ public class MainActivity extends SherlockFragmentActivity {
 							event_mission = (Integer)object.get("Event_Mission");
 							switch(event_mission){
 								case 0:	//Request Reply
-									Log.i("MainPageDrawer::case0", object.toString());
+									Log.i("MainActivity::case0", object.toString());
 									break;
 								case 1: //update event information
 									manager.modifiedEventInfo(object.getInt("Event_ID"), object.getString("Name"), object.getString("Email"), object.getString("Topic"));
+									Log.i("MainActivity::case1", "finisih update event info");
 									break;
 								case 2: //create survey
 									if(object.getInt("Survey_Type") == 2)
 										manager.createSurvey(object.getInt("Event_ID"), object.getInt("Survey_ID"), object.getInt("Survey_Type"), object.getString("Survey_Topic"), object.getJSONArray("Choice"));
 									else
 										manager.createSurvey(object.getInt("Event_ID"), object.getInt("Survey_ID"), object.getInt("Survey_Type"), object.getString("Survey_Topic"));
+									Log.i("MainActivity::case2", "finisih create survey");
 									break;
 								case 4: //create question
 									manager.createQuestion(object.getInt("Event_ID"), object.getInt("Question_ID"), object.getString("Question_Topic"));
+									Log.i("MainActivity::case4", "finisih create question");
 									break;
 								case 5: //increase question popularity
 									manager.incrPopu(object.getInt("Event_ID"), object.getInt("Question_ID"));
+									Log.i("MainActivity::case5", "finisih increase question popularity");
 									break;
 								case 6: //decrease question popularity
 									manager.decrPopu(object.getInt("Event_ID"), object.getInt("Question_ID"));
+									Log.i("MainActivity::case6", "finisih decrease question popularity");
 									break;
 								case 7: //change question status
 									manager.chagneQuestionStatus(object.getInt("Event_ID"), object.getInt("Question_ID"), object.getString("Status"));
+									Log.i("MainActivity::case7", "finisih change question status");
 									break;
 								case 8: //change survey status
 									manager.changeSurveyStatus(object.getInt("Event_ID"), object.getInt("Survey_ID"), object.getString("Status"));
+									Log.i("MainActivity::case8", "finisih change survey status");
 									break;
 								case 9: //close the event, can't ask question, survey...etc
 									manager.closeEvent(object.getInt("Event_ID"));
+									Log.i("MainActivity::case9", "finisih close the event");
 									break;
 								default:
-									Log.e("socket run()", "switch" + Integer.toString(event_mission));
+									Log.e("MainActivity::case default", "Wrong case " + Integer.toString(event_mission));
 									break;
 							}
 						} catch (JSONException e) {
-							Log.e("MainPageDrawer", "Create object error");
+							e.printStackTrace();
+							Log.e("MainPageDrawer::JSONObject", "JSONObject error");
 						}
                     }
                 });
@@ -654,7 +667,7 @@ public class MainActivity extends SherlockFragmentActivity {
     }
     public void sendMessage(String sendMessage) {
         mWebSocketClient.send(sendMessage);
-        Log.i("webSocket", "send message: " + sendMessage);
+        Log.i("MainActivity::sendMessage()", "success send message: " + sendMessage);
     }
     // end of socket communication
     
