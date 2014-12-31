@@ -203,6 +203,16 @@ public class MainActivity extends SherlockFragmentActivity {
 		
 		// socket connection
 		connectWebSocket();
+		
+		// join an event
+		boolean join_result = joinEvent(314024);
+		if(join_result==true){
+			Log.d("joinEvent","true");
+			EditText event_ID = (EditText) v.findViewById(R.id.EventID);
+			//event_ID.setText("708955");
+		}
+		else
+			MainActivity.this.finish(); //close Activity
 	}
 	
 	@Override
@@ -566,7 +576,7 @@ public class MainActivity extends SherlockFragmentActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                       // Log.i("webSocket", "onMessage: " + message);
+                        Log.i("webSocket", "onMessage: " + message);
                         // decode JSON Object
                         JSONObject object = null;
                         int event_mission;

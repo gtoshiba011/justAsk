@@ -65,7 +65,7 @@ public class Event {
     		try {
 				questionObject = questionJSONArray.getJSONObject(count);
 				topic = questionObject.getString("Question_Topic");			
-				String str = questionObject.getString("Statue");
+				String str = questionObject.getString("Status");
 				if(str == "un-solved")
 					isSolved = false;
 				else if(str == "solved")

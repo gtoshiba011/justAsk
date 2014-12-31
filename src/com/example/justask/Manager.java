@@ -38,6 +38,9 @@ public class Manager extends Application{
     	_myEventTable.put(eventID, event);
         return true;
     }
+    public void setEventID(int eventID){
+    	_joinEventID = eventID;
+    }
     //Server to client mission
     // M1
     public void modifiedEventInfo(int eventID, String name, String email, String topic){

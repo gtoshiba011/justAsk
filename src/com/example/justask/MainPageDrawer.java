@@ -14,6 +14,8 @@ import org.json.JSONObject;
 //Application
 import com.example.justask.Manager;
 
+import event.Event;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
@@ -54,7 +56,7 @@ public class MainPageDrawer extends Activity {
     private String[] mDrawerTitles;
     
 	// socket obj
-	private WebSocketClient mWebSocketClient;
+	private static WebSocketClient mWebSocketClient;
 	// application
 	private Manager manager = (Manager)this.getApplication();
     @Override
@@ -150,10 +152,13 @@ public class MainPageDrawer extends Activity {
 									Log.i("MainPageDrawer::case0", object.toString());
 									break;
 								case 10:// create event;
-									manager.createEvent(object.getInt("Event_ID"));
+									//manager.createEvent(object.getInt("Event_ID"));
 									break;
 								case 11:// when join event and update the event
-									manager.updateEventInfo(object.getInt("Event_ID"), object.getString("Name"), object.getString("Email"), object.getString("Topic"), object.getJSONArray("SurveyList"), object.getJSONArray("QuestionList"));
+									//manager.updateEventInfo(object.getInt("Event_ID"), object.getString("Name"), object.getString("Email"), object.getString("Topic"), object.getJSONArray("SurveyList"), object.getJSONArray("QuestionList"));
+									Intent intent = new Intent();
+									intent.setClass(MainPageDrawer.this, MainActivity.class);
+									startActivity(intent);
 									break;
 								default:
 									Log.e("socket run()", "switch" + Integer.toString(event_mission));
@@ -178,7 +183,7 @@ public class MainPageDrawer extends Activity {
         };
         mWebSocketClient.connect();
     }
-    public void sendMessage(String sendMessage) {
+    public static void sendMessage(String sendMessage) {
         mWebSocketClient.send(sendMessage);
         Log.i("webSocket", "success send message: " + sendMessage);
     }
@@ -238,7 +243,7 @@ public class MainPageDrawer extends Activity {
 
     private void selectItem(int position) {
         // update the main content by replacing fragments
-        Fragment fragment = new DrawerItemFragment();
+        Fragment fragment = new DrawerItemFragment(manager);
         Bundle args = new Bundle();
         args.putInt(DrawerItemFragment.ITEM_NUMBER, position);
         fragment.setArguments(args);
@@ -305,8 +310,10 @@ public class MainPageDrawer extends Activity {
      */
     public static class DrawerItemFragment extends Fragment {
         public static final String ITEM_NUMBER = "item_number";
+        Manager manager;
 
-        public DrawerItemFragment() {
+        public DrawerItemFragment(Manager _manager) {
+        	manager = _manager;
             // Empty constructor required for fragment subclasses
         }
 
@@ -330,9 +337,8 @@ public class MainPageDrawer extends Activity {
         			if(editText_code.getText().length()==6)
         			{
         				String mString = editText_code.getText().toString();
-        				Log.d("Enter",mString);
-        				//TODO check whether activity has been launched or not
-        				((MainPageDrawer) getActivity()).launch(rootView);
+        				joinEvent(Integer.valueOf(mString));
+        				Log.d("joinEvent",mString);
         				editText_code.setText("");
         			}
         		}
@@ -357,12 +363,14 @@ public class MainPageDrawer extends Activity {
     // *** mission function ***    
     // for audience 
     //mission 0
-    public boolean joinEvent(int eventID){
+    public static boolean joinEvent(int eventID){
     	JSONObject object = new JSONObject();
+    	JSONObject decode_object;
     	try{
     		object.put("Identity", 1);
     		object.put("Event_Mission", 0);
     		object.put("Event_ID", eventID);
+    		sendMessage(object.toString());
     	} catch(JSONException e){
     		Log.e("MainActivity::joinEvent()", e.toString());
     	}
