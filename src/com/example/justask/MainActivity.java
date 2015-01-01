@@ -78,6 +78,7 @@ public class MainActivity extends SherlockFragmentActivity {
 	
 	// Buttons
 	private Button btnEditSave, btnWebCode;
+	private Button addQuestionBut;
 
 	// Tabs titles
 	private String[] tabsTitles = {"Profile", "Questions", "Survey"};
@@ -98,6 +99,7 @@ public class MainActivity extends SherlockFragmentActivity {
 	//protected SurveyDbHelper sdb;
 	List<Survey> slist;
 	MyAdapter adapt;
+	List<Survey> surveyList;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -167,14 +169,15 @@ public class MainActivity extends SherlockFragmentActivity {
 		v.setBackgroundColor(Color.parseColor("#ff2F6877"));
 		
 		// Set question list titles
-		group = new ArrayList<Map<String, String>>();
+		/*group = new ArrayList<Map<String, String>>();
 		Map<String, String> unsolved = new HashMap<String, String>();
 		unsolved.put("group", "Unsolved");
 		group.add(unsolved);
 		Map<String, String> solved = new HashMap<String, String>();
 		solved.put("group", "Solved");
-		group.add(solved);
+		group.add(solved);*/
 		
+		// Question Tab
 		groups = new ArrayList<Map<String, String>>();
 		group_unSloved = new HashMap<String, String>();
 		group_sloved = new HashMap<String, String>();
@@ -183,9 +186,11 @@ public class MainActivity extends SherlockFragmentActivity {
 		groups.add(group_unSloved);
 		groups.add(group_sloved);
 		
+		//addQuestionBut = (Button)findViewById()
+		
 		// Allocate address to question list
-		qlist = new ArrayList<Map<String,Question>>();
-		child = new ArrayList<List<Map<String,Question>>>();
+		/*qlist = new ArrayList<Map<String,Question>>();
+		child = new ArrayList<List<Map<String,Question>>>();*/
 
 		// Allocate address to survey list
 		slist = new ArrayList<Survey>();
@@ -278,6 +283,13 @@ public class MainActivity extends SherlockFragmentActivity {
 	}
 
 	public void updateSurveylist(){
+		surveyList = new ArrayList<Survey>();
+		Hashtable<Integer, Survey> surveyHash = manager.getEvent(manager.getJoinEventID()).getSurveyManager().getServeyTable();
+		Enumeration<Integer> enumKey = surveyHash.keys();
+		while(enumKey.hasMoreElements()){
+			Integer key = enumKey.nextElement();
+			surveyList.add(surveyHash.get(key));
+		}
 		adapt = new MyAdapter(MainActivity.this, R.layout.survey_item_view, slist);
 		ListView listTask = (ListView) findViewById(R.id.listView1);
 		listTask.setAdapter(adapt);

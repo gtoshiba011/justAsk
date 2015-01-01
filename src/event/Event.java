@@ -48,7 +48,7 @@ public class Event {
     public QuestionManager getQuestionManager(){
     	return _quesManager;
     }
-    public SurveyManager getSurvManager(){
+    public SurveyManager getSurveyManager(){
     	return _survManager;
     }
     public int getID(){

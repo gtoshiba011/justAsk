@@ -44,11 +44,5 @@ public class Survey {
     /*public boolean receiveAndParseResult(){
         //TODO
         return false;
-    }
-
-    public boolean replyResult(){
-        //TODO
-    	//send result to server
-        return false;
     }*/
 }

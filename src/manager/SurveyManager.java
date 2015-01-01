@@ -18,6 +18,9 @@ public class SurveyManager {
     private Survey getSurvey(int ID){
     	return _mySurveyTable.get(ID);
     }
+    public Hashtable<Integer, Survey> getServeyTable(){
+    	return _mySurveyTable;
+    }
     public boolean createSurvey(int ID, int status, String topic, int surveyType, JSONArray choiceJSONArray){
     	Survey survey;
     	switch(surveyType){
