@@ -55,40 +55,29 @@ public class SurveyManager {
     	if( getSurvey(SID).getStatus() == status)
     		return true;
     	if(status == 1){ //initial
-    		//do nothing
+    		//TODO
+    		return getSurvey(SID).changeStatus(status);
     	}
     	else if(status == 2){ //start
-    		//do nothing
+    		//TODO
+    		return getSurvey(SID).changeStatus(status);
     	}
     	else if(status == 3){ //stop
     		//close survey
-    		closeSurvey(SID);
+    		return closeSurvey(SID);
     	}
-        return getSurvey(SID).changeStatus(status);
+    	else{
+    		Log.e("SurveyManager::changeSurveyStatus()", "else ERROR");
+    		return false;
+    	}
     }  
-    public void closeSurvey(int SID){
+    public boolean closeSurvey(int SID){
     	deleteFromSurveyList(SID);
+    	return true;
     }
     
-    
-    public boolean updateSurveyList(){
-        //TODO
-    	//connect to server and update all table
-        return false;
-    }
     public void sortSurveyList(){
         //TODO
     	//how to sort list
     }
-
-    public void showSurveyList(){
-        //TODO
-    	//activity
-    }
-
-    public void broadcastSurvey(int surveyID){
-        //TODO
-    	//form server
-    }
-
 }

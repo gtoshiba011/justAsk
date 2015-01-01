@@ -31,6 +31,15 @@ public class QuestionManager {
     public Question getQuestion(int quesID){
     	return _allTable.get(quesID);
     }
+    public Hashtable<Integer, Question> getAllTable(){
+    	return _allTable;
+    }
+    public Hashtable<Integer, Question> getUnSolvedTable(){
+    	return _unSolvedTable;
+    }
+    public Hashtable<Integer, Question> getSolvedTable(){
+    	return _solvedTable;
+    }
     public boolean changeStutus(int quesID, boolean isSolved){
     	if( getQuestion(quesID).isSolved() == isSolved)
     		return true;

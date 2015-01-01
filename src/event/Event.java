@@ -45,6 +45,12 @@ public class Event {
     public SpeechInfo getSpeechInfo(){
     	return _speechInfo;
     }
+    public QuestionManager getQuestionManager(){
+    	return _quesManager;
+    }
+    public SurveyManager getSurvManager(){
+    	return _survManager;
+    }
     public int getID(){
     	return _eventID;
     }
@@ -52,7 +58,7 @@ public class Event {
     	return _isClosed;
     }
     public boolean exit(){
-        modifyStatus(false);
+        modifyStatus(true);
         return true;
     }
     // Question
@@ -67,19 +73,22 @@ public class Event {
     	while(count != questionSize){
     		try {
 				questionObject = questionJSONArray.getJSONObject(count);
+				ID = count;
 				topic = questionObject.getString("Question_Topic");			
 				String str = questionObject.getString("Status");
-				if(str == "un-solved")
+				if(str.equals("un-solved"))
 					isSolved = false;
-				else if(str == "solved")
+				else if(str.equals("solved"))
 					isSolved = true;
 				else
-					Log.i("updateQuestionInfo", "ERROR");
+					Log.e("updateQuestionInfo", "else ERROR");
 				popu = questionObject.getInt("Question_Popular");
 			} catch (JSONException e) {
-				Log.i("updateQuestionInfo", "ERROR");
+				e.printStackTrace();
+				Log.e("updateQuestionInfo", "ERROR");
 				return false;
 			}
+    		Log.i("updateQuestionInfo", "ID: " + Integer.toString(ID) + " topic: " + topic + " isSolved: " + Boolean.toString(isSolved) + " popu: " + Integer.toString(popu) );
         	_quesManager.createQuestion(ID, topic, isSolved, popu);
     		// update count
         	count++;
@@ -111,21 +120,23 @@ public class Event {
     	while ( surveySize != count){
 			try {
 				surveyObject = surveyJSONArray.getJSONObject(count);
+				ID = count;
 	    		String str = surveyObject.getString("Status");
-	    		if(str == "initial")
+	    		if(str.equals("initial"))
 	    			status = 1;
-	    		else if(str == "start")
+	    		else if(str.equals("start"))
 	    			status = 2;
-	    		else if(str == "stop")
+	    		else if(str.equals("stop"))
 	    			status = 3;
 	    		else
-					Log.i("updateSurveyInfo", "ERROR");
+					Log.e("updateSurveyInfo", "else ERROR");
 	    		topic =  surveyObject.getString("Survey_Topic");
 	    		type = surveyObject.getInt("Survey_Type");
 	    		if(type == 2)
 	    			choiceJSONArray =  surveyObject.getJSONArray("Choice");
 			} catch (JSONException e) {
-				Log.i("updateSurveyInfo", "ERROR");
+				e.printStackTrace();
+				Log.e("updateSurveyInfo", "ERROR");
 				return false;
 			}
     		_survManager.createSurvey(ID, status, topic, type, choiceJSONArray);

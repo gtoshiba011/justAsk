@@ -13,10 +13,10 @@ public class Question {
     
     //constructor
     public Question(int ID, String topic, boolean isSolved, int popu) {
-    	_ID = 0;
+    	_ID = ID;
         _topic = topic;
-        _isSolved = false;
-        _popu = 0;
+        _isSolved = isSolved;
+        _popu = popu;
         _like = false;
     }
     // function

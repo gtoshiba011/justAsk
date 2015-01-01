@@ -163,6 +163,7 @@ public class MainPageDrawer extends Activity {
 									Log.i("MainPageDrawer::case11", "finisih update event");
 									Intent intent = new Intent();
 									intent.setClass(MainPageDrawer.this, MainActivity.class);
+									mWebSocketClient.close();
 									startActivity(intent);
 									break;
 								default:

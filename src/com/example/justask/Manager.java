@@ -71,35 +71,39 @@ public class Manager extends Application{
     }
     // M7
     public boolean chagneQuestionStatus(int eventID, int QID, String status){
-    	boolean isSolved = (status == "solved") ? true : false;
+    	boolean isSolved = status.equals("solved") ? true : false;
     	return getEvent(eventID).changeQuestionStatus(QID, isSolved);
     }
     // M8
     public boolean changeSurveyStatus(int eventID, int SID, String status){
     	int st = 0;
-    	if(status == "initial")
+    	if(status.equals("initial"))
     		st = 1;
-    	else if(status == "start")
+    	else if(status.equals("start"))
     		st = 2;
-    	else if(status == "stop")
+    	else if(status.equals("stop"))
     		st = 3;
+    	else{
+    		Log.e("Manager::changeSurveyStatus()", "else ERROR");
+    		return false;
+    	}
     	return getEvent(eventID).changeSurveyStatus(SID, st);
     }
     // M9
     public boolean closeEvent(int eventID){
-    	if(getEvent(eventID).getStatus() == false){
-    		Log.e("Manager", "clsoeEvent");
-    		return false;
-    	}
-    	else{
+    	if(!getEvent(eventID).getStatus()){
         	_joinEventID = 0;
     		return getEvent(eventID).exit();
+    	}
+    	else{
+    		Log.e("Manager::clsoeEvent()", "else ERROR");
+    		return false;
     	}
     }
     // M10
     public boolean createEvent(int eventID){
     	if(_myEventTable.containsKey(eventID)){
-    		Log.e("Manager","createEvent");
+    		Log.e("Manager::createEvent()","");
     		return false;
     	}
     	Event event = new Event(eventID);

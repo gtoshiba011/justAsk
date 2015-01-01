@@ -4,7 +4,9 @@ package com.example.justask;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +68,10 @@ public class MainActivity extends SherlockFragmentActivity {
 	private TabsPagerAdapter mAdapter;
 	private ActionBar actionBar;
 	
-	// socket obj
+	//private ExpandableListView elv = (ExpandableListView)findViewById(R.id.mExpandableListView);
+	private ExpandableListView elv;
+	
+	// socket object
 	private static WebSocketClient mWebSocketClient;
 	// application
 	Manager manager;
@@ -85,6 +90,10 @@ public class MainActivity extends SherlockFragmentActivity {
 	List<List<Map<String, Question>>> child;
 	ExpandableAdapter adapter;
 	
+	List<Map<String, String>> groups;
+	Map<String, String> group_unSloved;
+	Map<String, String> group_sloved;
+
 	// Survey list
 	//protected SurveyDbHelper sdb;
 	List<Survey> slist;
@@ -93,11 +102,12 @@ public class MainActivity extends SherlockFragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.activity_main);		
 		
-		
+		//manager
 		manager = (Manager) getApplicationContext();
-		Log.i("manager", Integer.toString(manager.getJoinEventID()));
+		Log.i("MainActivity::manager", Integer.toString(manager.getJoinEventID()));
+		
 		// socket connection
 		connectWebSocket();
 		
@@ -165,10 +175,18 @@ public class MainActivity extends SherlockFragmentActivity {
 		solved.put("group", "Solved");
 		group.add(solved);
 		
+		groups = new ArrayList<Map<String, String>>();
+		group_unSloved = new HashMap<String, String>();
+		group_sloved = new HashMap<String, String>();
+		group_unSloved.put("group", "Un-Solved Question");
+		group_sloved.put("group", "Solved Question");
+		groups.add(group_unSloved);
+		groups.add(group_sloved);
+		
 		// Allocate address to question list
 		qlist = new ArrayList<Map<String,Question>>();
 		child = new ArrayList<List<Map<String,Question>>>();
-		
+
 		// Allocate address to survey list
 		slist = new ArrayList<Survey>();
 		
@@ -214,23 +232,24 @@ public class MainActivity extends SherlockFragmentActivity {
 			@Override
 			public void onPageScrolled(int arg0, float arg1, int arg2) {
 				// TODO Auto-generated method stub
-				
 			}
 			
 			@Override
 			public void onPageScrollStateChanged(int arg0) {
 				// TODO Auto-generated method stub
-				
 			}
 		});
 		
 		getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#2F6877")));
 		
-		
 		// join an event again
 		joinEvent(manager.getJoinEventID());
-		Log.i("MainActivity:join event again","finished");
+		Log.i("MainActivity::onCreate()", "join event again, and finished");
+		
+		// update information
 		//updateInfo();
+		//updateQuestionlist(elv.isGroupExpanded(0), elv.isGroupExpanded(1));
+		//updateSurveylist();
 	}
 	
 	@Override
@@ -266,7 +285,7 @@ public class MainActivity extends SherlockFragmentActivity {
 	
 	public void updateQuestionlist( boolean group0, boolean group1){
 
-		child = new ArrayList<List<Map<String,Question>>>();
+		/*child = new ArrayList<List<Map<String,Question>>>();
 		List<Map<String, Question>> unsolved, solved;
 		unsolved = new ArrayList<Map<String, Question>>();
 		solved = new ArrayList<Map<String, Question>>();
@@ -281,11 +300,40 @@ public class MainActivity extends SherlockFragmentActivity {
 				unsolved.add(temp);
 		}
 		child.add(unsolved);
-		child.add(solved);
+		child.add(solved);*/
 		
-		adapter = new ExpandableAdapter(MainActivity.this, group, child);
+		//group_unSloved's children
+		List<Map<String, Question>> child_unSloved = new ArrayList<Map<String, Question>>();
+		Hashtable<Integer, Question> unSolvedTable = manager.getEvent(manager.getJoinEventID()).getQuestionManager().getUnSolvedTable();
+		Enumeration<Integer> enumKey = unSolvedTable.keys();
+		while(enumKey.hasMoreElements()){
+			Map<String, Question> data = new HashMap<String, Question>();
+			Integer key = enumKey.nextElement();
+			Question question = unSolvedTable.get(key);
+			data.put("child", question);
+			child_unSloved.add(data);
+		}
 		
-		ExpandableListView elv = (ExpandableListView)findViewById(R.id.mExpandableListView);
+		//group_sloved's children
+		List<Map<String, Question>> child_sloved = new ArrayList<Map<String, Question>>();
+		Hashtable<Integer, Question> solvedTable = manager.getEvent(manager.getJoinEventID()).getQuestionManager().getSolvedTable();
+		enumKey = solvedTable.keys();
+		while(enumKey.hasMoreElements()){
+			Map<String, Question> data = new HashMap<String, Question>();
+			Integer key = enumKey.nextElement();
+			Question question = solvedTable.get(key);
+			data.put("child", question);
+			child_unSloved.add(data);
+		}
+		
+		// add child_unSolved, child_solved to childs
+		ArrayList<List<Map<String,Question>>> childs = new ArrayList<List<Map<String,Question>>>();
+		childs.add(child_unSloved);
+		childs.add(child_sloved);
+				
+		adapter = new ExpandableAdapter(MainActivity.this, groups, childs);
+
+		elv = (ExpandableListView)findViewById(R.id.mExpandableListView);
 		elv.setAdapter(adapter);
 		if( group0 ) elv.expandGroup(0);
 		if( group1 ) elv.expandGroup(1);
@@ -375,7 +423,6 @@ public class MainActivity extends SherlockFragmentActivity {
 			child.get(0).add(newQuestion);
 			adapter.notifyDataSetChanged();
 		}
-		
 	}
 
 	public void addSurveyNow(View v) {
@@ -476,6 +523,8 @@ public class MainActivity extends SherlockFragmentActivity {
 				btn.setChecked( false );
 				btn.setBackgroundResource(R.drawable.button_like_unclicked);
 			}
+			//Log.i("MainActivity::Tab", "Q ID: " + String.valueOf(question.getQuestionID()) + " popu: " + String.valueOf(question.getPopu()));
+			
 			btn.setText( String.valueOf(question.getPopu()) );
 			btn.setTag(question);
 			
@@ -625,9 +674,11 @@ public class MainActivity extends SherlockFragmentActivity {
 									break;
 								case 1: //update event information
 									manager.modifiedEventInfo(object.getInt("Event_ID"), object.getString("Name"), object.getString("Email"), object.getString("Topic"));
+									updateInfo();
 									Log.i("MainActivity::case1", "finisih update event info");
 									break;
 								case 2: //create survey
+									//TODO
 									if(object.getInt("Survey_Type") == 2)
 										manager.createSurvey(object.getInt("Event_ID"), object.getInt("Survey_ID"), object.getInt("Survey_Type"), object.getString("Survey_Topic"), object.getJSONArray("Choice"));
 									else
@@ -636,30 +687,39 @@ public class MainActivity extends SherlockFragmentActivity {
 									break;
 								case 4: //create question
 									manager.createQuestion(object.getInt("Event_ID"), object.getInt("Question_ID"), object.getString("Question_Topic"));
+									updateQuestionlist(true, elv.isGroupExpanded(1));
 									Log.i("MainActivity::case4", "finisih create question");
 									break;
 								case 5: //increase question popularity
 									manager.incrPopu(object.getInt("Event_ID"), object.getInt("Question_ID"));
+									updateQuestionlist(true, elv.isGroupExpanded(1));
 									Log.i("MainActivity::case5", "finisih increase question popularity");
 									break;
 								case 6: //decrease question popularity
 									manager.decrPopu(object.getInt("Event_ID"), object.getInt("Question_ID"));
+									updateQuestionlist(true, elv.isGroupExpanded(1));
 									Log.i("MainActivity::case6", "finisih decrease question popularity");
 									break;
 								case 7: //change question status
 									manager.chagneQuestionStatus(object.getInt("Event_ID"), object.getInt("Question_ID"), object.getString("Status"));
+									updateQuestionlist(elv.isGroupExpanded(0), elv.isGroupExpanded(1));
 									Log.i("MainActivity::case7", "finisih change question status");
 									break;
 								case 8: //change survey status
+									//TODO
 									manager.changeSurveyStatus(object.getInt("Event_ID"), object.getInt("Survey_ID"), object.getString("Status"));
 									Log.i("MainActivity::case8", "finisih change survey status");
 									break;
 								case 9: //close the event, can't ask question, survey...etc
+									//TODO
 									manager.closeEvent(object.getInt("Event_ID"));
 									Log.i("MainActivity::case9", "finisih close the event");
 									break;
 								default:
 									Log.e("MainActivity::case default", "Wrong case " + Integer.toString(event_mission));
+									//updateInfo();
+									//updateQuestionlist(true, true);
+									//updateSurveylist();
 									break;
 							}
 						} catch (JSONException e) {
