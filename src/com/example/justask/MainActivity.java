@@ -547,15 +547,16 @@ public class MainActivity extends SherlockFragmentActivity {
 			
 			btn.setText( String.valueOf(question.getPopu()) );
 			btn.setTag(question);
-			/*
-			CheckBox cb = (CheckBox) linearLayout.findViewById(R.id.chkStatus);
+			
+			//CheckBox cb = (CheckBox) linearLayout.findViewById(R.id.chkStatus);
+			
 			if( question.isSolved() ) {
-				cb.setChecked(true);
+				//cb.setChecked(true);
 				linearLayout.setBackgroundResource(R.drawable.question_solved_shape);
 				btn.setBackgroundResource(R.drawable.button_like_nonclickable);
 				btn.setClickable(false);
 			}
-			else btn.setClickable(true);*/
+			//else btn.setClickable(true);
 
 			return linearLayout;
 		}

@@ -74,6 +74,7 @@ public class MainPageDrawer extends Activity {
         mDrawerTitles = getResources().getStringArray(R.array.drawer_item_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        mDrawerList.setBackgroundColor(Color.parseColor("#f02F6877"));
 
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
