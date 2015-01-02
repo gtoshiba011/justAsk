@@ -334,7 +334,7 @@ public class MainActivity extends SherlockFragmentActivity {
 			Integer key = enumKey.nextElement();
 			Question question = solvedTable.get(key);
 			data.put("child", question);
-			child_unSloved.add(data);
+			child_sloved.add(data);
 		}
 		
 		// add child_unSolved, child_solved to childs
