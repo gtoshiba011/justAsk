@@ -249,7 +249,6 @@ public class MainActivity extends SherlockFragmentActivity {
 		
 		// join an event again
 		joinEvent(manager.getJoinEventID());
-		Log.i("MainActivity::onCreate()", "join event again, and finished");
 		
 		// update information
 		//updateInfo();
@@ -290,7 +289,7 @@ public class MainActivity extends SherlockFragmentActivity {
 			Integer key = enumKey.nextElement();
 			surveyList.add(surveyHash.get(key));
 		}
-		adapt = new MyAdapter(MainActivity.this, R.layout.survey_item_view, slist);
+		adapt = new MyAdapter(MainActivity.this, R.layout.survey_item_view, surveyList);
 		ListView listTask = (ListView) findViewById(R.id.listView1);
 		listTask.setAdapter(adapt);
 	}
@@ -426,14 +425,17 @@ public class MainActivity extends SherlockFragmentActivity {
 		if (s.equalsIgnoreCase("")) {
 			Toast.makeText(this, "enter the question description first!!",Toast.LENGTH_LONG);
 		} else {
-			Question question = new Question(0, s, false, 0);
+			int eventID = manager.getJoinEventID();
+			askQuestion(eventID, s);
+			t.setText("");
+			/*Question question = new Question(0, s, false, 0);
 			Log.d("question list", "data added");
 			t.setText("");;
 			Map<String, Question> newQuestion = new HashMap<String, Question>();
 			newQuestion.put("child", question);
 			qlist.add(newQuestion);
 			child.get(0).add(newQuestion);
-			adapter.notifyDataSetChanged();
+			adapter.notifyDataSetChanged();*/
 		}
 	}
 
@@ -454,6 +456,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		}
 	}
 	
+	//NO-USED NOW
 	public void SolveQuestion(View view) {
 		View v = (View) view.getParent();
 		CheckBox cb = (CheckBox) v.findViewById(R.id.chkStatus);
@@ -472,20 +475,24 @@ public class MainActivity extends SherlockFragmentActivity {
 		ToggleButton tb = (ToggleButton) v.findViewById(R.id.btnLike);
 		Question changeQuestion = (Question) tb.getTag();
 		changeQuestion.setLike(tb.isChecked());
+		int eventID = manager.getJoinEventID();
+		int QID = changeQuestion.getQuestionID();
 		if( tb.isChecked() ){
-			changeQuestion.increasePopu();
+			//manager.getEvent(eventID).incrPopu(QID);
 			tb.setBackgroundResource(R.drawable.button_like_clicked);
+			increasePopu(eventID, QID);
 		}
 		else{
-			changeQuestion.decreasePopu();
+			//manager.getEvent(eventID).incrPopu(QID);
 			tb.setBackgroundResource(R.drawable.button_like_unclicked);
+			decreasePopu(eventID, QID);
 		}
-		tb.setText( String.valueOf(changeQuestion.getPopu()) );
+		//tb.setText( String.valueOf(changeQuestion.getPopu()));
 	}
 	
 	public void sendSurveyResult(View view) {
 		Survey survey = (Survey)view.getTag();
-		slist.remove(survey);		
+		surveyList.remove(survey);
 		adapt.notifyDataSetChanged();
 	}
 
@@ -517,7 +524,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView,
 				ViewGroup parent)
 		{
-			Log.d("ExpandableAdapter", "getChileView()");
+			//Log.d("ExpandableAdapter", "getChileView()");
 			//@SuppressWarnings("unchecked")
 			Question question = ((Map<String, Question>) getChild(groupPosition, childPosition)).get("child");
 			LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -648,6 +655,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		}
 
 	}
+	
 	// *** socket communication start ***
     private void connectWebSocket() {
     	Log.i("MainActivity::connectWebSocket()", "Connect web socket...");
@@ -691,26 +699,26 @@ public class MainActivity extends SherlockFragmentActivity {
 									Log.i("MainActivity::case1", "finisih update event info");
 									break;
 								case 2: //create survey
-									//TODO
 									if(object.getInt("Survey_Type") == 2)
 										manager.createSurvey(object.getInt("Event_ID"), object.getInt("Survey_ID"), object.getInt("Survey_Type"), object.getString("Survey_Topic"), object.getJSONArray("Choice"));
 									else
 										manager.createSurvey(object.getInt("Event_ID"), object.getInt("Survey_ID"), object.getInt("Survey_Type"), object.getString("Survey_Topic"));
+									updateSurveylist();
 									Log.i("MainActivity::case2", "finisih create survey");
 									break;
 								case 4: //create question
 									manager.createQuestion(object.getInt("Event_ID"), object.getInt("Question_ID"), object.getString("Question_Topic"));
-									updateQuestionlist(true, elv.isGroupExpanded(1));
+									updateQuestionlist(elv.isGroupExpanded(0), elv.isGroupExpanded(1));
 									Log.i("MainActivity::case4", "finisih create question");
 									break;
 								case 5: //increase question popularity
 									manager.incrPopu(object.getInt("Event_ID"), object.getInt("Question_ID"));
-									updateQuestionlist(true, elv.isGroupExpanded(1));
+									updateQuestionlist(elv.isGroupExpanded(0), elv.isGroupExpanded(1));
 									Log.i("MainActivity::case5", "finisih increase question popularity");
 									break;
 								case 6: //decrease question popularity
 									manager.decrPopu(object.getInt("Event_ID"), object.getInt("Question_ID"));
-									updateQuestionlist(true, elv.isGroupExpanded(1));
+									updateQuestionlist(elv.isGroupExpanded(0), elv.isGroupExpanded(1));
 									Log.i("MainActivity::case6", "finisih decrease question popularity");
 									break;
 								case 7: //change question status
@@ -721,6 +729,7 @@ public class MainActivity extends SherlockFragmentActivity {
 								case 8: //change survey status
 									//TODO
 									manager.changeSurveyStatus(object.getInt("Event_ID"), object.getInt("Survey_ID"), object.getString("Status"));
+									updateSurveylist();
 									Log.i("MainActivity::case8", "finisih change survey status");
 									break;
 								case 9: //close the event, can't ask question, survey...etc
@@ -730,9 +739,6 @@ public class MainActivity extends SherlockFragmentActivity {
 									break;
 								default:
 									Log.e("MainActivity::case default", "Wrong case " + Integer.toString(event_mission));
-									//updateInfo();
-									//updateQuestionlist(true, true);
-									//updateSurveylist();
 									break;
 							}
 						} catch (JSONException e) {
@@ -770,10 +776,11 @@ public class MainActivity extends SherlockFragmentActivity {
     		object.put("Identity", 1);
     		object.put("Event_Mission", 0);
     		object.put("Event_ID", eventID);
-    		sendMessage(object.toString());
     	} catch(JSONException e){
     		Log.e("MainActivity::joinEvent()", e.toString());
     	}
+		sendMessage(object.toString());
+    	Log.i("MainActivity::joinEvent()", "finish join event");
         return true;
     }
     //mission 1
@@ -788,7 +795,9 @@ public class MainActivity extends SherlockFragmentActivity {
     	} catch(JSONException e){
     		Log.e("MainActivity::replySurvey()", e.toString());
     	}
-        return false;
+    	sendMessage(object.toString());
+    	Log.i("MainActivity::replySurvey()", "finish reply survey");
+        return true;
     }
     //mission 2
     public boolean askQuestion(int eventID, String topic){
@@ -801,6 +810,8 @@ public class MainActivity extends SherlockFragmentActivity {
     	} catch(JSONException e){
     		Log.e("MainActivity::askQuestion()", e.toString());
     	}
+    	sendMessage(object.toString());
+    	Log.i("MainActivity::askQuestion()", "finish ask question");
         return true;
     }
     //mission 3
@@ -814,6 +825,8 @@ public class MainActivity extends SherlockFragmentActivity {
     	} catch(JSONException e){
     		Log.e("MainActivity::increasePopu()", e.toString());
     	}
+    	sendMessage(object.toString());
+    	Log.i("MainActivity::increasePopu()", "finish increase Popu");
         return true;
     }
     //mission 4
@@ -827,6 +840,8 @@ public class MainActivity extends SherlockFragmentActivity {
     	} catch(JSONException e){
     		Log.e("MainActivity::decreasePopu()", e.toString());
     	}
+    	sendMessage(object.toString());
+    	Log.i("MainActivity::decreasePopu()", "finish decrease Popu");
         return true;
     }
     /*// for speaker
