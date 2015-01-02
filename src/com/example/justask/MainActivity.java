@@ -437,6 +437,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		}
 	}
 
+	/*
 	public void addSurveyNow(View v) {
 		
 		EditText t = (EditText) findViewById(R.id.edtSurvey);
@@ -464,7 +465,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		ExpandableListView elv = (ExpandableListView)findViewById(R.id.mExpandableListView);
 		updateQuestionlist( elv.isGroupExpanded(0), elv.isGroupExpanded(1) );
 		adapter.notifyDataSetChanged();
-	}
+	}*/
 	
 	public void onClickLike(View view) {
 		View v = (View) view.getParent();
@@ -539,7 +540,7 @@ public class MainActivity extends SherlockFragmentActivity {
 			
 			btn.setText( String.valueOf(question.getPopu()) );
 			btn.setTag(question);
-			
+			/*
 			CheckBox cb = (CheckBox) linearLayout.findViewById(R.id.chkStatus);
 			if( question.isSolved() ) {
 				cb.setChecked(true);
@@ -547,7 +548,7 @@ public class MainActivity extends SherlockFragmentActivity {
 				btn.setBackgroundResource(R.drawable.button_like_nonclickable);
 				btn.setClickable(false);
 			}
-			else btn.setClickable(true);
+			else btn.setClickable(true);*/
 
 			return linearLayout;
 		}

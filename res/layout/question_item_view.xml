@@ -4,17 +4,6 @@
     android:layout_height="wrap_content"
     android:background="@drawable/question_unsolved_shape"
     android:orientation="vertical" >
-        
-    	<CheckBox
-    	    android:id="@+id/chkStatus"
-    	    android:layout_width="wrap_content"
-    	    android:layout_height="wrap_content"
-    	    android:layout_alignParentLeft="true"
-    	    android:focusable="false"
-    	    android:focusableInTouchMode="false"
-    	    android:onClick="SolveQuestion"
-    	    android:text="CheckBox"
-    	    android:textColor="#2F6877" />
     
 		<TextView
 		    android:id="@+id/txvQuestion"

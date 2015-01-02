@@ -27,7 +27,8 @@
         android:layout_margin="5dp"
         android:background="@drawable/edittext_shape"
         android:gravity="center_horizontal"
-        android:hint="Enter Event Code"
+        android:hint="Enter Event ID"
+        android:inputType="number"
         android:maxLength="6"
         android:padding="5dp"
         android:singleLine="true" >
