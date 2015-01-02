@@ -117,6 +117,13 @@ public class MainPageDrawer extends Activity {
         ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#2F6877"));     
         ab.setBackgroundDrawable(colorDrawable);
     }
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+
+        // socket connection
+     	connectWebSocket();
+    }
 	// *** socket communication start ***
     private void connectWebSocket() {
     	Log.i("MainPageDrawer::connectWebSocket()", "Connect web socket...");
@@ -163,7 +170,7 @@ public class MainPageDrawer extends Activity {
 									Log.i("MainPageDrawer::case11", "finisih update event");
 									Intent intent = new Intent();
 									intent.setClass(MainPageDrawer.this, MainActivity.class);
-									mWebSocketClient.close();
+									//mWebSocketClient.close();
 									startActivity(intent);
 									break;
 								default:
