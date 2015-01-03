@@ -8,23 +8,16 @@ import java.util.List;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
-
-//json object
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-//Application
-import com.example.justask.Manager;
-
-import event.Event;
-
-import android.app.ActionBar;
 import History.History;
-import android.app.Activity;
+import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -33,40 +26,40 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-//import android.view.Menu;
-//import android.view.MenuInflater;
-//import android.view.MenuItem;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 //json object
 //Application
+//import android.view.Menu;
+//import android.view.MenuInflater;
+//import android.view.MenuItem;
+//json object
+//Application
+import com.example.justask.MainPageDrawer.DrawerItemFragment;
 
 //import net.sourceforge.zbar.android.CameraTest.*;
 
-public class EventHistory extends SherlockFragmentActivity {
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
-    private ActionBarDrawerToggle mDrawerToggle;
-
-    private CharSequence mDrawerTitle;
-    private CharSequence mTitle;
-    private String[] mDrawerTitles;
+public class EventHistory extends SherlockFragmentActivity implements DialogInterface.OnClickListener{
+	private DrawerLayout mDrawerLayout;
+	private LinearLayout mDrawer;
+	private ActionBarDrawerToggle mDrawerToggle;
+	
+	private NonSwipeableViewPager viewPager;
+	private TabsPagerAdapter mAdapter;
+	private ActionBar actionBar;
     
 	// socket obj
 	private static WebSocketClient mWebSocketClient;
@@ -82,55 +75,56 @@ public class EventHistory extends SherlockFragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_page_drawer);
+        setContentView(R.layout.event_history_drawer);
 
 		// socket connection
 		//connectWebSocket();
 		manager = (Manager) getApplicationContext();
 		
-        mTitle = mDrawerTitle = "Event History";
-        mDrawerTitles = getResources().getStringArray(R.array.drawer_item_array);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        mDrawerList.setBackgroundColor(Color.parseColor("#f02F6877"));
+		// Drawer
+		mDrawerLayout = (DrawerLayout)findViewById(R.id.history_drawer_layout);
+		mDrawer = (LinearLayout)findViewById(R.id.history_drawer);
+		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+		mDrawer.setBackgroundColor(Color.parseColor("#f02F6877"));
 
-        // set a custom shadow that overlays the main content when the drawer opens
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-        // set up the drawer's list view with items and click listener
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mDrawerTitles));
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-        // enable ActionBar app icon to behave as action to toggle nav drawer
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
-        getActionBar().setTitle( "Event History" );
+		getSupportActionBar().setHomeButtonEnabled(true);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setIcon(android.R.color.transparent);
+		getSupportActionBar().setTitle("Event History");
 
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the sliding drawer and the action bar app icon
-        mDrawerToggle = new ActionBarDrawerToggle(
-                this,                  /* host Activity */
-                mDrawerLayout,         /* DrawerLayout object */
-                R.drawable.ic_drawer,  /* nav drawer image to replace 'Up' caret */
-                R.string.drawer_open,  /* "open drawer" description for accessibility */
-                R.string.drawer_close  /* "close drawer" description for accessibility */
-                ) {
-            public void onDrawerClosed(View view) {
-            	super.onDrawerClosed(view);
-                getActionBar().setTitle(mTitle);
-                //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
+		mDrawerToggle = new ActionBarDrawerToggle(
+				this,
+				mDrawerLayout,
+				R.drawable.ic_drawer,
+				R.string.drawer_open,
+				R.string.drawer_close) {
+			
+			public void onDrawerClosed(View view) {
+				getSupportActionBar().setTitle( "Event History" );
+				super.onDrawerClosed(view);
+			}
+			
+			public void onDrawerOpened(View drawerView) {
+				// Set the title on the action when drawer open
+				getSupportActionBar().setTitle("Event History");
+				super.onDrawerOpened(drawerView);
+			}
+		};
+		
+		mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-            public void onDrawerOpened(View drawerView) {
-            	super.onDrawerOpened(drawerView);
-                getActionBar().setTitle(mDrawerTitle);
-                //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-        };
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        //if (savedInstanceState == null) {
+            //selectItem(0);
+            Fragment fragment = new DrawerItemFragment();
+            Bundle args = new Bundle();
+            args.putInt(DrawerItemFragment.ITEM_NUMBER, 0);
+            fragment.setArguments(args);
 
-        if (savedInstanceState == null) {
-            selectItem(0);
-        }
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+        //}
         
         ActionBar ab = getActionBar(); 
         ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#2F6877"));     
@@ -307,6 +301,7 @@ public class EventHistory extends SherlockFragmentActivity {
     */
 
     /* Called whenever we call invalidateOptionsMenu() */
+    /*
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
@@ -314,29 +309,49 @@ public class EventHistory extends SherlockFragmentActivity {
         //menu.findItem(R.id.action_websearch).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
-
+    */
     @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if(item.getItemId() == R.id.action_clear) {
-			db.clear();
-			list.clear();
-			adapt.notifyDataSetChanged();
+			new AlertDialog.Builder(this)
+				.setMessage("History list will be CLEARED!\n" +
+							"This step cannot be undone!")
+				.setIcon(R.drawable.ic_evil)
+				.setTitle("Are you sure?")
+				.setNegativeButton("No", this)
+				.setPositiveButton("Yes", this)
+				.show();
+		}
+		else if (item.getItemId() == android.R.id.home) {
+			if (mDrawerLayout.isDrawerOpen(mDrawer)) {
+				mDrawerLayout.closeDrawer(mDrawer);
+			} else {
+				mDrawerLayout.openDrawer(mDrawer);
+			}
 		}
 
 		return super.onOptionsItemSelected(item);
 	}
+    
+    @Override
+    public void onClick(DialogInterface dialog, int id) {
+    	if( id == DialogInterface.BUTTON_POSITIVE) {
+    		db.clear();
+			list.clear();
+			adapt.notifyDataSetChanged();
+    	}
+    }
 
     /* The click listner for ListView in the navigation drawer */
+    /*
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             selectItem(position);
         }
-    }
-
+    }*/
+    
     private void selectItem(int position) {
-        // update the main content by replacing fragments
-        //Fragment fragment = new DrawerItemFragment(manager);
         Fragment fragment = new DrawerItemFragment();
         Bundle args = new Bundle();
         args.putInt(DrawerItemFragment.ITEM_NUMBER, position);
@@ -346,17 +361,11 @@ public class EventHistory extends SherlockFragmentActivity {
         fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 
         // update selected item and title, then close the drawer
-        mDrawerList.setItemChecked(position, true);
+        //mDrawerList.setItemChecked(position, true);
         //setTitle(mDrawerTitles[position]);
-        mDrawerLayout.closeDrawer(mDrawerList);
+        //mDrawerLayout.closeDrawer();
     }
-
-    @Override
-    public void setTitle(CharSequence title) {
-        mTitle = title;
-        getActionBar().setTitle(mTitle);
-    }
-
+    
     /**
      * When using the ActionBarDrawerToggle, you must call it during
      * onPostCreate() and onConfigurationChanged()...

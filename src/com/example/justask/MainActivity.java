@@ -310,8 +310,10 @@ public class MainActivity extends SherlockFragmentActivity {
 			if( surveyHash.get(key).getStatus() == Survey.START)
 				surveyList.add(surveyHash.get(key));
 		}
+		Log.d("Size", String.valueOf(surveyList.size()));
 		adapt = new MyAdapter(MainActivity.this, R.layout.survey_item_view, surveyList);
 		ListView listTask = (ListView) findViewById(R.id.listView1);
+		Log.d("updateSurveyList", String.valueOf(listTask==null));
 		listTask.setAdapter(adapt);
 	}
 	
