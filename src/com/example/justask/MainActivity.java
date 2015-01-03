@@ -719,6 +719,7 @@ public class MainActivity extends SherlockFragmentActivity {
 					        RadioButton radio = new RadioButton(MainActivity.this);
 					        try {
 					        	 radio.setText(survey.getChoiceArray().getString(i));
+					        	 radio.setTextColor(Color.parseColor("#f02F6877"));
 					        	 radio.setId(i);
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block

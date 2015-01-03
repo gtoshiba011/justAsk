@@ -3,18 +3,13 @@ package com.example.justask;
 //import socket dictionary
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import net.sourceforge.zbar.android.CameraTest.CameraTestActivity;
+
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
-
-//json object
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-//Application
-import com.example.justask.Manager;
-
-import event.Event;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -33,17 +28,16 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
+//json object
+//Application
 
 //import net.sourceforge.zbar.android.CameraTest.*;
 
@@ -321,16 +315,16 @@ public class MainPageDrawer extends Activity {
 	
 	// When the "Scan QR code" button is pushed
 	public void ScanQR(View v){
-		//Intent it = new Intent(this, CameraTestActivity.class);
-		//startActivityForResult(it, 1);
+		Intent it = new Intent(this, CameraTestActivity.class);
+		startActivityForResult(it, 1);
 	}
 	
 	// When the "Event History" button is pushed
-		public void event(View v){
-			mWebSocketClient.close();
-			Intent it = new Intent(this, EventHistory.class);
-			startActivity( it );
-		}
+	public void event(View v){
+		mWebSocketClient.close();
+		Intent it = new Intent(this, EventHistory.class);
+		startActivity( it );
+	}
 	
     /**
      * Fragment that appears in the "content_frame", shows a planet
