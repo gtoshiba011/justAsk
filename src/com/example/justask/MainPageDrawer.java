@@ -3,18 +3,13 @@ package com.example.justask;
 //import socket dictionary
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import net.sourceforge.zbar.android.CameraTest.CameraTestActivity;
+
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
-
-//json object
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-//Application
-import com.example.justask.Manager;
-
-import event.Event;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -33,17 +28,16 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
+//json object
+//Application
 
 //import net.sourceforge.zbar.android.CameraTest.*;
 
@@ -73,15 +67,14 @@ public class MainPageDrawer extends Activity {
 		
         mTitle = mDrawerTitle = getTitle();
         mDrawerTitles = getResources().getStringArray(R.array.drawer_item_array);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.mainpage_drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         mDrawerList.setBackgroundColor(Color.parseColor("#f02F6877"));
 
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, mDrawerTitles));
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mDrawerTitles));
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
@@ -322,16 +315,16 @@ public class MainPageDrawer extends Activity {
 	
 	// When the "Scan QR code" button is pushed
 	public void ScanQR(View v){
-		//Intent it = new Intent(this, CameraTestActivity.class);
-		//startActivityForResult(it, 1);
+		Intent it = new Intent(this, CameraTestActivity.class);
+		startActivityForResult(it, 1);
 	}
 	
 	// When the "Event History" button is pushed
-		public void event(View v){
-			mWebSocketClient.close();
-			Intent it = new Intent(this, EventHistory.class);
-			startActivity( it );
-		}
+	public void event(View v){
+		mWebSocketClient.close();
+		Intent it = new Intent(this, EventHistory.class);
+		startActivity( it );
+	}
 	
     /**
      * Fragment that appears in the "content_frame", shows a planet

@@ -311,8 +311,10 @@ public class MainActivity extends SherlockFragmentActivity {
 			if( surveyHash.get(key).getStatus() == Survey.START)
 				surveyList.add(surveyHash.get(key));
 		}
+		Log.d("Size", String.valueOf(surveyList.size()));
 		adapt = new MyAdapter(MainActivity.this, R.layout.survey_item_view, surveyList);
 		ListView listTask = (ListView) findViewById(R.id.listView1);
+		Log.d("updateSurveyList", String.valueOf(listTask==null));
 		listTask.setAdapter(adapt);
 	}
 	
@@ -715,6 +717,7 @@ public class MainActivity extends SherlockFragmentActivity {
 					        RadioButton radio = new RadioButton(MainActivity.this);
 					        try {
 					        	 radio.setText(survey.getChoiceArray().getString(i));
+					        	 radio.setTextColor(Color.parseColor("#f02F6877"));
 					        	 radio.setId(i);
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block
