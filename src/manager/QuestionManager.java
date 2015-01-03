@@ -64,17 +64,17 @@ public class QuestionManager {
     		return true;
     	}
     	else{
-    		Log.e("QuestionManager::addQuestionToList()", "already has question ID " + ID);
+    		Log.e("QuestionManager", "addQuestionToList()");
         	return false;
     	}	
     }
-    public boolean deleteQuestionFromList(int ID){
-    	if(_allTable.containsKey(ID)){
-    		_allTable.remove(ID);
+    public boolean deleteQuestionFromList(int quesID){
+    	if(_allTable.containsKey(quesID)){
+    		_allTable.remove(quesID);
     		return true;
     	}
     	else{
-    		Log.e("QuestionManager::deleteQuestionFromList()", "doesn't have question ID " + ID);
+    		Log.e("QuestionManager", "deleteQuestionFromList()");
         	return false;
     	}
     }
@@ -85,7 +85,7 @@ public class QuestionManager {
     		return true;
     	}
     	else{
-    		Log.e("QuestionManager::addQuestionToUnsolvedList()", "already has question ID " + quesID);
+    		Log.e("QuestionManager", "addQuestionToUnsolvedList()");
         	return false;
     	}	
     }
@@ -106,7 +106,8 @@ public class QuestionManager {
     		return true;
     	}
     	else{
-    		Log.e("QuestionManager::deleteQuestionFromUnsolvedList()", "doesn't have question ID " + quesID);
+    		Log.e("QuestionManager", "addQuestionToSolvedList(): no this ID "
+    				+ Integer.toString(quesID));
         	return false;
     	}
     }
@@ -116,35 +117,26 @@ public class QuestionManager {
     		return true;
     	}
     	else{
-    		Log.e("QuestionManager::deleteQuestionFromSolvedList()", "doesn't have question ID " + quesID);
-
+    		Log.e("QuestionManager", "deleteQuestionFromSolvedList(): no this ID "
+    				+ Integer.toString(quesID));
         	return false;
     	}
-    }    
-    //sort unsolved question by 'like' amount
-    //NO-USE NOW
-    public boolean sortQuestion(){
+    } 
+    
+    
+	//activity
+    public void showQuestionList(){
         //TODO
-    	Hashtable<Integer, Integer> tempTable = new Hashtable<Integer, Integer>();
-    	Enumeration<Integer> enumkey = _unSolvedTable.keys();
-    	// add new Hashtable<Integer, Integer>;
-    	while(enumkey.hasMoreElements()){
-    		int key = enumkey.nextElement();
-    		tempTable.put(key, _unSolvedTable.get(key).getPopu());
-    	}
-        ArrayList<Map.Entry<Integer, Integer>> tempList = new ArrayList<Map.Entry<Integer, Integer>>(tempTable.entrySet());
-        Collections.sort(tempList, new Comparator<Map.Entry<?, Integer>>(){
-
-        	public int compare(Map.Entry<?, Integer> o1, Map.Entry<?, Integer> o2) {
-        		return o1.getValue().compareTo(o2.getValue());
-        	}});
-        Hashtable<Integer, Question> sortedTable = new Hashtable<Integer, Question>();
-        for(Iterator<Entry<Integer, Integer>> it = tempList.iterator(); it.hasNext();){
-        	Map.Entry<Integer, Integer> entry = (Map.Entry<Integer, Integer>)it.next();
-        	Log.i("QuestionManager::sortQuestion()", "key: " + Integer.toString(entry.getKey()) + "value: " + Integer.toString(entry.getValue()));
-        	sortedTable.put((Integer) entry.getKey(), _unSolvedTable.get(entry.getKey()));
-        }
-        _unSolvedTable = sortedTable;
+    }
+    public boolean updateQuestionList(){
+        //TODO
+    	//connect to server and update all table
         return true;
     }
+    //sort unsolved question by 'like' amount
+    public boolean sortQuestion(){
+        //TODO
+    	//is this function necessary?
+        return false;
+    }   
 }

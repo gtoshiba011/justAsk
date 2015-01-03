@@ -131,9 +131,9 @@ public class MainPageDrawer extends Activity {
     	Log.i("MainPageDrawer::connectWebSocket()", "Connect web socket...");
         URI uri;
         try {
-        	Log.i("MainPageDrawer::webSocket", "start new uri");
+        	Log.i("webSocket", "start new uri");
             uri = new URI("ws://140.112.230.230:7272");
-            Log.i("MainPageDrawer::webSocket", "new uri success!");
+            Log.i("webSocket", "new uri success!");
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return;
@@ -151,7 +151,7 @@ public class MainPageDrawer extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.i("MainPageDrawer::webSocket", "onMessage: " + message);
+                        Log.i("webSocket", "onMessage: " + message);
                         
                         // decode JSON Object
                         JSONObject object = null;
@@ -193,12 +193,12 @@ public class MainPageDrawer extends Activity {
 
             @Override
             public void onClose(int i, String s, boolean b) {
-                Log.i("MainPageDrawer::Websocket", "Closed " + s);
+                Log.i("Websocket", "Closed " + s);
             }
 
             @Override
             public void onError(Exception e) {
-                Log.i("MainPageDrawer::Websocket", "Error " + e.getMessage());
+                Log.i("Websocket", "Error " + e.getMessage());
             }
         };
         mWebSocketClient.connect();

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutEventHistory"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:layout_marginBottom="5dp"
+    android:background="@drawable/question_unsolved_shape"
+    android:onClick="HistoryClick"
+    android:orientation="vertical"
+    android:padding="10dp" >
+    
+		<TextView
+		    android:id="@+id/txvHisTopic"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentStart="true"
+		    android:layout_gravity="center_horizontal"
+		    android:gravity="center_vertical"
+		    android:text="The secret of iPhone"
+		    android:textColor="#2F6877"
+		    android:textSize="20sp" />
+
+		<TextView
+		    android:id="@+id/txvHisPresenter"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_gravity="center_horizontal"
+		    android:text="Steve Jobs"
+		    android:textColor="#2F6877" />
+
+</LinearLayout>

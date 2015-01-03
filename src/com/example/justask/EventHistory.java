@@ -3,6 +3,9 @@ package com.example.justask;
 //import socket dictionary
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -17,9 +20,11 @@ import com.example.justask.Manager;
 import event.Event;
 
 import android.app.ActionBar;
+import History.History;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -32,9 +37,13 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+//import android.view.Menu;
+//import android.view.MenuInflater;
+//import android.view.MenuItem;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -42,12 +51,15 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
+//json object
+//Application
 
 //import net.sourceforge.zbar.android.CameraTest.*;
 
-public class EventHistory extends Activity {
+public class EventHistory extends SherlockFragmentActivity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -58,9 +70,14 @@ public class EventHistory extends Activity {
     
 	// socket obj
 	private static WebSocketClient mWebSocketClient;
+	
 	// application
 	private static Manager manager;
-	//final Manager manager = (Manager) getApplicationContext();
+	
+	// Event history database
+	protected HistoryDbHelper db;
+	List<History> list;
+	HistoryAdapter adapt;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +88,7 @@ public class EventHistory extends Activity {
 		//connectWebSocket();
 		manager = (Manager) getApplicationContext();
 		
-        mTitle = mDrawerTitle = getTitle();
+        mTitle = mDrawerTitle = "Event History";
         mDrawerTitles = getResources().getStringArray(R.array.drawer_item_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -80,13 +97,13 @@ public class EventHistory extends Activity {
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, mDrawerTitles));
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mDrawerTitles));
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
+        getActionBar().setTitle( "Event History" );
 
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the sliding drawer and the action bar app icon
@@ -117,8 +134,66 @@ public class EventHistory extends Activity {
         
         ActionBar ab = getActionBar(); 
         ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#2F6877"));     
-        ab.setBackgroundDrawable(colorDrawable);
+        getActionBar().setBackgroundDrawable(colorDrawable);
+        
+        db = new HistoryDbHelper(this);
+		list = db.getAllHistorys();
+		adapt = new HistoryAdapter(this, R.layout.history_item_view, list);
     }
+    
+    // Called function when event in history list is clicked
+    public void HistoryClick(View view){
+    	History history = (History)view.findViewById(R.id.txvHisTopic).getTag();
+    	joinEvent(history.getId());
+    }
+    
+    private class HistoryAdapter extends ArrayAdapter<History> {
+
+		Context context;
+		List<History> historyList = new ArrayList<History>();
+		int layoutResourceId;
+
+		public HistoryAdapter(Context context, int layoutResourceId,
+				List<History> objects) {
+			super(context, layoutResourceId, objects);
+			this.layoutResourceId = layoutResourceId;
+			this.historyList = objects;
+			this.context = context;
+		}
+
+		/**
+		 * This method will DEFINe what the view inside the list view will
+		 * finally look like Here we are going to code that the checkbox state
+		 * is the status of task and check box text is the task name
+		 */
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			
+			TextView txvName = null;
+			TextView txvPerson = null;
+			if (convertView == null) {
+				LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				convertView = inflater.inflate(R.layout.history_item_view, parent, false);
+				txvName = (TextView) convertView.findViewById(R.id.txvHisTopic);
+				txvPerson = (TextView) convertView.findViewById(R.id.txvHisPresenter);
+				convertView.setTag(R.id.first_tag, txvName);
+				convertView.setTag(R.id.second_tag, txvPerson);
+			} else {
+				txvName = (TextView) convertView.getTag(R.id.first_tag);
+				txvPerson = (TextView) convertView.getTag(R.id.second_tag);
+			}
+			
+			History current = historyList.get(position);
+			txvName.setText(current.getEventName());
+			txvPerson.setText(current.getPresenter());
+			txvName.setTag(current);
+			txvPerson.setTag(current);
+			//Log.d("listener", String.valueOf(current.getId()));
+			return convertView;
+		}
+
+	}
+    
     @Override
     public void onResume() {
         super.onResume();  // Always call the superclass method first
@@ -126,11 +201,20 @@ public class EventHistory extends Activity {
         // socket connection
      	connectWebSocket();
     }
+    @Override
     public void onStop() {
         super.onStop();  // Always call the superclass method first
 
         EventHistory.this.finish();
     }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getSupportMenuInflater();
+        inflater.inflate(R.menu.event_drawer, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    
 	// *** socket communication start ***
     private void connectWebSocket() {
     	Log.i("EventHistory::connectWebSocket()", "Connect web socket...");
@@ -232,31 +316,15 @@ public class EventHistory extends Activity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-         // The action bar home/up action should open or close the drawer.
-         // ActionBarDrawerToggle will take care of this.
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        // Handle action buttons
-        /*
-        switch(item.getItemId()) {
-        case R.id.action_websearch:
-            // create intent to perform web search for this planet
-            Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-            intent.putExtra(SearchManager.QUERY, getActionBar().getTitle());
-            // catch event that there's no activity to handle intent
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivity(intent);
-            } else {
-                Toast.makeText(this, R.string.app_not_available, Toast.LENGTH_LONG).show();
-            }
-            return true;
-        default:
-            return super.onOptionsItemSelected(item);
-        }*/
-        return super.onOptionsItemSelected(item);
-    }
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if(item.getItemId() == R.id.action_clear) {
+			db.clear();
+			list.clear();
+			adapt.notifyDataSetChanged();
+		}
+
+		return super.onOptionsItemSelected(item);
+	}
 
     /* The click listner for ListView in the navigation drawer */
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
@@ -307,17 +375,11 @@ public class EventHistory extends Activity {
         // Pass any configuration change to the drawer toggls
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
-    
-	
-	// When the "join" button is pushed
-		public void join(View v){
-			joinEvent(266054);
-		}
 	
     /**
      * Fragment that appears in the "content_frame", shows a planet
      */
-    public static class DrawerItemFragment extends Fragment {
+    public class DrawerItemFragment extends Fragment {
         public static final String ITEM_NUMBER = "item_number";
         //Manager manager;
 
@@ -328,9 +390,12 @@ public class EventHistory extends Activity {
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             final View rootView = inflater.inflate(R.layout.event_history, container, false);
+            
+            ListView listTask = (ListView) rootView.findViewById(R.id.eventList);
+    		listTask.setAdapter(adapt);
+            
             int i = getArguments().getInt(ITEM_NUMBER);
             String planet = getResources().getStringArray(R.array.drawer_item_array)[i];
 

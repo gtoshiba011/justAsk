@@ -37,23 +37,18 @@ public class SurveyManager {
     		survey = new EssaySurvey(ID, status, topic);
     		break;
     	default:
-    		Log.e("SurveyManager::createSurvey()", "case, error type");
+    		Log.e("SurveyManager", "createSurvey(): error type");
     		return false;    			
     	}
     	addToSurveyList(ID, survey);
     	return true;
     } 
-    public boolean addToSurveyList(int surveyID, Survey survey){
-    	if( _mySurveyTable.containsKey(surveyID)){
-    		Log.e("SruveyManager::addToSurveyList()", "already has survey ID " + surveyID );
-    		return false;
-    	}
+    public void addToSurveyList(int surveyID, Survey survey){
     	_mySurveyTable.put(surveyID,  survey);
-    	return true;
     }
     public boolean deleteFromSurveyList(int surveyID){
     	if( !_mySurveyTable.containsKey(surveyID)){
-    		Log.e("SruveyManager::deleteFromSurveyList()", "find no survey ID " + surveyID );
+    		Log.e("SruveyManager", "aadToSurveyList(): find no survey ID" + Integer.toString(surveyID) );
     		return false;
     	}
     	_mySurveyTable.remove(surveyID);
@@ -82,5 +77,10 @@ public class SurveyManager {
     public boolean closeSurvey(int SID){
     	deleteFromSurveyList(SID);
     	return true;
+    }
+    
+    public void sortSurveyList(){
+        //TODO
+    	//how to sort list
     }
 }
