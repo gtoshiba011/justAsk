@@ -123,7 +123,7 @@ public class Event {
 		Log.i("Event::updateSurveyInfo()", "surveySize: " + surveySize);
     	while ( surveySize != count){
 			try {
-				Log.i("Event::updateSurveyInfo()", "count: " + count);
+				Log.i("Event::updateSurveyInfo()", "event ID: " + count);
 				surveyObject = surveyJSONArray.getJSONObject(count);
 				ID = count;
 	    		String str = surveyObject.getString("Status");
@@ -139,7 +139,7 @@ public class Event {
 	    		type = surveyObject.getInt("Survey_Type");
 	    		if(type == 2){
 	    			choiceJSONArray =  surveyObject.getJSONArray("Choice");
-					Log.i("Event::updateSurveyInfo()", Integer.toString(choiceJSONArray.length()));
+					Log.i("Event::updateSurveyInfo()", "choice num: " + Integer.toString(choiceJSONArray.length()));
 	    		}
 			} catch (JSONException e) {
 				e.printStackTrace();

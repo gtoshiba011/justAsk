@@ -23,6 +23,7 @@ import question.Question;
 import survey.Survey;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
@@ -262,10 +263,10 @@ public class MainActivity extends SherlockFragmentActivity {
 		joinEvent(manager.getJoinEventID());
 		
 		// put this event into event history list
-		db = new HistoryDbHelper(this);
-		db.addHistory( 	manager.getJoinEventID(),
-						manager.getEvent(manager.getJoinEventID()).getSpeechInfo().getTopic(),
-						manager.getEvent(manager.getJoinEventID()).getSpeechInfo().getName()	);
+//		db = new HistoryDbHelper(this);
+//		db.addHistory( 	manager.getJoinEventID(),
+//						manager.getEvent(manager.getJoinEventID()).getSpeechInfo().getTopic(),
+//						manager.getEvent(manager.getJoinEventID()).getSpeechInfo().getName()	);
 		
 		//viewPager.setCurrentItem(2, false);
 		//viewPager.setCurrentItem(1, false);
@@ -829,20 +830,27 @@ public class MainActivity extends SherlockFragmentActivity {
 									Log.i("MainActivity::case7", "finisih change question status");
 									break;
 								case 8: //change survey status
-									//TODO
 									manager.changeSurveyStatus(object.getInt("Event_ID"), object.getInt("Survey_ID"), object.getString("Status"));
 									updateSurveylist();
 									Log.i("MainActivity::case8", "finisih change survey status");
 									break;
 								case 9: //close the event, can't ask question, survey...etc
-									//TODO
 									manager.closeEvent(object.getInt("Event_ID"));
 									Log.i("MainActivity::case9", "finisih close the event");
 									break;
-//								case 10:
-//									updateInfo();
-//									updateQuestionlist(true, true);
-//									updateSurveylist();
+								case 10:// create event;
+									manager.createEvent(object.getInt("Event_ID"));
+									Log.i("MainActivity::case10", "finisih create event");
+									break;
+								case 11:// when join event and update the event
+									manager.updateEventInfo(object.getInt("Event_ID"), object.getString("Name"), object.getString("Email"), object.getString("Topic"), object.getJSONArray("SurveyList"), object.getJSONArray("QuestionList"));
+									Log.i("MainActivity::case11", "finisih update event");
+									db = new HistoryDbHelper(MainActivity.this);
+									db.addHistory( 	manager.getJoinEventID(),
+													manager.getEvent(manager.getJoinEventID()).getSpeechInfo().getTopic(),
+													manager.getEvent(manager.getJoinEventID()).getSpeechInfo().getName()	);
+									Log.i("MainActivity::case11", "finisih add history");
+									break;
 								default:
 									Log.e("MainActivity::case default", "Wrong case " + Integer.toString(event_mission));
 									break;

@@ -4,7 +4,7 @@ package com.example.justask;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import net.sourceforge.zbar.android.CameraTest.CameraTestActivity;
+//import net.sourceforge.zbar.android.CameraTest.CameraTestActivity;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -117,16 +117,16 @@ public class MainPageDrawer extends Activity {
         super.onResume();  // Always call the superclass method first
 
         // socket connection
-     	connectWebSocket();
+     	//connectWebSocket();
     }
 	// *** socket communication start ***
     private void connectWebSocket() {
     	Log.i("MainPageDrawer::connectWebSocket()", "Connect web socket...");
         URI uri;
         try {
-        	Log.i("webSocket", "start new uri");
+        	Log.i("MainPageDrawer::WebSocket", "start new uri");
             uri = new URI("ws://140.112.230.230:7272");
-            Log.i("webSocket", "new uri success!");
+            Log.i("MainPageDrawer:WebSocket", "new uri success!");
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return;
@@ -135,7 +135,7 @@ public class MainPageDrawer extends Activity {
         mWebSocketClient = new WebSocketClient(uri) {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
-                Log.i("Websocket", "Opened");
+                Log.i("MainPageDrawer:Websocket", "Opened");
             }
 
             @Override 
@@ -144,7 +144,7 @@ public class MainPageDrawer extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.i("webSocket", "onMessage: " + message);
+                        Log.i("MainPageDrawer:WebSocket", "onMessage: " + message);
                         
                         // decode JSON Object
                         JSONObject object = null;
@@ -186,12 +186,12 @@ public class MainPageDrawer extends Activity {
 
             @Override
             public void onClose(int i, String s, boolean b) {
-                Log.i("Websocket", "Closed " + s);
+                Log.i("MainPageDrawer:Websocket", "Closed " + s);
             }
 
             @Override
             public void onError(Exception e) {
-                Log.i("Websocket", "Error " + e.getMessage());
+                Log.i("MainPageDrawer:Websocket", "Error " + e.getMessage());
             }
         };
         mWebSocketClient.connect();
@@ -312,11 +312,14 @@ public class MainPageDrawer extends Activity {
 		Intent it = new Intent(this, MainActivity.class);
 		startActivity( it );
 	}
-	
+	public void launch(){
+		Intent it = new Intent(this, MainActivity.class);
+		startActivity( it );
+	}
 	// When the "Scan QR code" button is pushed
 	public void ScanQR(View v){
-		Intent it = new Intent(this, CameraTestActivity.class);
-		startActivityForResult(it, 1);
+		//Intent it = new Intent(this, CameraTestActivity.class);
+		//startActivityForResult(it, 1);
 	}
 	
 	// When the "Event History" button is pushed
@@ -329,7 +332,7 @@ public class MainPageDrawer extends Activity {
     /**
      * Fragment that appears in the "content_frame", shows a planet
      */
-    public static class DrawerItemFragment extends Fragment {
+    public class DrawerItemFragment extends Fragment {
         public static final String ITEM_NUMBER = "item_number";
         //Manager manager;
 
@@ -359,9 +362,11 @@ public class MainPageDrawer extends Activity {
         			if(editText_code.getText().length()==6)
         			{
         				String mString = editText_code.getText().toString();
-        				joinEvent(Integer.valueOf(mString));
-        				Log.d("joinEvent",mString);
+        				//joinEvent(Integer.valueOf(mString));
+        				//Log.d("joinEvent",mString);
         				editText_code.setText("");
+        				manager.setEventID(Integer.valueOf(mString));
+        				launch();
         			}
         		}
 
@@ -387,7 +392,6 @@ public class MainPageDrawer extends Activity {
     //mission 0
     public static boolean joinEvent(int eventID){
     	JSONObject object = new JSONObject();
-    	JSONObject decode_object;
     	try{
     		object.put("Identity", 1);
     		object.put("Event_Mission", 0);
