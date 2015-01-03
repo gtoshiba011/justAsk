@@ -4,12 +4,15 @@ package com.example.justask;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -226,7 +229,6 @@ public class MainActivity extends SherlockFragmentActivity {
 				}
 			}
 		});
-
 		viewPager.setOnPageChangeListener(new NonSwipeableViewPager.OnPageChangeListener() {
 			
 			@Override
@@ -249,7 +251,6 @@ public class MainActivity extends SherlockFragmentActivity {
 		
 		// join an event again
 		joinEvent(manager.getJoinEventID());
-		
 		// update information
 		//updateInfo();
 		//updateQuestionlist(elv.isGroupExpanded(0), elv.isGroupExpanded(1));
@@ -295,39 +296,39 @@ public class MainActivity extends SherlockFragmentActivity {
 	}
 	
 	public void updateQuestionlist( boolean group0, boolean group1){
-
-		/*child = new ArrayList<List<Map<String,Question>>>();
-		List<Map<String, Question>> unsolved, solved;
-		unsolved = new ArrayList<Map<String, Question>>();
-		solved = new ArrayList<Map<String, Question>>();
 		
-		Iterator<Map<String, Question>> it = qlist.iterator();
-		while( it.hasNext() ){
-			Map<String, Question> temp = it.next();
-			Question questionNow = temp.get("child");
-			if( questionNow.isSolved() )
-				solved.add(temp);
-			else
-				unsolved.add(temp);
-		}
-		child.add(unsolved);
-		child.add(solved);*/
+		// sort unSolvedTable by popularity
+    	Hashtable<Integer, Integer> tempTable = new Hashtable<Integer, Integer>();
+    	Hashtable<Integer, Question> unSolvedTable = manager.getEvent(manager.getJoinEventID()).getQuestionManager().getUnSolvedTable();
+		Enumeration<Integer> enumkey = unSolvedTable.keys();
+    	// add new Hashtable<Integer, Integer>;
+    	while(enumkey.hasMoreElements()){
+    		int key = enumkey.nextElement();
+    		tempTable.put(key, unSolvedTable.get(key).getPopu());
+    	}
+        ArrayList<Map.Entry<Integer, Integer>> tempList = new ArrayList<Map.Entry<Integer, Integer>>(tempTable.entrySet());
+        Collections.sort(tempList, new Comparator<Map.Entry<Integer, Integer>>(){
+
+        	public int compare(Map.Entry<Integer, Integer> o1, Map.Entry<Integer, Integer> o2) {
+        		return o2.getValue().compareTo(o1.getValue());
+        	}});
 		
 		//group_unSloved's children
 		List<Map<String, Question>> child_unSloved = new ArrayList<Map<String, Question>>();
-		Hashtable<Integer, Question> unSolvedTable = manager.getEvent(manager.getJoinEventID()).getQuestionManager().getUnSolvedTable();
-		Enumeration<Integer> enumKey = unSolvedTable.keys();
-		while(enumKey.hasMoreElements()){
+	    for(Iterator<Entry<Integer, Integer>> it = tempList.iterator(); it.hasNext();){
+	      	Map.Entry<Integer, Integer> entry = (Map.Entry<Integer, Integer>)it.next();
 			Map<String, Question> data = new HashMap<String, Question>();
-			Integer key = enumKey.nextElement();
+			Integer key = entry.getKey();
 			Question question = unSolvedTable.get(key);
+			Log.i("MainActivity::updateQuestionlist()", "key: " + Integer.toString(key));
 			data.put("child", question);
 			child_unSloved.add(data);
-		}
+	    }
 		
 		//group_sloved's children
 		List<Map<String, Question>> child_sloved = new ArrayList<Map<String, Question>>();
 		Hashtable<Integer, Question> solvedTable = manager.getEvent(manager.getJoinEventID()).getQuestionManager().getSolvedTable();
+		Enumeration<Integer> enumKey = solvedTable.keys();
 		enumKey = solvedTable.keys();
 		while(enumKey.hasMoreElements()){
 			Map<String, Question> data = new HashMap<String, Question>();
@@ -738,6 +739,10 @@ public class MainActivity extends SherlockFragmentActivity {
 									manager.closeEvent(object.getInt("Event_ID"));
 									Log.i("MainActivity::case9", "finisih close the event");
 									break;
+								case 10:
+//									updateInfo();
+//									updateQuestionlist(true, true);
+//									updateSurveylist();
 								default:
 									Log.e("MainActivity::case default", "Wrong case " + Integer.toString(event_mission));
 									break;

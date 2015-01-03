@@ -107,6 +107,9 @@ public class Event {
     public boolean changeQuestionStatus(int QID, boolean status){
     	return _quesManager.changeStutus(QID, status);
     }
+    public boolean sortQuestion(){
+    	return _quesManager.sortQuestion();
+    }
     // Survey
     public boolean updateSurveyInfo(JSONArray surveyJSONArray){
     	int surveySize = surveyJSONArray.length();
