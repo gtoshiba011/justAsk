@@ -1,6 +1,8 @@
 package survey;
 import java.util.Vector;
 
+import org.json.JSONArray;
+
 public class Survey {
 
 	// public constants
@@ -19,6 +21,7 @@ public class Survey {
     Numeral 	3
     Essay		4
     *** end define type */
+    protected JSONArray _choiceArr;// type : int
     protected String _surveyTopic;
     
     //constructor
@@ -42,6 +45,9 @@ public class Survey {
     }
     public int getSurveyType(){
     	return _surveyType;
+    }
+    public JSONArray getChoiceArray(){
+    	return _choiceArr;
     }
     
     /*public boolean receiveAndParseResult(){
