@@ -10,7 +10,11 @@ public class Survey {
 	public static final int MULTIPLE = 2;
 	public static final int NUMERAL = 3;
 	public static final int ESSAY = 4;
-
+	
+	public static final int INITIAL = 1;
+	public static final int START = 2;
+	public static final int STOP = 3;
+	
 	protected int _ID;
     protected int _status;	//1: initial, 2:start, 3:stop 
     protected int _surveyType;

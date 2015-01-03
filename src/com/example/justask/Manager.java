@@ -118,17 +118,6 @@ public class Manager extends Application{
         return ( event.updateSurveyInfo(surveyJSONArray)&&event.updateQuestionInfo(questionJSONArray) );
     }
 
-
-	
-    //activity
-    public boolean showEventInfo(){
-        //TODO
-        return true;
-    }
-
-
-    
-   
     /*
     // Speaker
     public void setIdentiy(int identity){

@@ -157,5 +157,9 @@ public class Event {
     public boolean changeSurveyStatus(int SID, int status){
     	return _survManager.changeSurveyStatus(SID, status);
     }
+    public boolean closeSurvey(int SID){
+    	return _survManager.closeSurvey(SID);
+    }
+    
     
 }

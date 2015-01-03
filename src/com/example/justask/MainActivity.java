@@ -290,7 +290,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		Enumeration<Integer> enumKey = surveyHash.keys();
 		while(enumKey.hasMoreElements()){
 			Integer key = enumKey.nextElement();
-			if( surveyHash.get(key).getStatus() == Survey.MULTIPLE)
+			if( surveyHash.get(key).getStatus() == Survey.START)
 				surveyList.add(surveyHash.get(key));
 		}
 		adapt = new MyAdapter(MainActivity.this, R.layout.survey_item_view, surveyList);
@@ -495,27 +495,54 @@ public class MainActivity extends SherlockFragmentActivity {
 		//tb.setText( String.valueOf(changeQuestion.getPopu()));
 	}
 	
-	public void sendSurveyResult(View view) {
-		Survey survey = (Survey)view.getTag();
-		String answer;
+	public void sendSurveyResult(View v) {
+		View view = (View) v.getParent();
+		Survey survey = (Survey)v.getTag();
+		String answer = "";
 		switch( survey.getSurveyType() ){
 			case Survey.TRUEFALSE:
-				//RadioGroup radioGroup = RadioGroup view.findViewById(R.id.radioGroup1);
+				//RadioGroup radioGroup1 = (RadioGroup) view.findViewById(R.id.radioGroup1);
+				//int id1 = radioGroup1.getCheckedRadioButtonId();
 				RadioButton trueButton = (RadioButton) view.findViewById(R.id.radioTrue);
-				RadioButton falseButton = (RadioButton) view.findViewById(R.id.radioTrue);
+				RadioButton falseButton = (RadioButton) view.findViewById(R.id.radioFalse);
+				if(trueButton.isChecked())
+					answer = "true";
+				else if(falseButton.isChecked())
+					answer = "false";
+				else{
+					return;
+				}
 				break;
 			case Survey.MULTIPLE:
+				RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.radioGroup1);
+				int id = radioGroup.getCheckedRadioButtonId();
+				Log.i("MainActivity::sendSurveyResult()", "MULTIPLE: " + id);
+				if(id == -1){
+					return;
+				}
+				answer = Integer.toString(id);
 				break;
 			case Survey.NUMERAL:
+				EditText edit = (EditText) view.findViewById(R.id.edtNumeral);
+				if (edit.getText().toString().matches(""))
+					return;
+				else
+					answer = edit.getText().toString();
 				break;
 			case Survey.ESSAY:
+				EditText edit1 = (EditText) view.findViewById(R.id.edtEssay);
+				if (edit1.getText().toString().matches(""))
+					return;
+				else
+					answer = edit1.getText().toString();
 				break;
 			default:
-				break;
+				Log.e("MainActivity::sendSurveyResult()", "case error");
+				return;
 		}
-		replySurvey(manager.getJoinEventID(), survey.getID(), "");
-		//surveyList.remove(survey);
-		adapt.notifyDataSetChanged();
+		replySurvey(manager.getJoinEventID(), survey.getID(), answer);
+		manager.getEvent(manager.getJoinEventID()).closeSurvey(survey.getID());
+		updateSurveylist();
 	}
 
 	// Adapter for question list
@@ -666,9 +693,10 @@ public class MainActivity extends SherlockFragmentActivity {
 						RadioGroup group;
 						group = (RadioGroup)convertView.findViewById(R.id.radioGroup1);
 						for(int i = 0 ; i < survey.getChoiceArray().length() ; i++){
-					         RadioButton radio = new RadioButton(MainActivity.this);
-					         try {
-								radio.setText(survey.getChoiceArray().getString(i));
+					        RadioButton radio = new RadioButton(MainActivity.this);
+					        try {
+					        	 radio.setText(survey.getChoiceArray().getString(i));
+					        	 radio.setId(i);
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
