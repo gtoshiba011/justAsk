@@ -3,6 +3,7 @@ package manager;
 import question.Question;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 import android.util.Log;
 
@@ -120,22 +121,31 @@ public class QuestionManager {
     				+ Integer.toString(quesID));
         	return false;
     	}
-    } 
-    
-    
-	//activity
-    public void showQuestionList(){
-        //TODO
-    }
-    public boolean updateQuestionList(){
-        //TODO
-    	//connect to server and update all table
-        return true;
-    }
+    }    
     //sort unsolved question by 'like' amount
+    //NO-USE NOW
     public boolean sortQuestion(){
         //TODO
-    	//is this function necessary?
-        return false;
-    }   
+    	Hashtable<Integer, Integer> tempTable = new Hashtable<Integer, Integer>();
+    	Enumeration<Integer> enumkey = _unSolvedTable.keys();
+    	// add new Hashtable<Integer, Integer>;
+    	while(enumkey.hasMoreElements()){
+    		int key = enumkey.nextElement();
+    		tempTable.put(key, _unSolvedTable.get(key).getPopu());
+    	}
+        ArrayList<Map.Entry<Integer, Integer>> tempList = new ArrayList<Map.Entry<Integer, Integer>>(tempTable.entrySet());
+        Collections.sort(tempList, new Comparator<Map.Entry<?, Integer>>(){
+
+        	public int compare(Map.Entry<?, Integer> o1, Map.Entry<?, Integer> o2) {
+        		return o1.getValue().compareTo(o2.getValue());
+        	}});
+        Hashtable<Integer, Question> sortedTable = new Hashtable<Integer, Question>();
+        for(Iterator<Entry<Integer, Integer>> it = tempList.iterator(); it.hasNext();){
+        	Map.Entry<Integer, Integer> entry = (Map.Entry<Integer, Integer>)it.next();
+        	Log.i("QuestionManager::sortQuestion()", "key: " + Integer.toString(entry.getKey()) + "value: " + Integer.toString(entry.getValue()));
+        	sortedTable.put((Integer) entry.getKey(), _unSolvedTable.get(entry.getKey()));
+        }
+        _unSolvedTable = sortedTable;
+        return true;
+    }
 }
