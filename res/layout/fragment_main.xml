@@ -66,6 +66,7 @@
         android:background="@drawable/button_shape"
         android:minHeight="30dp"
         android:minWidth="0dp"
+        android:onClick="event"
         android:text="Event History"
         android:textColor="#FFFFFF" />
 
