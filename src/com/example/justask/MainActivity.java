@@ -361,6 +361,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		}
 		//close activity after pressing action_home buttom in action bar
 		else if(item.getItemId() == R.id.action_home) {
+			mWebSocketClient.close();
 			MainActivity.this.finish(); //close Activity
 		}
 
