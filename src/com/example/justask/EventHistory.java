@@ -47,7 +47,7 @@ import android.widget.Toast;
 
 //import net.sourceforge.zbar.android.CameraTest.*;
 
-public class MainPageDrawer extends Activity {
+public class EventHistory extends Activity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -126,9 +126,14 @@ public class MainPageDrawer extends Activity {
         // socket connection
      	connectWebSocket();
     }
+    public void onStop() {
+        super.onStop();  // Always call the superclass method first
+
+        EventHistory.this.finish();
+    }
 	// *** socket communication start ***
     private void connectWebSocket() {
-    	Log.i("MainPageDrawer::connectWebSocket()", "Connect web socket...");
+    	Log.i("EventHistory::connectWebSocket()", "Connect web socket...");
         URI uri;
         try {
         	Log.i("webSocket", "start new uri");
@@ -138,7 +143,7 @@ public class MainPageDrawer extends Activity {
             e.printStackTrace();
             return;
         }
-        Log.i("MainPageDrawer::connectWebSocket()", "Connect success!");
+        Log.i("EventHistory::connectWebSocket()", "Connect success!");
         mWebSocketClient = new WebSocketClient(uri) {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
@@ -162,30 +167,30 @@ public class MainPageDrawer extends Activity {
 							switch(event_mission){
 								case 0:	//Request Reply
 									if(object.getBoolean("Success") == false){
-										Toast toast = Toast.makeText(MainPageDrawer.this,"Invalid Event ID", Toast.LENGTH_LONG);
+										Toast toast = Toast.makeText(EventHistory.this,"Invalid Event ID", Toast.LENGTH_LONG);
 										toast.show();
 									}
-									Log.i("MainPageDrawer::case0", object.toString());
+									Log.i("EventHistory::case0", object.toString());
 									break;
 								case 10:// create event;
 									manager.createEvent(object.getInt("Event_ID"));
-									Log.i("MainPageDrawer::case10", "finisih create event");
+									Log.i("EventHistory::case10", "finisih create event");
 									break;
 								case 11:// when join event and update the event
 									manager.updateEventInfo(object.getInt("Event_ID"), object.getString("Name"), object.getString("Email"), object.getString("Topic"), object.getJSONArray("SurveyList"), object.getJSONArray("QuestionList"));
-									Log.i("MainPageDrawer::case11", "finisih update event");
+									Log.i("EventHistory::case11", "finisih update event");
 									Intent intent = new Intent();
-									intent.setClass(MainPageDrawer.this, MainActivity.class);
+									intent.setClass(EventHistory.this, MainActivity.class);
 									mWebSocketClient.close();
 									startActivity(intent);
 									break;
 								default:
-									Log.e("MainPageDrawer::case default", "Wrong case " + Integer.toString(event_mission));
+									Log.e("EventHistory::case default", "Wrong case " + Integer.toString(event_mission));
 									break;
 							}
 						} catch (JSONException e) {
 							e.printStackTrace();
-							Log.e("MainPageDrawer::JSONObject", "JSONObject error");
+							Log.e("EventHistory::JSONObject", "JSONObject error");
 						}
                     }
                 });
@@ -205,7 +210,7 @@ public class MainPageDrawer extends Activity {
     }
     public static void sendMessage(String sendMessage) {
         mWebSocketClient.send(sendMessage);
-        Log.i("MainPageDrawer::sendMessage()", "success send message: " + sendMessage);
+        Log.i("EventHistory::sendMessage()", "success send message: " + sendMessage);
     }
     // *** end of socket communication ***
     /* comment this line to prevent setting buttom on action bar
@@ -303,34 +308,10 @@ public class MainPageDrawer extends Activity {
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
     
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	switch(resultCode){
-    	case 1://QR flag
-    		String result = data.getExtras().getString("QREventCode");
-    		EditText editText = (EditText) findViewById(R.id.edtEventCode);
-    		editText.setText(result);
-    		break;
-    	}
-    }
-    
-	// When the "Launch An Event" button is pushed
-	public void launch(View v){
-		Intent it = new Intent(this, MainActivity.class);
-		startActivity( it );
-	}
 	
-	// When the "Scan QR code" button is pushed
-	public void ScanQR(View v){
-		//Intent it = new Intent(this, CameraTestActivity.class);
-		//startActivityForResult(it, 1);
-	}
-	
-	// When the "Event History" button is pushed
-		public void event(View v){
-			mWebSocketClient.close();
-			Intent it = new Intent(this, EventHistory.class);
-			startActivity( it );
+	// When the "join" button is pushed
+		public void join(View v){
+			joinEvent(266054);
 		}
 	
     /**
@@ -349,7 +330,7 @@ public class MainPageDrawer extends Activity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
-            final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            final View rootView = inflater.inflate(R.layout.event_history, container, false);
             int i = getArguments().getInt(ITEM_NUMBER);
             String planet = getResources().getStringArray(R.array.drawer_item_array)[i];
 
@@ -357,34 +338,6 @@ public class MainPageDrawer extends Activity {
             //                "drawable", getActivity().getPackageName());
             //((ImageView) rootView.findViewById(R.id.image)).setImageResource(imageId);
             getActivity().setTitle(getResources().getStringArray(R.array.drawer_item_array)[0]);
-            
-        	// When enter event code finished
-        	final EditText editText_code = (EditText) rootView.findViewById(R.id.edtEventCode);
-        	editText_code.addTextChangedListener(new TextWatcher() {
-        		@Override
-        		public void onTextChanged(CharSequence s, int start, int before, int count) {
-        			if(editText_code.getText().length()==6)
-        			{
-        				String mString = editText_code.getText().toString();
-        				joinEvent(Integer.valueOf(mString));
-        				Log.d("joinEvent",mString);
-        				editText_code.setText("");
-        			}
-        		}
-
-        		@Override
-        		public void beforeTextChanged(CharSequence s, int start, int count,
-        				int after) {
-        			// TODO Auto-generated method stub
-        			
-        		}
-
-        		@Override
-        		public void afterTextChanged(Editable s) {
-        			// TODO Auto-generated method stub
-        			
-        		}
-        	});
             
             return rootView;
         }
@@ -402,7 +355,7 @@ public class MainPageDrawer extends Activity {
     		sendMessage(object.toString());
     	} catch(JSONException e){
     		e.printStackTrace();
-    		Log.e("MainPageDrawer::JSONObject", e.toString());
+    		Log.e("EventHistory::JSONObject", e.toString());
     	}
         return true;
     }

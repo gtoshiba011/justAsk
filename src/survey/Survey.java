@@ -40,6 +40,9 @@ public class Survey {
     public String getSurveyTopic(){
     	return _surveyTopic;
     }
+    public int getSurveyType(){
+    	return _surveyType;
+    }
     
     /*public boolean receiveAndParseResult(){
         //TODO
