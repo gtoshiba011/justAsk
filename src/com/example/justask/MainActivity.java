@@ -303,6 +303,7 @@ public class MainActivity extends SherlockFragmentActivity {
 	}
 
 	public void updateSurveylist(){
+		List<Survey> surveyList = new ArrayList<Survey>();
 		Hashtable<Integer, Survey> surveyHash = manager.getEvent(manager.getJoinEventID()).getSurveyManager().getServeyTable();
 		Enumeration<Integer> enumKey = surveyHash.keys();
 		while(enumKey.hasMoreElements()){
@@ -678,14 +679,14 @@ public class MainActivity extends SherlockFragmentActivity {
 	private class MyAdapter extends ArrayAdapter<Survey> {
 
 		Context context;
-		List<Survey> surveyList = new ArrayList<Survey>();
+		List<Survey> surveylist = new ArrayList<Survey>();
 		int layoutResourceId;
 
 		public MyAdapter(Context context, int layoutResourceId,
 				List<Survey> objects) {			
 			super(context, layoutResourceId, objects);
 			this.layoutResourceId = layoutResourceId;
-			this.surveyList = objects;
+			this.surveylist = objects;
 			this.context = context;
 		}
 
@@ -699,7 +700,7 @@ public class MainActivity extends SherlockFragmentActivity {
 			Button btn = null;
 			TextView txv = null;
 
-			Survey survey = surveyList.get(position);
+			Survey survey = surveylist.get(position);
 			//if (convertView == null) {
 				LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				switch( survey.getSurveyType() ){
