@@ -303,7 +303,6 @@ public class MainActivity extends SherlockFragmentActivity {
 	}
 
 	public void updateSurveylist(){
-		surveyList = new ArrayList<Survey>();
 		Hashtable<Integer, Survey> surveyHash = manager.getEvent(manager.getJoinEventID()).getSurveyManager().getServeyTable();
 		Enumeration<Integer> enumKey = surveyHash.keys();
 		while(enumKey.hasMoreElements()){

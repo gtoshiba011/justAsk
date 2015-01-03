@@ -141,6 +141,12 @@ public class EventHistory extends SherlockFragmentActivity {
 		adapt = new HistoryAdapter(this, R.layout.history_item_view, list);
     }
     
+    // Called function when event in history list is clicked
+    public void HistoryClick(View view){
+    	History history = (History)view.findViewById(R.id.txvHisTopic).getTag();
+    	joinEvent(history.getId());
+    }
+    
     private class HistoryAdapter extends ArrayAdapter<History> {
 
 		Context context;
@@ -312,7 +318,9 @@ public class EventHistory extends SherlockFragmentActivity {
     @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if(item.getItemId() == R.id.action_clear) {
-			//TODO press clear button
+			db.clear();
+			list.clear();
+			adapt.notifyDataSetChanged();
 		}
 
 		return super.onOptionsItemSelected(item);
@@ -367,12 +375,6 @@ public class EventHistory extends SherlockFragmentActivity {
         // Pass any configuration change to the drawer toggls
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
-    
-	
-	// When the "join" button is pushed
-		public void join(View v){
-			joinEvent(266054);
-		}
 	
     /**
      * Fragment that appears in the "content_frame", shows a planet

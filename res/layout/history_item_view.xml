@@ -6,6 +6,7 @@
     android:layout_gravity="center_horizontal"
     android:layout_marginBottom="5dp"
     android:background="@drawable/question_unsolved_shape"
+    android:onClick="HistoryClick"
     android:orientation="vertical"
     android:padding="10dp" >
     

@@ -9,6 +9,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class HistoryDbHelper extends SQLiteOpenHelper {
 
@@ -57,8 +58,19 @@ public class HistoryDbHelper extends SQLiteOpenHelper {
 		values.put(KEY_EVENTNAME, name); 
 		values.put(KEY_PRESENTER, presenter);
 
+		String query = "SELECT * FROM " + TABLE_HISTORYS + " WHERE " + KEY_ID + " = " + String.valueOf(id);
+		Cursor cursor = db.rawQuery(query, null);
+		int count = 0;
+		while( cursor.moveToNext() ){
+			count = count + 1;
+		}
+		Log.d("Cursor", String.valueOf(count));
+		
 		// Inserting Row
-		db.insert(TABLE_HISTORYS, null, values);
+		if( count == 0 )
+			db.insert(TABLE_HISTORYS, null, values);
+		else if ( count == 1 )
+			db.update(TABLE_HISTORYS, values, KEY_ID + " = ?",new String[] {String.valueOf(id)});
 		db.close(); // Closing database connection
 	}
 
@@ -82,6 +94,11 @@ public class HistoryDbHelper extends SQLiteOpenHelper {
 		}
 
 		return eventList;
+	}
+	
+	public void clear(){
+		SQLiteDatabase db = this.getWritableDatabase();
+		db.execSQL( "DELETE FROM " + TABLE_HISTORYS );
 	}
 	/*
 	public void updateSurveyStatus(Survey survey) {
