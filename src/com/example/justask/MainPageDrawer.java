@@ -43,6 +43,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.support.v4.app.FragmentTransaction;
+import android.widget.Toast;
 
 //import net.sourceforge.zbar.android.CameraTest.*;
 
@@ -160,6 +161,10 @@ public class MainPageDrawer extends Activity {
 							event_mission = object.getInt("Event_Mission");
 							switch(event_mission){
 								case 0:	//Request Reply
+									if(object.getBoolean("Success") == false){
+										Toast toast = Toast.makeText(MainPageDrawer.this,"Invalid Event ID", Toast.LENGTH_LONG);
+										toast.show();
+									}
 									Log.i("MainPageDrawer::case0", object.toString());
 									break;
 								case 10:// create event;
