@@ -8,9 +8,18 @@ import java.util.List;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+
+//json object
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+//Application
+import com.example.justask.Manager;
+
+import event.Event;
+
+import android.app.ActionBar;
 import History.History;
 import android.app.Activity;
 import android.app.Fragment;
@@ -24,23 +33,33 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+//import android.view.Menu;
+//import android.view.MenuInflater;
+//import android.view.MenuItem;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
 //json object
 //Application
 
 //import net.sourceforge.zbar.android.CameraTest.*;
 
-public class EventHistory extends Activity {
+public class EventHistory extends SherlockFragmentActivity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -113,6 +132,7 @@ public class EventHistory extends Activity {
             selectItem(0);
         }
         
+        ActionBar ab = getActionBar(); 
         ColorDrawable colorDrawable = new ColorDrawable(Color.parseColor("#2F6877"));     
         getActionBar().setBackgroundDrawable(colorDrawable);
         
@@ -175,11 +195,20 @@ public class EventHistory extends Activity {
         // socket connection
      	connectWebSocket();
     }
+    @Override
     public void onStop() {
         super.onStop();  // Always call the superclass method first
 
         EventHistory.this.finish();
     }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getSupportMenuInflater();
+        inflater.inflate(R.menu.event_drawer, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    
 	// *** socket communication start ***
     private void connectWebSocket() {
     	Log.i("EventHistory::connectWebSocket()", "Connect web socket...");
@@ -281,31 +310,13 @@ public class EventHistory extends Activity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-         // The action bar home/up action should open or close the drawer.
-         // ActionBarDrawerToggle will take care of this.
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        // Handle action buttons
-        /*
-        switch(item.getItemId()) {
-        case R.id.action_websearch:
-            // create intent to perform web search for this planet
-            Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-            intent.putExtra(SearchManager.QUERY, getActionBar().getTitle());
-            // catch event that there's no activity to handle intent
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivity(intent);
-            } else {
-                Toast.makeText(this, R.string.app_not_available, Toast.LENGTH_LONG).show();
-            }
-            return true;
-        default:
-            return super.onOptionsItemSelected(item);
-        }*/
-        return super.onOptionsItemSelected(item);
-    }
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if(item.getItemId() == R.id.action_clear) {
+			//TODO press clear button
+		}
+
+		return super.onOptionsItemSelected(item);
+	}
 
     /* The click listner for ListView in the navigation drawer */
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
@@ -383,13 +394,13 @@ public class EventHistory extends Activity {
             ListView listTask = (ListView) rootView.findViewById(R.id.eventList);
     		listTask.setAdapter(adapt);
             
-            //int i = getArguments().getInt(ITEM_NUMBER);
-            //String planet = getResources().getStringArray(R.array.drawer_item_array)[i];
+            int i = getArguments().getInt(ITEM_NUMBER);
+            String planet = getResources().getStringArray(R.array.drawer_item_array)[i];
 
             //int imageId = getResources().getIdentifier(planet.toLowerCase(Locale.getDefault()),
             //                "drawable", getActivity().getPackageName());
             //((ImageView) rootView.findViewById(R.id.image)).setImageResource(imageId);
-            //getActivity().setTitle(getResources().getStringArray(R.array.drawer_item_array)[0]);
+            getActivity().setTitle(getResources().getStringArray(R.array.drawer_item_array)[0]);
             
             return rootView;
         }

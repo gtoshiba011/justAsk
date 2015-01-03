@@ -4,11 +4,15 @@ package com.example.justask;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -17,6 +21,7 @@ import org.json.JSONObject;
 
 import question.Question;
 import survey.Survey;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -34,11 +39,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TextView;
@@ -300,7 +308,8 @@ public class MainActivity extends SherlockFragmentActivity {
 		Enumeration<Integer> enumKey = surveyHash.keys();
 		while(enumKey.hasMoreElements()){
 			Integer key = enumKey.nextElement();
-			surveyList.add(surveyHash.get(key));
+			if( surveyHash.get(key).getStatus() == Survey.MULTIPLE)
+				surveyList.add(surveyHash.get(key));
 		}
 		adapt = new MyAdapter(MainActivity.this, R.layout.survey_item_view, surveyList);
 		ListView listTask = (ListView) findViewById(R.id.listView1);
@@ -308,34 +317,31 @@ public class MainActivity extends SherlockFragmentActivity {
 	}
 	
 	public void updateQuestionlist( boolean group0, boolean group1){
+		
+		// sort unSolvedTable by popularity
+    	Hashtable<Integer, Integer> tempTable = new Hashtable<Integer, Integer>();
+    	Hashtable<Integer, Question> unSolvedTable = manager.getEvent(manager.getJoinEventID()).getQuestionManager().getUnSolvedTable();
+		Enumeration<Integer> enumkey = unSolvedTable.keys();
+    	// add new Hashtable<Integer, Integer>;
+    	while(enumkey.hasMoreElements()){
+    		int key = enumkey.nextElement();
+    		tempTable.put(key, unSolvedTable.get(key).getPopu());
+    	}
+        ArrayList<Map.Entry<Integer, Integer>> tempList = new ArrayList<Map.Entry<Integer, Integer>>(tempTable.entrySet());
+        Collections.sort(tempList, new Comparator<Map.Entry<Integer, Integer>>(){
 
-		/*child = new ArrayList<List<Map<String,Question>>>();
-		List<Map<String, Question>> unsolved, solved;
-		unsolved = new ArrayList<Map<String, Question>>();
-		solved = new ArrayList<Map<String, Question>>();
-		
-		Iterator<Map<String, Question>> it = qlist.iterator();
-		while( it.hasNext() ){
-			Map<String, Question> temp = it.next();
-			Question questionNow = temp.get("child");
-			if( questionNow.isSolved() )
-				solved.add(temp);
-			else
-				unsolved.add(temp);
-		}
-		child.add(unsolved);
-		child.add(solved);*/
-		
-		//Log.d("HI", "Get in here!!!!!!!!!");
+        	public int compare(Map.Entry<Integer, Integer> o1, Map.Entry<Integer, Integer> o2) {
+        		return o2.getValue().compareTo(o1.getValue());
+        	}});
 		
 		//group_unSloved's children
 		List<Map<String, Question>> child_unSloved = new ArrayList<Map<String, Question>>();
-		Hashtable<Integer, Question> unSolvedTable = manager.getEvent(manager.getJoinEventID()).getQuestionManager().getUnSolvedTable();
-		Enumeration<Integer> enumKey = unSolvedTable.keys();
-		while(enumKey.hasMoreElements()){
+	    for(Iterator<Entry<Integer, Integer>> it = tempList.iterator(); it.hasNext();){
+	      	Map.Entry<Integer, Integer> entry = (Map.Entry<Integer, Integer>)it.next();
 			Map<String, Question> data = new HashMap<String, Question>();
-			Integer key = enumKey.nextElement();
+			Integer key = entry.getKey();
 			Question question = unSolvedTable.get(key);
+			//Log.i("MainActivity::updateQuestionlist()", "key: " + Integer.toString(key));
 			data.put("child", question);
 			child_unSloved.add(data);
 		}
@@ -343,6 +349,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		//group_sloved's children
 		List<Map<String, Question>> child_sloved = new ArrayList<Map<String, Question>>();
 		Hashtable<Integer, Question> solvedTable = manager.getEvent(manager.getJoinEventID()).getQuestionManager().getSolvedTable();
+		Enumeration<Integer> enumKey = solvedTable.keys();
 		enumKey = solvedTable.keys();
 		while(enumKey.hasMoreElements()){
 			Map<String, Question> data = new HashMap<String, Question>();
@@ -509,7 +516,24 @@ public class MainActivity extends SherlockFragmentActivity {
 	
 	public void sendSurveyResult(View view) {
 		Survey survey = (Survey)view.getTag();
-		surveyList.remove(survey);
+		String answer;
+		switch( survey.getSurveyType() ){
+			case Survey.TRUEFALSE:
+				//RadioGroup radioGroup = RadioGroup view.findViewById(R.id.radioGroup1);
+				RadioButton trueButton = (RadioButton) view.findViewById(R.id.radioTrue);
+				RadioButton falseButton = (RadioButton) view.findViewById(R.id.radioTrue);
+				break;
+			case Survey.MULTIPLE:
+				break;
+			case Survey.NUMERAL:
+				break;
+			case Survey.ESSAY:
+				break;
+			default:
+				break;
+		}
+		replySurvey(manager.getJoinEventID(), survey.getID(), "");
+		//surveyList.remove(survey);
 		adapt.notifyDataSetChanged();
 	}
 
@@ -649,15 +673,27 @@ public class MainActivity extends SherlockFragmentActivity {
 			Button btn = null;
 			TextView txv = null;
 
-			Survey current = surveyList.get(position);
+			Survey survey = surveyList.get(position);
 			//if (convertView == null) {
 				LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				switch( current.getSurveyType() ){
+				switch( survey.getSurveyType() ){
 					case Survey.TRUEFALSE:
 						convertView = inflater.inflate(R.layout.survey_truefalse_view, parent, false);
 						break;
 					case Survey.MULTIPLE:
 						convertView = inflater.inflate(R.layout.survey_multiple_view, parent, false);
+						RadioGroup group;
+						group = (RadioGroup)convertView.findViewById(R.id.radioGroup1);
+						for(int i = 0 ; i < survey.getChoiceArray().length() ; i++){
+					         RadioButton radio = new RadioButton(MainActivity.this);
+					         try {
+								radio.setText(survey.getChoiceArray().getString(i));
+							} catch (JSONException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+					         group.addView(radio);
+					    }
 						break;
 					case Survey.NUMERAL:
 						convertView = inflater.inflate(R.layout.survey_numeral_view, parent, false);
@@ -678,9 +714,9 @@ public class MainActivity extends SherlockFragmentActivity {
 			//	btn = (Button) convertView.getTag(R.id.second_tag);
 			//}
 
-			txv.setText(current.getSurveyTopic());
-			txv.setTag(current);
-			btn.setTag(current);
+			txv.setText(survey.getSurveyTopic());
+			txv.setTag(survey);
+			btn.setTag(survey);
 
 			return convertView;
 		}
@@ -692,9 +728,9 @@ public class MainActivity extends SherlockFragmentActivity {
     	Log.i("MainActivity::connectWebSocket()", "Connect web socket...");
         URI uri;
         try {
-        	Log.i("webSocket", "start new uri");
+        	Log.i("MainActivity::webSocket", "start new uri");
             uri = new URI("ws://140.112.230.230:7272");
-            Log.i("webSocket", "new uri success!");
+            Log.i("MainActivity::webSocket", "new uri success!");
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return;
@@ -703,7 +739,7 @@ public class MainActivity extends SherlockFragmentActivity {
         mWebSocketClient = new WebSocketClient(uri) {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
-                Log.i("Websocket", "Opened");
+                Log.i("MainActivity::Websocket", "Opened");
                 //mWebSocketClient.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
             }
 
@@ -713,7 +749,7 @@ public class MainActivity extends SherlockFragmentActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.i("webSocket", "onMessage: " + message);
+                        Log.i("MainActivity::webSocket", "onMessage: " + message);
                         // decode JSON Object
                         JSONObject object = null;
                         int event_mission;
@@ -772,6 +808,10 @@ public class MainActivity extends SherlockFragmentActivity {
 									manager.closeEvent(object.getInt("Event_ID"));
 									Log.i("MainActivity::case9", "finisih close the event");
 									break;
+//								case 10:
+//									updateInfo();
+//									updateQuestionlist(true, true);
+//									updateSurveylist();
 								default:
 									Log.e("MainActivity::case default", "Wrong case " + Integer.toString(event_mission));
 									break;
@@ -786,12 +826,12 @@ public class MainActivity extends SherlockFragmentActivity {
 
             @Override
             public void onClose(int i, String s, boolean b) {
-                Log.i("Websocket", "Closed " + s);
+                Log.i("MainActivity::Websocket", "Closed " + s);
             }
 
             @Override
             public void onError(Exception e) {
-                Log.i("Websocket", "Error " + e.getMessage());
+                Log.i("MainActivity::Websocket", "Error " + e.getMessage());
             }
         };
         mWebSocketClient.connect();
