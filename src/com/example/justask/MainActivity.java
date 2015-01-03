@@ -708,8 +708,6 @@ public class MainActivity extends SherlockFragmentActivity {
 						convertView = inflater.inflate(R.layout.survey_truefalse_view, parent, false);
 						break;
 					case Survey.MULTIPLE:
-						Log.i("bug", Integer.toString(survey.getID()));
-						Log.i("bug", Integer.toString(survey.getChoiceArray().length()));
 						convertView = inflater.inflate(R.layout.survey_multiple_view, parent, false);
 						RadioGroup group;
 						group = (RadioGroup)convertView.findViewById(R.id.radioGroup1);
