@@ -500,9 +500,9 @@ public class MainActivity extends SherlockFragmentActivity {
 		String answer;
 		switch( survey.getSurveyType() ){
 			case Survey.TRUEFALSE:
+				//RadioGroup radioGroup = RadioGroup view.findViewById(R.id.radioGroup1);
 				RadioButton trueButton = (RadioButton) view.findViewById(R.id.radioTrue);
 				RadioButton falseButton = (RadioButton) view.findViewById(R.id.radioTrue);
-				if(trueButton.)
 				break;
 			case Survey.MULTIPLE:
 				break;
@@ -665,10 +665,10 @@ public class MainActivity extends SherlockFragmentActivity {
 						convertView = inflater.inflate(R.layout.survey_multiple_view, parent, false);
 						RadioGroup group;
 						group = (RadioGroup)convertView.findViewById(R.id.radioGroup1);
-						for(int i = 0 ; i < current.getChoiceArray().length() ; i++){
+						for(int i = 0 ; i < survey.getChoiceArray().length() ; i++){
 					         RadioButton radio = new RadioButton(MainActivity.this);
 					         try {
-								radio.setText(current.getChoiceArray().getString(i));
+								radio.setText(survey.getChoiceArray().getString(i));
 							} catch (JSONException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
