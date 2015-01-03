@@ -43,6 +43,9 @@ public class Survey {
     public int getSurveyType(){
     	return _surveyType;
     }
+    public int getID(){
+    	return _ID;
+    }
     
     /*public boolean receiveAndParseResult(){
         //TODO

@@ -64,17 +64,17 @@ public class QuestionManager {
     		return true;
     	}
     	else{
-    		Log.e("QuestionManager", "addQuestionToList()");
+    		Log.e("QuestionManager::addQuestionToList()", "already has question ID " + ID);
         	return false;
     	}	
     }
-    public boolean deleteQuestionFromList(int quesID){
-    	if(_allTable.containsKey(quesID)){
-    		_allTable.remove(quesID);
+    public boolean deleteQuestionFromList(int ID){
+    	if(_allTable.containsKey(ID)){
+    		_allTable.remove(ID);
     		return true;
     	}
     	else{
-    		Log.e("QuestionManager", "deleteQuestionFromList()");
+    		Log.e("QuestionManager::deleteQuestionFromList()", "doesn't have question ID " + ID);
         	return false;
     	}
     }
@@ -85,7 +85,7 @@ public class QuestionManager {
     		return true;
     	}
     	else{
-    		Log.e("QuestionManager", "addQuestionToUnsolvedList()");
+    		Log.e("QuestionManager::addQuestionToUnsolvedList()", "already has question ID " + quesID);
         	return false;
     	}	
     }
@@ -106,8 +106,7 @@ public class QuestionManager {
     		return true;
     	}
     	else{
-    		Log.e("QuestionManager", "addQuestionToSolvedList(): no this ID "
-    				+ Integer.toString(quesID));
+    		Log.e("QuestionManager::deleteQuestionFromUnsolvedList()", "doesn't have question ID " + quesID);
         	return false;
     	}
     }
@@ -117,8 +116,8 @@ public class QuestionManager {
     		return true;
     	}
     	else{
-    		Log.e("QuestionManager", "deleteQuestionFromSolvedList(): no this ID "
-    				+ Integer.toString(quesID));
+    		Log.e("QuestionManager::deleteQuestionFromSolvedList()", "doesn't have question ID " + quesID);
+
         	return false;
     	}
     }    

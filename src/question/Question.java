@@ -9,7 +9,7 @@ public class Question {
     private String _topic;
     private boolean _isSolved;	// true: solved; false: unsolved
     private int _popu;
-    private boolean _like;
+    private boolean _islike;
     
     //constructor
     public Question(int ID, String topic, boolean isSolved, int popu) {
@@ -17,7 +17,7 @@ public class Question {
         _topic = topic;
         _isSolved = isSolved;
         _popu = popu;
-        _like = false;
+        _islike = false;
     }
     // function
     // get private member variable
@@ -34,7 +34,7 @@ public class Question {
         return _popu;
     }
     public boolean isLiked(){
-    	return _like;
+    	return _islike;
     }
     // change private member
     public boolean increasePopu(){
@@ -49,8 +49,8 @@ public class Question {
     	_isSolved = status;
         return true;
     }
-    public boolean setLike(boolean like){
-    	_like = like;
+    public boolean setLike(boolean islike){
+    	_islike = islike;
     	return true;
     }
 }

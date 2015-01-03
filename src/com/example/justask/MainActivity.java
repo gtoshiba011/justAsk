@@ -45,6 +45,7 @@ import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TextView;
@@ -288,7 +289,8 @@ public class MainActivity extends SherlockFragmentActivity {
 		Enumeration<Integer> enumKey = surveyHash.keys();
 		while(enumKey.hasMoreElements()){
 			Integer key = enumKey.nextElement();
-			surveyList.add(surveyHash.get(key));
+			if( surveyHash.get(key).getStatus() == Survey.MULTIPLE)
+				surveyList.add(surveyHash.get(key));
 		}
 		adapt = new MyAdapter(MainActivity.this, R.layout.survey_item_view, surveyList);
 		ListView listTask = (ListView) findViewById(R.id.listView1);
@@ -320,7 +322,7 @@ public class MainActivity extends SherlockFragmentActivity {
 			Map<String, Question> data = new HashMap<String, Question>();
 			Integer key = entry.getKey();
 			Question question = unSolvedTable.get(key);
-			Log.i("MainActivity::updateQuestionlist()", "key: " + Integer.toString(key));
+			//Log.i("MainActivity::updateQuestionlist()", "key: " + Integer.toString(key));
 			data.put("child", question);
 			child_unSloved.add(data);
 	    }
@@ -494,7 +496,24 @@ public class MainActivity extends SherlockFragmentActivity {
 	
 	public void sendSurveyResult(View view) {
 		Survey survey = (Survey)view.getTag();
-		surveyList.remove(survey);
+		String answer;
+		switch( survey.getSurveyType() ){
+			case Survey.TRUEFALSE:
+				RadioButton trueButton = (RadioButton) view.findViewById(R.id.radioTrue);
+				RadioButton falseButton = (RadioButton) view.findViewById(R.id.radioTrue);
+				if(trueButton.)
+				break;
+			case Survey.MULTIPLE:
+				break;
+			case Survey.NUMERAL:
+				break;
+			case Survey.ESSAY:
+				break;
+			default:
+				break;
+		}
+		replySurvey(manager.getJoinEventID(), survey.getID(), "");
+		//surveyList.remove(survey);
 		adapt.notifyDataSetChanged();
 	}
 
@@ -634,10 +653,10 @@ public class MainActivity extends SherlockFragmentActivity {
 			Button btn = null;
 			TextView txv = null;
 
-			Survey current = surveyList.get(position);
+			Survey survey = surveyList.get(position);
 			//if (convertView == null) {
 				LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				switch( current.getSurveyType() ){
+				switch( survey.getSurveyType() ){
 					case Survey.TRUEFALSE:
 						convertView = inflater.inflate(R.layout.survey_truefalse_view, parent, false);
 						break;
@@ -656,16 +675,16 @@ public class MainActivity extends SherlockFragmentActivity {
 				txv = (TextView) convertView.findViewById(R.id.txvSurvey);
 				btn = (Button) convertView.findViewById(R.id.btnSend);
 				convertView.setTag(R.id.first_tag, txv);
-				convertView.setTag(R.id.second_tag, btn);				
+				convertView.setTag(R.id.second_tag, btn);
 			//} 
 			//else {
 			//	txv = (TextView) convertView.getTag(R.id.first_tag);
 			//	btn = (Button) convertView.getTag(R.id.second_tag);
 			//}
 
-			txv.setText(current.getSurveyTopic());
-			txv.setTag(current);
-			btn.setTag(current);
+			txv.setText(survey.getSurveyTopic());
+			txv.setTag(survey);
+			btn.setTag(survey);
 
 			return convertView;
 		}
@@ -677,9 +696,9 @@ public class MainActivity extends SherlockFragmentActivity {
     	Log.i("MainActivity::connectWebSocket()", "Connect web socket...");
         URI uri;
         try {
-        	Log.i("webSocket", "start new uri");
+        	Log.i("MainActivity::webSocket", "start new uri");
             uri = new URI("ws://140.112.230.230:7272");
-            Log.i("webSocket", "new uri success!");
+            Log.i("MainActivity::webSocket", "new uri success!");
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return;
@@ -688,7 +707,7 @@ public class MainActivity extends SherlockFragmentActivity {
         mWebSocketClient = new WebSocketClient(uri) {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
-                Log.i("Websocket", "Opened");
+                Log.i("MainActivity::Websocket", "Opened");
                 //mWebSocketClient.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
             }
 
@@ -698,7 +717,7 @@ public class MainActivity extends SherlockFragmentActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.i("webSocket", "onMessage: " + message);
+                        Log.i("MainActivity::webSocket", "onMessage: " + message);
                         // decode JSON Object
                         JSONObject object = null;
                         int event_mission;
@@ -753,7 +772,7 @@ public class MainActivity extends SherlockFragmentActivity {
 									manager.closeEvent(object.getInt("Event_ID"));
 									Log.i("MainActivity::case9", "finisih close the event");
 									break;
-								case 10:
+//								case 10:
 //									updateInfo();
 //									updateQuestionlist(true, true);
 //									updateSurveylist();
@@ -771,12 +790,12 @@ public class MainActivity extends SherlockFragmentActivity {
 
             @Override
             public void onClose(int i, String s, boolean b) {
-                Log.i("Websocket", "Closed " + s);
+                Log.i("MainActivity::Websocket", "Closed " + s);
             }
 
             @Override
             public void onError(Exception e) {
-                Log.i("Websocket", "Error " + e.getMessage());
+                Log.i("MainActivity::Websocket", "Error " + e.getMessage());
             }
         };
         mWebSocketClient.connect();

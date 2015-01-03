@@ -103,7 +103,7 @@ public class Manager extends Application{
     // M10
     public boolean createEvent(int eventID){
     	if(_myEventTable.containsKey(eventID)){
-    		Log.e("Manager::createEvent()","");
+    		Log.e("Manager::createEvent()","already has event" + Integer.toString(eventID));
     		return false;
     	}
     	Event event = new Event(eventID);
