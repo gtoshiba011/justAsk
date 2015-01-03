@@ -46,6 +46,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TextView;
@@ -662,6 +663,18 @@ public class MainActivity extends SherlockFragmentActivity {
 						break;
 					case Survey.MULTIPLE:
 						convertView = inflater.inflate(R.layout.survey_multiple_view, parent, false);
+						RadioGroup group;
+						group = (RadioGroup)convertView.findViewById(R.id.radioGroup1);
+						for(int i = 0 ; i < current.getChoiceArray().length() ; i++){
+					         RadioButton radio = new RadioButton(MainActivity.this);
+					         try {
+								radio.setText(current.getChoiceArray().getString(i));
+							} catch (JSONException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+					         group.addView(radio);
+					    }
 						break;
 					case Survey.NUMERAL:
 						convertView = inflater.inflate(R.layout.survey_numeral_view, parent, false);

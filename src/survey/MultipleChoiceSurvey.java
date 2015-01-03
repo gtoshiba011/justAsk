@@ -7,7 +7,6 @@ import org.json.JSONArray;
 public class MultipleChoiceSurvey extends Survey{
 
     private int _numberOfChoice;
-    private JSONArray _choiceArr;
 
     //constructor
     public MultipleChoiceSurvey(int ID, int status, String topic, JSONArray choiceJSONArray) {
