@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +17,6 @@ import org.json.JSONObject;
 
 import question.Question;
 import survey.Survey;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -36,7 +34,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
@@ -100,6 +97,9 @@ public class MainActivity extends SherlockFragmentActivity {
 	List<Survey> slist;
 	MyAdapter adapt;
 	List<Survey> surveyList;
+	
+	// Event history
+	protected HistoryDbHelper db;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +122,9 @@ public class MainActivity extends SherlockFragmentActivity {
 		getSupportActionBar().setHomeButtonEnabled(true);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setIcon(android.R.color.transparent);
+		
+		//elv = (ExpandableListView)findViewById(R.id.mExpandableListView);
+		//Log.d("elv is null", String.valueOf(elv == null));
 		
 		//Event Tab Layout Initialization
 		final TabHost tabHost=(TabHost)findViewById(android.R.id.tabhost);
@@ -250,6 +253,16 @@ public class MainActivity extends SherlockFragmentActivity {
 		// join an event again
 		joinEvent(manager.getJoinEventID());
 		
+		// put this event into event history list
+		db = new HistoryDbHelper(this);
+		db.addHistory( 	manager.getJoinEventID(),
+						manager.getEvent(manager.getJoinEventID()).getSpeechInfo().getTopic(),
+						manager.getEvent(manager.getJoinEventID()).getSpeechInfo().getName()	);
+		
+		//viewPager.setCurrentItem(2, false);
+		//viewPager.setCurrentItem(1, false);
+		//viewPager.setCurrentItem(0, false);
+		
 		// update information
 		//updateInfo();
 		//updateQuestionlist(elv.isGroupExpanded(0), elv.isGroupExpanded(1));
@@ -313,6 +326,8 @@ public class MainActivity extends SherlockFragmentActivity {
 		child.add(unsolved);
 		child.add(solved);*/
 		
+		//Log.d("HI", "Get in here!!!!!!!!!");
+		
 		//group_unSloved's children
 		List<Map<String, Question>> child_unSloved = new ArrayList<Map<String, Question>>();
 		Hashtable<Integer, Question> unSolvedTable = manager.getEvent(manager.getJoinEventID()).getQuestionManager().getUnSolvedTable();
@@ -345,6 +360,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		adapter = new ExpandableAdapter(MainActivity.this, groups, childs);
 
 		elv = (ExpandableListView)findViewById(R.id.mExpandableListView);
+		//Log.d("NULL", String.valueOf(elv==null));
 		elv.setAdapter(adapter);
 		if( group0 ) elv.expandGroup(0);
 		if( group1 ) elv.expandGroup(1);
@@ -723,22 +739,26 @@ public class MainActivity extends SherlockFragmentActivity {
 									break;
 								case 4: //create question
 									manager.createQuestion(object.getInt("Event_ID"), object.getInt("Question_ID"), object.getString("Question_Topic"));
-									updateQuestionlist(elv.isGroupExpanded(0), elv.isGroupExpanded(1));
+									if( elv != null )
+										updateQuestionlist(elv.isGroupExpanded(0), elv.isGroupExpanded(1));
 									Log.i("MainActivity::case4", "finisih create question");
 									break;
 								case 5: //increase question popularity
 									manager.incrPopu(object.getInt("Event_ID"), object.getInt("Question_ID"));
-									updateQuestionlist(elv.isGroupExpanded(0), elv.isGroupExpanded(1));
+									if( elv != null )
+										updateQuestionlist(elv.isGroupExpanded(0), elv.isGroupExpanded(1));
 									Log.i("MainActivity::case5", "finisih increase question popularity");
 									break;
 								case 6: //decrease question popularity
 									manager.decrPopu(object.getInt("Event_ID"), object.getInt("Question_ID"));
-									updateQuestionlist(elv.isGroupExpanded(0), elv.isGroupExpanded(1));
+									if( elv != null )
+										updateQuestionlist(elv.isGroupExpanded(0), elv.isGroupExpanded(1));
 									Log.i("MainActivity::case6", "finisih decrease question popularity");
 									break;
 								case 7: //change question status
 									manager.chagneQuestionStatus(object.getInt("Event_ID"), object.getInt("Question_ID"), object.getString("Status"));
-									updateQuestionlist(elv.isGroupExpanded(0), elv.isGroupExpanded(1));
+									if( elv != null )
+										updateQuestionlist(elv.isGroupExpanded(0), elv.isGroupExpanded(1));
 									Log.i("MainActivity::case7", "finisih change question status");
 									break;
 								case 8: //change survey status

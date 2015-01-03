@@ -11,15 +11,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.justask.MainActivity$PlaceholderFragment" >
 
-
-    <TextView
-        android:id="@+id/section_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="join 266054"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="#FFFFFF" />
-
     <Button
         android:id="@+id/btnEditSave"
         android:layout_width="200sp"
@@ -32,5 +23,12 @@
         android:onClick="join"
         android:text="Join"
         android:textColor="#FFFFFF" />
+
+    <ListView
+        android:id="@+id/eventList"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent" >
+
+    </ListView>
 
 </LinearLayout>
