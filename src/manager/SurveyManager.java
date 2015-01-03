@@ -16,7 +16,12 @@ public class SurveyManager {
     	_mySurveyTable = new Hashtable<Integer, Survey>();
     }    
     private Survey getSurvey(int ID){
-    	return _mySurveyTable.get(ID);
+    	if(!_mySurveyTable.containsKey(ID)){
+    		Log.e("SurveyManager::getSurvey()", "ID " + ID + " not in surveyTable.");
+    		return null;
+    	}
+    	else
+    		return _mySurveyTable.get(ID);
     }
     public Hashtable<Integer, Survey> getServeyTable(){
     	return _mySurveyTable;

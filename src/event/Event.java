@@ -120,8 +120,10 @@ public class Event {
 		String topic = "";
 		int type = 0;
 		JSONArray choiceJSONArray= null;
+		Log.i("Event::updateSurveyInfo()", "surveySize: " + surveySize);
     	while ( surveySize != count){
 			try {
+				Log.i("Event::updateSurveyInfo()", "count: " + count);
 				surveyObject = surveyJSONArray.getJSONObject(count);
 				ID = count;
 	    		String str = surveyObject.getString("Status");
@@ -135,12 +137,13 @@ public class Event {
 					Log.e("updateSurveyInfo", "else ERROR");
 	    		topic =  surveyObject.getString("Survey_Topic");
 	    		type = surveyObject.getInt("Survey_Type");
-	    		if(type == 2)
+	    		if(type == 2){
 	    			choiceJSONArray =  surveyObject.getJSONArray("Choice");
+					Log.i("Event::updateSurveyInfo()", Integer.toString(choiceJSONArray.length()));
+	    		}
 			} catch (JSONException e) {
 				e.printStackTrace();
-				Log.e("updateSurveyInfo", "ERROR");
-				return false;
+				Log.e("Event::updateSurveyInfo()", "try ERROR");
 			}
     		_survManager.createSurvey(ID, status, topic, type, choiceJSONArray);
     		// update count
