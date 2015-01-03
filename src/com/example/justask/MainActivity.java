@@ -631,23 +631,36 @@ public class MainActivity extends SherlockFragmentActivity {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			Button btn = null;
 			TextView txv = null;
-			
-			if (convertView == null) {
-				LayoutInflater inflater = (LayoutInflater) context
-						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				convertView = inflater.inflate(R.layout.survey_item_view,
-						parent, false);
+
+			Survey current = surveyList.get(position);
+			//if (convertView == null) {
+				LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				switch( current.getSurveyType() ){
+					case Survey.TRUEFALSE:
+						convertView = inflater.inflate(R.layout.survey_truefalse_view, parent, false);
+						break;
+					case Survey.MULTIPLE:
+						convertView = inflater.inflate(R.layout.survey_multiple_view, parent, false);
+						break;
+					case Survey.NUMERAL:
+						convertView = inflater.inflate(R.layout.survey_numeral_view, parent, false);
+						break;
+					case Survey.ESSAY:
+						convertView = inflater.inflate(R.layout.survey_essay_view, parent, false);
+						break;
+					default:
+						break;
+				}
 				txv = (TextView) convertView.findViewById(R.id.txvSurvey);
 				btn = (Button) convertView.findViewById(R.id.btnSend);
 				convertView.setTag(R.id.first_tag, txv);
 				convertView.setTag(R.id.second_tag, btn);				
-			} 
-			else {
-				txv = (TextView) convertView.getTag(R.id.first_tag);
-				btn = (Button) convertView.getTag(R.id.second_tag);
-			}
-			
-			Survey current = surveyList.get(position);
+			//} 
+			//else {
+			//	txv = (TextView) convertView.getTag(R.id.first_tag);
+			//	btn = (Button) convertView.getTag(R.id.second_tag);
+			//}
+
 			txv.setText(current.getSurveyTopic());
 			txv.setTag(current);
 			btn.setTag(current);

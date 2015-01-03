@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingBottom="5dp" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/survey_shape"
+        android:orientation="vertical" >
+            
+        <TextView
+            android:id="@+id/txvSurvey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp"
+            android:text="New Text"
+            android:textColor="#2F6877"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/edtNumeral"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/edittext_shape"
+            android:ems="10"
+            android:hint="Your answer ..."
+            android:inputType="number"
+            android:padding="5dp" >
+
+            <requestFocus />
+        </EditText>
+
+        <Button
+            android:id="@+id/btnSend"
+            style="?android:attr/buttonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:background="@drawable/button_send"
+            android:drawableLeft="@drawable/ic_send"
+            android:height="25dp"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:onClick="sendSurveyResult"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="Send"
+            android:textColor="#EEFFFFFF"
+            android:textSize="16sp"
+            android:width="90dp" />
+        
+    </LinearLayout>
+
+</RelativeLayout>
