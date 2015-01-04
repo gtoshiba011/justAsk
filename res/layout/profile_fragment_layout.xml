@@ -88,11 +88,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
-        android:text="Presenter"
+        android:text="Topic"
         android:textColor="#FFFFFF" />
 
     <TextView
-        android:id="@+id/txvPresenter"
+        android:id="@+id/txvTopic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
@@ -107,11 +107,11 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="5dp"
-        android:text="Topic"
+        android:text="Presenter"
         android:textColor="#FFFFFF" />
 
     <TextView
-        android:id="@+id/txvTopic"
+        android:id="@+id/txvPresenter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"

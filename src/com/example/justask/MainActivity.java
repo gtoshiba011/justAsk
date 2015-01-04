@@ -287,6 +287,17 @@ public class MainActivity extends SherlockFragmentActivity {
     }
 	
 	@Override
+    protected void onStop() {
+        super.onStart();
+        try{
+        	mWebSocketClient.closeBlocking();
+        }catch(InterruptedException ie){
+        }
+        MainActivity.this.finish(); //close Activity
+        Log.d("MainActivity:onStop","update info in textview finished");
+    }
+	
+	@Override
 	public void onBackPressed()
 	{
 		try{
@@ -646,7 +657,7 @@ public class MainActivity extends SherlockFragmentActivity {
 			
 			if( question.isSolved() ) {
 				//cb.setChecked(true);
-				relativeLayout.setBackgroundResource(R.drawable.question_solved_shape);
+				((View)tv.getParent()).setBackgroundResource(R.drawable.question_solved_shape);
 				btn.setBackgroundResource(R.drawable.button_like_nonclickable);
 				btn.setClickable(false);
 			}
