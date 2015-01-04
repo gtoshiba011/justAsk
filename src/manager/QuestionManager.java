@@ -29,6 +29,25 @@ public class QuestionManager {
     		addQuestionToUnsolvedList(ID);
     	return true;
     }
+    public boolean updateQuestion(int ID, boolean isSolved, int popu){
+    	Question question = getQuestion(ID);
+    	if(question.isSolved() != isSolved){
+    		if(isSolved){
+    			deleteQuestionFromUnsolvedList(ID);
+    			addQuestionToSolvedList(ID);
+    		}
+    		else{
+    			deleteQuestionFromSolvedList(ID);
+    			addQuestionToUnsolvedList(ID);
+    		}
+    		question.setStatus(isSolved);
+    	}
+    	question.setPopu(popu);
+    	return true;
+    }
+    public boolean existQuestion(int ID){
+    	return _allTable.containsKey(ID);
+    }
     public Question getQuestion(int quesID){
     	return _allTable.get(quesID);
     }
@@ -121,22 +140,5 @@ public class QuestionManager {
     				+ Integer.toString(quesID));
         	return false;
     	}
-    } 
-    
-    
-	//activity
-    public void showQuestionList(){
-        //TODO
-    }
-    public boolean updateQuestionList(){
-        //TODO
-    	//connect to server and update all table
-        return true;
-    }
-    //sort unsolved question by 'like' amount
-    public boolean sortQuestion(){
-        //TODO
-    	//is this function necessary?
-        return false;
-    }   
+    }  
 }

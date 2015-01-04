@@ -11,9 +11,7 @@ public class MultipleChoiceSurvey extends Survey{
 
     //constructor
     public MultipleChoiceSurvey(int ID, int status, String topic, JSONArray choiceJSONArray) {
-        super(ID);
-    	_status = status;
-    	_surveyTopic = topic;
+        super(ID, status, topic);
         _surveyType = MULTIPLE;
         _choiceArr = choiceJSONArray;
     }

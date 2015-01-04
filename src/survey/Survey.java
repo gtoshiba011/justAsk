@@ -27,10 +27,14 @@ public class Survey {
     *** end define type */
     protected JSONArray _choiceArr;// type : int
     protected String _surveyTopic;
+    protected boolean _isAnswer;
     
     //constructor
-    public Survey(int ID) {
+    public Survey(int ID, int status, String topic) {
     	_ID = ID;
+    	_status = status;
+    	_surveyTopic = topic;
+    	_isAnswer = false;
     }
     public boolean changeStatus(int status){
     	_status = status;
@@ -56,7 +60,13 @@ public class Survey {
     public JSONArray getChoiceArray(){
     	return _choiceArr;
     }
-    
+    public boolean setIsAnswer(){
+    	_isAnswer = true;
+    	return true;
+    }
+    public boolean getIsAnswer(){
+    	return _isAnswer;
+    }
     /*public boolean receiveAndParseResult(){
         //TODO
         return false;

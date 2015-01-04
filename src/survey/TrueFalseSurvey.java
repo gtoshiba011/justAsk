@@ -7,9 +7,7 @@ public class TrueFalseSurvey extends Survey{
     //constructor
     //constructor
     public TrueFalseSurvey(int ID, int status, String topic) {
-        super(ID);
-    	_status = status;
-    	_surveyTopic = topic;
+        super(ID, status, topic);
     	_surveyType = TRUEFALSE;
     }
 

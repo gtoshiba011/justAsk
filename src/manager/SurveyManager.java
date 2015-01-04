@@ -23,6 +23,14 @@ public class SurveyManager {
     	else
     		return _mySurveyTable.get(ID);
     }
+    public boolean existSurvey(int ID){
+    	if(!_mySurveyTable.containsKey(ID)){
+    		Log.i("SurveyManager::existSurvey()", "ID " + ID + " not in surveyTable.");
+    		return false;
+    	}
+    	else
+    		return true;
+    }
     public Hashtable<Integer, Survey> getServeyTable(){
     	return _mySurveyTable;
     }
@@ -47,7 +55,10 @@ public class SurveyManager {
     	}
     	addToSurveyList(ID, survey);
     	return true;
-    } 
+    }
+    public boolean updateSurvey(int ID, int status){
+    	return changeSurveyStatus(ID, status);
+    }
     public void addToSurveyList(int surveyID, Survey survey){
     	_mySurveyTable.put(surveyID,  survey);
     }
@@ -60,8 +71,10 @@ public class SurveyManager {
     	return true;
     }
     public boolean changeSurveyStatus(int SID, int status){
-    	if( getSurvey(SID) == null)
+    	if( getSurvey(SID) == null){
+    		Log.e("SueveyManager::changeSurveyStatus()", "survey null");
     		return true;
+    	}
     	if( getSurvey(SID).getStatus() == status)
     		return true;
     	if(status == 1){ //initial
@@ -82,10 +95,11 @@ public class SurveyManager {
     	}
     }  
     public boolean closeSurvey(int SID){
-    	deleteFromSurveyList(SID);
-    	return true;
+    	return deleteFromSurveyList(SID);
     }
-    
+    public boolean setIsAnswer(int SID){
+    	return getSurvey(SID).setIsAnswer();
+    }
     public void sortSurveyList(){
         //TODO
     	//how to sort list

@@ -9,9 +9,7 @@ public class EssaySurvey extends Survey{
 
     //constructor
     public EssaySurvey(int ID, int status, String topic) {
-        super(ID);
-    	_status = status;
-    	_surveyTopic = topic;
+        super(ID, status, topic);
     	_surveyType = ESSAY;
     }
 

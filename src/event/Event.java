@@ -89,7 +89,11 @@ public class Event {
 				return false;
 			}
     		Log.i("updateQuestionInfo", "ID: " + Integer.toString(ID) + " topic: " + topic + " isSolved: " + Boolean.toString(isSolved) + " popu: " + Integer.toString(popu) );
-        	_quesManager.createQuestion(ID, topic, isSolved, popu);
+        	if(_quesManager.existQuestion(ID)){
+        		_quesManager.updateQuestion(ID, isSolved, popu);
+        	}
+        	else
+        		_quesManager.createQuestion(ID, topic, isSolved, popu);
     		// update count
         	count++;
     	}
@@ -106,9 +110,6 @@ public class Event {
     }
     public boolean changeQuestionStatus(int QID, boolean status){
     	return _quesManager.changeStutus(QID, status);
-    }
-    public boolean sortQuestion(){
-    	return _quesManager.sortQuestion();
     }
     // Survey
     public boolean updateSurveyInfo(JSONArray surveyJSONArray){
@@ -145,7 +146,10 @@ public class Event {
 				e.printStackTrace();
 				Log.e("Event::updateSurveyInfo()", "try ERROR");
 			}
-    		_survManager.createSurvey(ID, status, topic, type, choiceJSONArray);
+			if(_survManager.existSurvey(ID))
+				_survManager.updateSurvey(ID, status);
+			else
+				_survManager.createSurvey(ID, status, topic, type, choiceJSONArray);
     		// update count
     		count++;
         }
@@ -163,6 +167,8 @@ public class Event {
     public boolean closeSurvey(int SID){
     	return _survManager.closeSurvey(SID);
     }
-    
+    public boolean setIsAnswer(int SID){
+    	return _survManager.setIsAnswer(SID);
+    }
     
 }

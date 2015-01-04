@@ -45,6 +45,10 @@ public class Question {
     	_popu--;
     	return true;
     }
+    public boolean setPopu(int popu){
+    	_popu = popu;
+    	return true;
+    }
     public boolean setStatus(boolean status){
     	_isSolved = status;
         return true;

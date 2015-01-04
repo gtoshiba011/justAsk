@@ -322,7 +322,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		Enumeration<Integer> enumKey = surveyHash.keys();
 		while(enumKey.hasMoreElements()){
 			Integer key = enumKey.nextElement();
-			if( surveyHash.get(key).getStatus() == Survey.START)
+			if( (surveyHash.get(key).getStatus() == Survey.START)  && (!surveyHash.get(key).getIsAnswer()) )
 				surveyList.add(surveyHash.get(key));
 		}
 		Log.d("Size", String.valueOf(surveyList.size()));
@@ -586,7 +586,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		else{
 			replySurvey(manager.getJoinEventID(), survey.getID(), answer);
 		}
-		manager.getEvent(manager.getJoinEventID()).closeSurvey(survey.getID());
+		manager.getEvent(manager.getJoinEventID()).setIsAnswer(survey.getID());
 		updateSurveylist();
 	}
 

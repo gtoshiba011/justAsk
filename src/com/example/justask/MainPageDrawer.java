@@ -4,7 +4,7 @@ package com.example.justask;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-//import net.sourceforge.zbar.android.CameraTest.CameraTestActivity;
+import net.sourceforge.zbar.android.CameraTest.CameraTestActivity;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
