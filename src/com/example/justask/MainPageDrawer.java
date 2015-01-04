@@ -155,7 +155,7 @@ public class MainPageDrawer extends Activity {
 							switch(event_mission){
 								case 0:	//Request Reply
 									if(object.getBoolean("Success") == false){
-										Toast toast = Toast.makeText(MainPageDrawer.this,"Invalid Event ID", Toast.LENGTH_LONG);
+										Toast toast = Toast.makeText(MainPageDrawer.this,"Invalid Event Id", Toast.LENGTH_LONG);
 										toast.show();
 									}
 									Log.i("MainPageDrawer::case0", object.toString());
@@ -301,21 +301,14 @@ public class MainPageDrawer extends Activity {
     	switch(resultCode){
     	case 1://QR flag
     		String result = data.getExtras().getString("QREventCode");
+    		if(result.length()!=6)
+			{
+				Toast toast = Toast.makeText(MainPageDrawer.this,"Invalid Event Id", Toast.LENGTH_LONG);
+				toast.show();
+				break;
+			}
     		EditText editText = (EditText) findViewById(R.id.edtEventCode);
     		editText.setText(result);
-    		if(editText.getText().length()==6)
-			{
-				String mString = editText.getText().toString();
-				editText.setText("");
-				manager.setEventID(Integer.valueOf(mString));
-				launch();
-			}
-    		else
-    		{
-    			editText.setText("");
-    			Toast toast = Toast.makeText(MainPageDrawer.this,"Invalid Event ID", Toast.LENGTH_LONG);
-				toast.show();
-    		}
     		break;
     	}
     }
