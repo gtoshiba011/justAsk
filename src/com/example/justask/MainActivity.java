@@ -48,6 +48,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TextView;
@@ -387,7 +388,10 @@ public class MainActivity extends SherlockFragmentActivity {
 		}
 		//close activity after pressing action_home buttom in action bar
 		else if(item.getItemId() == R.id.action_home) {
-			mWebSocketClient.close();
+			try{
+	        	mWebSocketClient.closeBlocking();
+	        }catch(InterruptedException ie){
+	        }
 			MainActivity.this.finish(); //close Activity
 		}
 
@@ -601,11 +605,11 @@ public class MainActivity extends SherlockFragmentActivity {
 			LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
 			//獲取二級清單對應的佈局檔, 並將其各元素設置相應的屬性
-			LinearLayout linearLayout = (LinearLayout) layoutInflater.inflate(R.layout.question_item_view, null);
-			TextView tv = (TextView) linearLayout.findViewById(R.id.txvQuestion);
+			RelativeLayout relativeLayout = (RelativeLayout) layoutInflater.inflate(R.layout.question_item_view, null);
+			TextView tv = (TextView) relativeLayout.findViewById(R.id.txvQuestion);
 			tv.setText(question.getQuestionTopic());
 
-			ToggleButton btn = (ToggleButton)linearLayout.findViewById(R.id.btnLike);
+			ToggleButton btn = (ToggleButton)relativeLayout.findViewById(R.id.btnLike);
 			if( question.isLiked() ){
 				btn.setChecked( true );
 				btn.setBackgroundResource(R.drawable.button_like_clicked);
@@ -623,13 +627,13 @@ public class MainActivity extends SherlockFragmentActivity {
 			
 			if( question.isSolved() ) {
 				//cb.setChecked(true);
-				linearLayout.setBackgroundResource(R.drawable.question_solved_shape);
+				relativeLayout.setBackgroundResource(R.drawable.question_solved_shape);
 				btn.setBackgroundResource(R.drawable.button_like_nonclickable);
 				btn.setClickable(false);
 			}
 			//else btn.setClickable(true);
 
-			return linearLayout;
+			return relativeLayout;
 		}
 
 		public int getChildrenCount(int groupPosition)
@@ -714,18 +718,20 @@ public class MainActivity extends SherlockFragmentActivity {
 						convertView = inflater.inflate(R.layout.survey_multiple_view, parent, false);
 						RadioGroup group;
 						group = (RadioGroup)convertView.findViewById(R.id.radioGroup1);
-						for(int i = 0 ; i < survey.getChoiceArray().length() ; i++){
-					        RadioButton radio = new RadioButton(MainActivity.this);
-					        try {
-					        	 radio.setText(survey.getChoiceArray().getString(i));
-					        	 radio.setTextColor(Color.parseColor("#f02F6877"));
-					        	 radio.setId(i);
-							} catch (JSONException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-					         group.addView(radio);
-					    }
+						if(survey.getChoiceArray() != null){
+							for(int i = 0 ; i < survey.getChoiceArray().length() ; i++){
+						        RadioButton radio = new RadioButton(MainActivity.this);
+						        try {
+						        	 radio.setText(survey.getChoiceArray().getString(i));
+						        	 radio.setTextColor(Color.parseColor("#f02F6877"));
+						        	 radio.setId(i);
+								} catch (JSONException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+						         group.addView(radio);
+						    }
+						}
 						break;
 					case Survey.NUMERAL:
 						convertView = inflater.inflate(R.layout.survey_numeral_view, parent, false);
@@ -790,6 +796,11 @@ public class MainActivity extends SherlockFragmentActivity {
 							event_mission = (Integer)object.get("Event_Mission");
 							switch(event_mission){
 								case 0:	//Request Reply
+									if(object.getBoolean("Success") == false){
+										Toast toast = Toast.makeText(MainActivity.this,"Invalid Event ID", Toast.LENGTH_LONG);
+										toast.show();
+										MainActivity.this.finish(); //close Activity
+									}
 									Log.i("MainActivity::case0", object.toString());
 									break;
 								case 1: //update event information
@@ -844,6 +855,7 @@ public class MainActivity extends SherlockFragmentActivity {
 									break;
 								case 11:// when join event and update the event
 									manager.updateEventInfo(object.getInt("Event_ID"), object.getString("Name"), object.getString("Email"), object.getString("Topic"), object.getJSONArray("SurveyList"), object.getJSONArray("QuestionList"));
+									updateInfo();
 									Log.i("MainActivity::case11", "finisih update event");
 									db = new HistoryDbHelper(MainActivity.this);
 									db.addHistory( 	manager.getJoinEventID(),
@@ -873,7 +885,10 @@ public class MainActivity extends SherlockFragmentActivity {
                 Log.i("MainActivity::Websocket", "Error " + e.getMessage());
             }
         };
-        mWebSocketClient.connect();
+        try{
+        	mWebSocketClient.connectBlocking();
+        }catch(InterruptedException ie){
+        }
     }
     public void sendMessage(String sendMessage) {
         mWebSocketClient.send(sendMessage);

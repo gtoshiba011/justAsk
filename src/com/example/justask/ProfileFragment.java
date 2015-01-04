@@ -23,7 +23,7 @@ public class ProfileFragment extends Fragment{
     	btnWebCode.setTag(0);
     	btnEditSave.setVisibility(View.GONE);
     	btnWebCode.setVisibility(View.GONE);
-    	
+    	/*
     	MainActivity act = (MainActivity)getActivity();
     	TextView event_id_text =  (TextView) rootView.findViewById(R.id.EventID);
 		TextView name_text =  (TextView) rootView.findViewById(R.id.txvPresenter);
@@ -33,7 +33,7 @@ public class ProfileFragment extends Fragment{
 		name_text.setText(act.manager.getEvent(act.manager.getJoinEventID()).getSpeechInfo().getName());
         mail_text.setText(act.manager.getEvent(act.manager.getJoinEventID()).getSpeechInfo().getEmail());
         topic_text.setText(act.manager.getEvent(act.manager.getJoinEventID()).getSpeechInfo().getTopic());
-    	
+    	*/
     	return rootView;
     }
    

@@ -39,7 +39,7 @@ import android.widget.Toast;
 //json object
 //Application
 
-//import net.sourceforge.zbar.android.CameraTest.*;
+import net.sourceforge.zbar.android.CameraTest.*;
 
 public class MainPageDrawer extends Activity {
     private DrawerLayout mDrawerLayout;
@@ -303,6 +303,19 @@ public class MainPageDrawer extends Activity {
     		String result = data.getExtras().getString("QREventCode");
     		EditText editText = (EditText) findViewById(R.id.edtEventCode);
     		editText.setText(result);
+    		if(editText.getText().length()==6)
+			{
+				String mString = editText.getText().toString();
+				editText.setText("");
+				manager.setEventID(Integer.valueOf(mString));
+				launch();
+			}
+    		else
+    		{
+    			editText.setText("");
+    			Toast toast = Toast.makeText(MainPageDrawer.this,"Invalid Event ID", Toast.LENGTH_LONG);
+				toast.show();
+    		}
     		break;
     	}
     }
@@ -318,8 +331,8 @@ public class MainPageDrawer extends Activity {
 	}
 	// When the "Scan QR code" button is pushed
 	public void ScanQR(View v){
-		//Intent it = new Intent(this, CameraTestActivity.class);
-		//startActivityForResult(it, 1);
+		Intent it = new Intent(this, CameraTestActivity.class);
+		startActivityForResult(it, 1);
 	}
 	
 	// When the "Event History" button is pushed
