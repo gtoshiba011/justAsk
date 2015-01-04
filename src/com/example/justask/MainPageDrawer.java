@@ -307,7 +307,7 @@ public class MainPageDrawer extends Activity {
     	}
     }
     
-	// When the "Launch An Event" button is pushed
+	// Launch an event
 	public void launch(View v){
 		Intent it = new Intent(this, MainActivity.class);
 		startActivity( it );
@@ -324,7 +324,7 @@ public class MainPageDrawer extends Activity {
 	
 	// When the "Event History" button is pushed
 	public void event(View v){
-		mWebSocketClient.close();
+		//mWebSocketClient.close();
 		Intent it = new Intent(this, EventHistory.class);
 		startActivity( it );
 	}

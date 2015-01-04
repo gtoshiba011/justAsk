@@ -263,10 +263,10 @@ public class MainActivity extends SherlockFragmentActivity {
 		joinEvent(manager.getJoinEventID());
 		
 		// put this event into event history list
-//		db = new HistoryDbHelper(this);
-//		db.addHistory( 	manager.getJoinEventID(),
-//						manager.getEvent(manager.getJoinEventID()).getSpeechInfo().getTopic(),
-//						manager.getEvent(manager.getJoinEventID()).getSpeechInfo().getName()	);
+		//db = new HistoryDbHelper(this);
+		//db.addHistory( 	manager.getJoinEventID(),
+		//				manager.getEvent(manager.getJoinEventID()).getSpeechInfo().getTopic(),
+		//				manager.getEvent(manager.getJoinEventID()).getSpeechInfo().getName()	);
 		
 		//viewPager.setCurrentItem(2, false);
 		//viewPager.setCurrentItem(1, false);
