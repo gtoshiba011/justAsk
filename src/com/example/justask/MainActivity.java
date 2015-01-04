@@ -287,6 +287,16 @@ public class MainActivity extends SherlockFragmentActivity {
     }
 	
 	@Override
+	public void onBackPressed()
+	{
+		try{
+        	mWebSocketClient.closeBlocking();
+        }catch(InterruptedException ie){
+        }
+		MainActivity.this.finish(); //close Activity
+	}
+	
+	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getSupportMenuInflater();
         inflater.inflate(R.menu.main_page_drawer, menu);
