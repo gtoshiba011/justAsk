@@ -60,6 +60,8 @@ public class SurveyManager {
     	return true;
     }
     public boolean changeSurveyStatus(int SID, int status){
+    	if( getSurvey(SID) == null)
+    		return true;
     	if( getSurvey(SID).getStatus() == status)
     		return true;
     	if(status == 1){ //initial

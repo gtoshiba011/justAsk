@@ -298,10 +298,12 @@ public class MainActivity extends SherlockFragmentActivity {
 		TextView name_text =  (TextView) findViewById(R.id.txvPresenter);
         TextView mail_text =  (TextView) findViewById(R.id.txvEmail);
         TextView topic_text =  (TextView) findViewById(R.id.txvTopic);
-		event_id_text.setText(Integer.toString(manager.getJoinEventID()));
-		name_text.setText(manager.getEvent(manager.getJoinEventID()).getSpeechInfo().getName());
-        mail_text.setText(manager.getEvent(manager.getJoinEventID()).getSpeechInfo().getEmail());
-        topic_text.setText(manager.getEvent(manager.getJoinEventID()).getSpeechInfo().getTopic());
+        if(event_id_text != null){
+			event_id_text.setText(Integer.toString(manager.getJoinEventID()));
+			name_text.setText(manager.getEvent(manager.getJoinEventID()).getSpeechInfo().getName());
+	        mail_text.setText(manager.getEvent(manager.getJoinEventID()).getSpeechInfo().getEmail());
+	        topic_text.setText(manager.getEvent(manager.getJoinEventID()).getSpeechInfo().getTopic());
+        }
 	}
 
 	public void updateSurveylist(){
@@ -317,7 +319,8 @@ public class MainActivity extends SherlockFragmentActivity {
 		adapt = new MyAdapter(MainActivity.this, R.layout.survey_item_view, surveyList);
 		ListView listTask = (ListView) findViewById(R.id.listView1);
 		Log.d("updateSurveyList", String.valueOf(listTask==null));
-		listTask.setAdapter(adapt);
+		if(listTask != null)
+			listTask.setAdapter(adapt);
 	}
 	
 	public void updateQuestionlist( boolean group0, boolean group1){
@@ -799,6 +802,10 @@ public class MainActivity extends SherlockFragmentActivity {
 									if(object.getBoolean("Success") == false){
 										Toast toast = Toast.makeText(MainActivity.this,"Invalid Event ID", Toast.LENGTH_LONG);
 										toast.show();
+										try{
+								        	mWebSocketClient.closeBlocking();
+								        }catch(InterruptedException ie){
+								        }
 										MainActivity.this.finish(); //close Activity
 									}
 									Log.i("MainActivity::case0", object.toString());
