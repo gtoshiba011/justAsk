@@ -138,7 +138,10 @@ public class EventHistory extends SherlockFragmentActivity implements DialogInte
     // Called function when event in history list is clicked
     public void HistoryClick(View view){
     	History history = (History)view.findViewById(R.id.txvHisTopic).getTag();
-    	joinEvent(history.getId());
+    	manager.setEventID(history.getId());
+    	Intent it = new Intent(this, MainActivity.class);
+		startActivity( it );
+    	//joinEvent(history.getId());
     	Toast toast = Toast.makeText(EventHistory.this,"Join now...Please wait", Toast.LENGTH_LONG);
 		toast.show();
     	EventHistory.this.finish();
@@ -196,7 +199,7 @@ public class EventHistory extends SherlockFragmentActivity implements DialogInte
         super.onResume();  // Always call the superclass method first
 
         // socket connection
-     	connectWebSocket();
+     	//connectWebSocket();
     }
     @Override
     public void onStop() {
