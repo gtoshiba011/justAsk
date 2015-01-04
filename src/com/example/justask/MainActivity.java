@@ -538,6 +538,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		View view = (View) v.getParent();
 		Survey survey = (Survey)v.getTag();
 		String answer = "";
+		boolean answerBool = true;
 		switch( survey.getSurveyType() ){
 			case Survey.TRUEFALSE:
 				//RadioGroup radioGroup1 = (RadioGroup) view.findViewById(R.id.radioGroup1);
@@ -545,9 +546,9 @@ public class MainActivity extends SherlockFragmentActivity {
 				RadioButton trueButton = (RadioButton) view.findViewById(R.id.radioTrue);
 				RadioButton falseButton = (RadioButton) view.findViewById(R.id.radioFalse);
 				if(trueButton.isChecked())
-					answer = "true";
+					answerBool = true;
 				else if(falseButton.isChecked())
-					answer = "false";
+					answerBool = false;
 				else{
 					return;
 				}
@@ -579,7 +580,12 @@ public class MainActivity extends SherlockFragmentActivity {
 				Log.e("MainActivity::sendSurveyResult()", "case error");
 				return;
 		}
-		replySurvey(manager.getJoinEventID(), survey.getID(), answer);
+		if(survey.getSurveyType() == Survey.TRUEFALSE){
+			replySurvey(manager.getJoinEventID(), survey.getID(), answerBool);
+		}
+		else{
+			replySurvey(manager.getJoinEventID(), survey.getID(), answer);
+		}
 		manager.getEvent(manager.getJoinEventID()).closeSurvey(survey.getID());
 		updateSurveylist();
 	}
@@ -931,6 +937,21 @@ public class MainActivity extends SherlockFragmentActivity {
     }
     //mission 1
     public boolean replySurvey(int eventID, int surveyID, String answer){
+    	JSONObject object = new JSONObject();
+    	try{
+    		object.put("Identity", 1);
+    		object.put("Event_Mission", 1);
+    		object.put("Event_ID", eventID);
+    		object.put("Survey_ID", surveyID);
+    		object.put("Answer", answer);
+    	} catch(JSONException e){
+    		Log.e("MainActivity::replySurvey()", e.toString());
+    	}
+    	sendMessage(object.toString());
+    	Log.i("MainActivity::replySurvey()", "finish reply survey");
+        return true;
+    }
+    public boolean replySurvey(int eventID, int surveyID, boolean answer){
     	JSONObject object = new JSONObject();
     	try{
     		object.put("Identity", 1);
