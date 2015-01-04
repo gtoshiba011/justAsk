@@ -142,7 +142,7 @@ public class EventHistory extends SherlockFragmentActivity implements DialogInte
     	Intent it = new Intent(this, MainActivity.class);
 		startActivity( it );
     	//joinEvent(history.getId());
-    	Toast toast = Toast.makeText(EventHistory.this,"Join now...Please wait", Toast.LENGTH_LONG);
+		Toast toast = Toast.makeText(EventHistory.this,"Connecting...Please wait", Toast.LENGTH_LONG);
 		toast.show();
     	EventHistory.this.finish();
     }

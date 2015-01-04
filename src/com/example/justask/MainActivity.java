@@ -37,6 +37,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
@@ -121,7 +122,7 @@ public class MainActivity extends SherlockFragmentActivity {
 		Log.i("MainActivity::manager", Integer.toString(manager.getJoinEventID()));
 		
 		// socket connection
-		connectWebSocket();
+		boolean socketStatus = connectWebSocket();
 		
 		// Drawer
 		mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
@@ -194,8 +195,8 @@ public class MainActivity extends SherlockFragmentActivity {
 		groups = new ArrayList<Map<String, String>>();
 		group_unSloved = new HashMap<String, String>();
 		group_sloved = new HashMap<String, String>();
-		group_unSloved.put("group", "Un-Solved Question");
-		group_sloved.put("group", "Solved Question");
+		group_unSloved.put("group", " Un-Solved Question");
+		group_sloved.put("group", " Solved Question");
 		groups.add(group_unSloved);
 		groups.add(group_sloved);
 		
@@ -261,7 +262,10 @@ public class MainActivity extends SherlockFragmentActivity {
 		getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#2F6877")));
 		
 		// join an event again
-		joinEvent(manager.getJoinEventID());
+		if(socketStatus == true)
+			joinEvent(manager.getJoinEventID());
+		else
+			finish();
 		
 		// put this event into event history list
 		//db = new HistoryDbHelper(this);
@@ -483,6 +487,7 @@ public class MainActivity extends SherlockFragmentActivity {
 			int eventID = manager.getJoinEventID();
 			askQuestion(eventID, s);
 			t.setText("");
+			hideSoftKeyboard();
 			/*Question question = new Question(0, s, false, 0);
 			Log.d("question list", "data added");
 			t.setText("");;
@@ -492,6 +497,13 @@ public class MainActivity extends SherlockFragmentActivity {
 			child.get(0).add(newQuestion);
 			adapter.notifyDataSetChanged();*/
 		}
+	}
+	
+	public void hideSoftKeyboard() {
+	    if(getCurrentFocus()!=null) {
+	        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+	        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+	    }
 	}
 
 	/*
@@ -792,7 +804,7 @@ public class MainActivity extends SherlockFragmentActivity {
 	}
 	
 	// *** socket communication start ***
-    private void connectWebSocket() {
+    private boolean connectWebSocket() {
     	Log.i("MainActivity::connectWebSocket()", "Connect web socket...");
         URI uri;
         try {
@@ -801,7 +813,7 @@ public class MainActivity extends SherlockFragmentActivity {
             Log.i("MainActivity::webSocket", "new uri success!");
         } catch (URISyntaxException e) {
             e.printStackTrace();
-            return;
+            return false;
         }
         Log.i("MainActivity::connectWebSocket()", "Connect success!");
         mWebSocketClient = new WebSocketClient(uri) {
@@ -920,9 +932,18 @@ public class MainActivity extends SherlockFragmentActivity {
             }
         };
         try{
-        	mWebSocketClient.connectBlocking();
+        	boolean result = mWebSocketClient.connectBlocking();
+        	if(result == false){
+        		mWebSocketClient.close();
+        		
+        		Log.d("MainActivity:connect()","false");
+	        	Toast toast = Toast.makeText(MainActivity.this,"Internet Connection Unstable", Toast.LENGTH_LONG);
+	    		toast.show();
+	            return false;
+        	}
         }catch(InterruptedException ie){
         }
+        return true;
     }
     public void sendMessage(String sendMessage) {
         mWebSocketClient.send(sendMessage);

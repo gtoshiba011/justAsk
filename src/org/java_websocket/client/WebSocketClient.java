@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.NotYetConnectedException;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.WebSocketAdapter;
@@ -24,6 +25,8 @@ import org.java_websocket.framing.Framedata.Opcode;
 import org.java_websocket.handshake.HandshakeImpl1Client;
 import org.java_websocket.handshake.Handshakedata;
 import org.java_websocket.handshake.ServerHandshake;
+
+import android.util.Log;
 
 /**
  * A subclass must implement at least <var>onOpen</var>, <var>onClose</var>, and <var>onMessage</var> to be
@@ -116,7 +119,7 @@ public abstract class WebSocketClient extends WebSocketAdapter implements Runnab
 	 **/
 	public boolean connectBlocking() throws InterruptedException {
 		connect();
-		connectLatch.await();
+		connectLatch.await(3, TimeUnit.SECONDS);
 		return engine.isOpen();
 	}
 
