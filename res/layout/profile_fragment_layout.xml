@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:padding="5dp"
-                android:text="B3UEK7"
+                android:text=""
                 android:textColor="#FFFFFF"
                 android:textSize="20sp" />
 
@@ -97,7 +97,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:padding="5dp"
-        android:text="Steve Jobs"
+        android:text=""
         android:textColor="#FFFFFF"
         android:textSize="20sp" />
 
@@ -116,7 +116,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:padding="5dp"
-        android:text="The secret of iPhone"
+        android:text=""
         android:textColor="#FFFFFF"
         android:textSize="20sp" />
 
@@ -135,7 +135,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:padding="5dp"
-        android:text="sjobs@apple.com"
+        android:text=""
         android:textColor="#FFFFFF"
         android:textSize="20sp" />
 

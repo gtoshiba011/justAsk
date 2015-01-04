@@ -139,6 +139,9 @@ public class EventHistory extends SherlockFragmentActivity implements DialogInte
     public void HistoryClick(View view){
     	History history = (History)view.findViewById(R.id.txvHisTopic).getTag();
     	joinEvent(history.getId());
+    	Toast toast = Toast.makeText(EventHistory.this,"Join now...Please wait", Toast.LENGTH_LONG);
+		toast.show();
+    	EventHistory.this.finish();
     }
     
     private class HistoryAdapter extends ArrayAdapter<History> {
