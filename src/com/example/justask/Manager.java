@@ -4,7 +4,6 @@ import java.util.Hashtable;
 
 import org.json.JSONArray;
 
-import QR.QR;
 import event.Event;
 import android.app.Application;
 import android.util.Log;
